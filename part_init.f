@@ -1,8 +1,20 @@
+      MODULE part_init
+
+
+      USE global
+      USE dimensions
+      USE misc
+      USE gutsp_dd
+      USE mpi
+
+      contains
+
+
 c----------------------------------------------------------------------
       SUBROUTINE Energy_diag(vp,b0,b1,E,Evp,Euf,EB1,EB1x,EB1y,EB1z,
-     x                       EE,EeP,etemp,nu,up,np)
+     x                       EE,EeP,nu,up,np)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real vp(Ni_max,3),
 c     x     uf(nx,ny,nz,3),
@@ -10,13 +22,13 @@ c     x     nf(nx,ny,nz),
      x     b0(nx,ny,nz,3),
      x     b1(nx,ny,nz,3),
      x     E(nx,ny,nz,3),
-     x     etemp(nx,ny,nz),
+c     x     etemp(nx,ny,nz),
      x     nu(nx,ny,nz),
      x     up(nx,ny,nz,3),
      x     np(nx,ny,nz)
 
       real mO_q
-      parameter(mO_q = mO/q)
+
 
       real Evp                  !kinetic energy of particles
       real Euf                  !kinetic energy of fluid flow
@@ -32,6 +44,8 @@ c     x     nf(nx,ny,nz),
       real recvbuf
       integer count
       count = 1
+
+      mO_q = mO/q
 
       Euf = 0.0
       EB1 = 0.0
@@ -97,7 +111,7 @@ c      write(*,*) 'Input energy (J).............',S_input_E
 cc      write(*,*) 'Input EeP energy (J).........',input_EeP
 c      write(*,*) 'Total vp energy (J)..........',S_Evp
 c      write(*,*) 'Total up energy (J)..........',Euf
-      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
+c      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
 c      write(*,*) 'Total E energy (J)...........',EE/S_input_E
 cc      write(*,*) 'Total EeP energy (J).........',EeP
 c      write(*,*) 'Total energy (J).............',total_E
@@ -127,7 +141,7 @@ c 20            continue
       prev_Etot = norm_E
 
       return
-      end
+      end SUBROUTINE Energy_diag
 c----------------------------------------------------------------------
 
 
@@ -302,7 +316,7 @@ cc----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE maxwl_init(vthm,vx,vy,vz)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real vthm
       integer flg
@@ -341,14 +355,14 @@ c----------------------------------------------------------------------
  44   continue
 
       return
-      end
+      end SUBROUTINE maxwl_init
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz)
       real vp(Ni_max,3)
@@ -555,7 +569,7 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
    
 
       return
-      end
+      end SUBROUTINE sw_part_setup_maxwl
 c----------------------------------------------------------------------
 
 
@@ -698,7 +712,7 @@ c      return
 c      end
 cc----------------------------------------------------------------------
 
-
+      end MODULE part_init
 
 
 

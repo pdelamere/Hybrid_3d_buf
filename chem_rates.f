@@ -1,40 +1,16 @@
-c----------------------------------------------------------------------
-      SUBROUTINE Neut_Center(cx,cy,cz)
-c Locates the cartisian coords of the center of the neutral cloud
-c at a given time t.
-c----------------------------------------------------------------------
-CVD$F NOVECTOR
-      include 'incurv.h'
 
-c      t = m*dt + tstart          !0.2 reflects canister evacuation time
-c      cx = qx(ri) + vsat*(t-0.2) !release point + cloud expansion
-c      cx = qx(ri) + vsat*t       !release point 
-c      cy = qy(rj) + dy/1e10      !second term to avoid division
-c      cz = qz(rk)                !by zero.  That is to avoid
+      MODULE chem_rates
 
-      x0 = dx/2
-      y0 = dy/2
-      z0 = dz_grid(nz/2)/2
+      USE global
+      USE inputs
+      USE gutsp_dd
       
-      cx = qx(nx/2+20) + x0
-      cy = qy(ny/2) + y0
-c      cz = qz(rk/2) + io_proc*qz(nz) + z0 !defines second proc from bottom
-      cz = qz(1) + io_proc*qz(nz-1) + z0 !defines second proc from bottom
-                                    !in global coordinates
-
-
-                                 !centering the sat track on 
-                                 !whole grid points, otherwise
-                                 !danger of r = 0.
-      return
-      end
-c----------------------------------------------------------------------
-
+      contains
 
 c----------------------------------------------------------------------
       real FUNCTION neutral_density(r)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real r
       real nn0
@@ -72,21 +48,21 @@ c     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
 c      write(*,*) 'nden...',neutral_density
 
       return
-      end
+      end FUNCTION neutral_density
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE res_chex(xp,vp,vp1)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
 
       real cx,cy,cz,r,vrel
-      real nn0,nn,neutral_density
+      real nn0,nn !,neutral_density
       real chex_tau,chex_prob
 
       real sigma_chex
@@ -128,7 +104,7 @@ c            write(*,*) 'chex...',l,chex_prob
       enddo
 
       return
-      end
+      end SUBROUTINE res_chex
 c----------------------------------------------------------------------
 
 
@@ -139,7 +115,7 @@ c Ionizes the neutral cloud with a 28 s time constant and fill particle
 c arrays, np, vp, up (ion particle density, velocity, 
 c and bulk velocity).   
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz),
      x     vp(Ni_max,3),
@@ -149,7 +125,8 @@ c----------------------------------------------------------------------
      x     ndot(nx,ny,nz)
 
       real ndot_chex
-      real neutral_density,r,z1,y1,x1
+c      real neutral_density
+      real r,z1,y1,x1
 c      real function ranf      
 
       integer flg           !flag for while loop
@@ -299,14 +276,14 @@ c      stop
       call update_up(vp,np,up)
 
       return
-      end
+      end SUBROUTINE Ionize_Io
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE get_ndot(ndot)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real ndot(nx,ny,nz)
       real ndot2(nx,ny,nz)
@@ -422,14 +399,14 @@ c      write(*,*) 'Max ndot...',maxval(ndot)
 c      stop
 
       return
-      end
+      end SUBROUTINE get_ndot
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE get_ndot_gauss(ndot)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real ndot(nx,ny,nz)
       real ndot2(nx,ny,nz)
@@ -479,7 +456,7 @@ c----------------------------------------------------------------------
      x         (ndot(nx/2,ny/2,nz/2))
 
       return
-      end
+      end SUBROUTINE get_ndot_gauss
 c----------------------------------------------------------------------
 
 
@@ -487,7 +464,7 @@ c----------------------------------------------------------------------
       SUBROUTINE get_ndot_Xianzhe(ndot,nn)
 c     ndot is a density rate (cm-3 s-1)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real ndot(nx,ny,nz)
       real ndot2(nx,ny,nz)
@@ -557,14 +534,14 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
 c     DOLS I remove the scaling to Mdot from para.h
 c Linker give a rate and that is it (kg cm-3 s-1) but the code wants only km-3s-1
       return
-      end
+      end SUBROUTINE get_ndot_Xianzhe
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE get_nuin(nuin,nn,uf,nf,ndot)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real nuin(nx,ny,nz)
       real nn(nx,ny,nz)
@@ -601,7 +578,7 @@ c               nuin(i,j,k) = 10.0*ndot(i,j,k)/nf(i,j,k)
       call periodic_scalar(nuin)
 
       return
-      end
+      end SUBROUTINE get_nuin
 c----------------------------------------------------------------------
 
 
@@ -613,7 +590,7 @@ c arrays, np, vp, up (ion particle density, velocity,
 c and bulk velocity).   
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz),
      x     np_2(nx,ny,nz),
@@ -651,7 +628,7 @@ c      real Nofr(200)        !number of neutrals as func of r
       integer rijk
       real ddni
       integer cnt, l1
-      real neutral_density
+c      real neutral_density
       real npmax
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
@@ -876,6 +853,7 @@ c      call update_up(vp,np,up)
 
       
       return
-      end
+      end SUBROUTINE Ionize_pluto_mp
 c----------------------------------------------------------------------
 
+      end MODULE chem_rates

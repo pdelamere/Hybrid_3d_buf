@@ -5,7 +5,21 @@ c maind.f
 c Parallel version with no ion fluid, Nov 24, 2004
 c----------------------------------------------------------------------
 
-      include 'incurv.h'
+      
+      USE global
+      USE dimensions
+      USE inputs
+      USE mpi
+      USE initial
+      USE misc
+      USE gutsp_dd
+      USE gutsp_buf
+      USE gutsf
+      USE part_init
+c      USE grid_interp
+      USE chem_rates
+
+c      include 'incurv.h'
 
 c----------------------------------------------------------------------
 c Listing of all declared variables
@@ -138,6 +152,11 @@ c      real divu(nx,ny,nz)
 
 c----------------------------------------------------------------------
 
+      call readInputs()
+      call initparameters()
+
+c      stop
+
       call MPI_INIT(ierr)
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
@@ -168,45 +187,20 @@ c Initialize all variables
 c----------------------------------------------------------------------
       write(*,*) 'initializing variables...'
 
-      Ni_tot = 2000000
+      Ni_tot = Ni_tot_0
       Ni_tot_sw = Ni_tot
 c      Ni_tot_sys = Ni_tot*procnum
       Ni_tot_sys = Ni_tot
       print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
 
 
-   !----------------------------------------------------------------------
-   !   check input parameters
-   !----------------------------------------------------------------------
-
-      write(*,*) 'alpha...',alpha
-      write(*,*) 'c/wpi...',lambda_i,dx,dy,delz
-      write(*,*) 'dt......',dt,dtsub_init
-
-      va =  b0_init/sqrt(mu0*mproton*nf_init/1e9)/1e3
-      write(*,*) 'Alfven velocity.......',va
-      write(*,*) 'Thermal velocity......',vth_top
-      write(*,*) 'Mach number...........',vtop/(va + vth_top)
-      write(*,*) ' '
-      write(*,*) 'Thermal gyroradius....',m_top*vth_top/(q*b0_init),
-     x            m_top*vth_top/(q*b0_init)/dx
-      cwpi = 3e8/sqrt((np_top/1e9)*q*q/(epsilon*m_top))
-      write(*,*) 'Ion inertial length...',cwpi/1e3,cwpi/1e3/dx
-      write(*,*) 'gyrofrequency.........',q*b0_init/mproton,
-     x     (mproton/(q*b0_init))/dt
-      if ((mproton/(q*b0_init))/dt .le. 5) then
-         write(*,*) 'gyromotion not temporally resolved...'
-         !stop
+      if (my_rank .eq. 0) then
+         call check_inputs()
+         write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*ny*nz)
+         write(*,*) ' '
       endif
 
-
-      write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*ny*nz)
-      
-      !stop
-
-   !----------------------------------------------------------------------
-
-
+c      stop
 
 c      Ni_tot = 6
       mstart = 0
@@ -216,15 +210,19 @@ c      Ni_tot = 6
 
 c initialize seed for each processor
 
-      call random_seed
-      call random_seed(size = seedsize)
-      allocate(seeder(seedsize))
-      do n = 0,procnum-1 
-         if (my_rank .eq. n) then 
-            call random_seed(get=seeder)
-            call random_seed(put=seeder)
-         endif
-      enddo
+c      call random_seed
+c      call random_seed(size = seedsize)
+c      allocate(seeder(seedsize))
+c      do n = 0,procnum-1 
+c         if (my_rank .eq. n) then 
+c            call random_seed(get=seeder)
+c            call random_seed(put=seeder)
+c         endif
+c      enddo
+
+      seed = t1 +my_rank*100
+      call random_initialize(seed)
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
 
       if (.not.(restart)) then
          do 66 i=1,nx
@@ -265,9 +263,7 @@ c      Ni_tot = 4000000
       endif
 
       call grd7()
-
       call grd6_setup(b0,bt,b12,b1,b1p2,nu)
-
 
 c      call obstacle_boundary_nu(nu)
 
@@ -285,14 +281,14 @@ c      enddo
 
 
       if (.not.(restart)) then
-         write(*,*) 'SW particle setup maxwl 1...'
+c         write(*,*) 'SW particle setup maxwl 1...'
 
 c      call sw_part_setup_temp(np,vp,vp1,xp,input_p,up)
 c      call sw_part_setup_maxwl(np,vp,vp1,xp,xp1,input_p,up,np_t_flg,
 c     x                         np_b_flg)
          call sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
-         write(*,*) 'SW particle setup complete...',Ni_tot,
-     x        mrat(Ni_tot:Ni_tot+1)
+c         write(*,*) 'SW particle setup complete...',Ni_tot,
+c     x        mrat(Ni_tot:Ni_tot+1)
 
 
          call part_setup_buf(xp_buf,vp_buf)
@@ -301,7 +297,7 @@ c     x                         np_b_flg)
      x        B_out_buf,mrat_out_buf,m_arr_out_buf,b0)
          
          
-         write(*,*) 'buffer setup complete...'
+c         write(*,*) 'buffer setup complete...'
          
          call get_ndot(ndot)
          
@@ -609,7 +605,9 @@ c======================================================================
       do 1 m = mstart+1, nt
 
 c        write(*,*) ' '
-         write(*,*) 'time...', m, m*dt,my_rank
+         if (my_rank .eq. 0) then
+            write(*,*) 'time...', m, m*dt
+         endif
 
          !Calculate neutral density
 
@@ -620,10 +618,9 @@ c         xp1 = xp  !save previous particle position for diagnosics
 c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
             mr = 1.0/m_pu
             call separate_np(np_2,mr)
-            write(*,*) 'max np_2...',maxval(np_2)
+c            write(*,*) 'max np_2...',maxval(np_2)
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
          endif
-
 
          call get_interp_weights(xp)
          call update_np(np)             !np at n+1/2
@@ -633,7 +630,7 @@ c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
          !energy diagnostics
          call get_bndry_Eflux(b1,E)
          call Energy_diag(vp,b0,b1,E,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,
-     x                    EeP,etemp,nu,up,np)
+     x                    EeP,nu,up,np)
          
 
          call curlB(b1,np,aj)
@@ -864,8 +861,8 @@ c            call separate_temp(temp_p_1,1.0)
 c            call separate_temp(temp_p_2,1/m_pu)
 
             nproc_2rio = nint(100*rio/(delz*nz))
-            write(*,*) 'nproc_2rio....',nproc_2rio,
-     x           (comm_sz/2)-nproc_2rio
+c            write(*,*) 'nproc_2rio....',nproc_2rio,
+c     x           (comm_sz/2)-nproc_2rio
 
             call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 c save 3d arrays------------------------

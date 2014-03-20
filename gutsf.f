@@ -1,8 +1,18 @@
+
+      MODULE gutsf
+
+      USE global
+      USE boundary
+c      USE grid_interp
+      
+      contains
+
+
 c----------------------------------------------------------------------
       SUBROUTINE f_update_tlev(b1,b12,b1p2,bt,b0)
 c loops run 1 to n since values are only being copied
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
       
       real b1(nx,ny,nz,3),
      x     b12(nx,ny,nz,3),
@@ -29,7 +39,7 @@ c               call obstacle_boundary_B(b0,b1)
 
       
       return
-      end
+      end SUBROUTINE f_update_tlev
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
@@ -49,7 +59,7 @@ c just copy the interior values to the boundary.
 c----------------------------------------------------------------------
 CVD$R VECTOR
 
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real aa(nx,ny,nz,3)        !main cell contravarient vector 
       real bbmf(nx,ny,nz,3)      !main cell contravarient vector
@@ -124,7 +134,7 @@ c about the grid points.
 
 
       return
-      end
+      end SUBROUTINE crossf
 c----------------------------------------------------------------------
 
 
@@ -142,7 +152,7 @@ c using a linear interpolation of the k and k-1 values to the grid
 c point location.
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real bt(nx,ny,nz,3),   !main cell covarient
      x     btmf(nx,ny,nz,3)  !main cell contravarient
@@ -212,7 +222,7 @@ c      call boundaries(btmf)
       call periodic(btmf)
 
       return
-      end
+      end SUBROUTINE cov_to_contra
 c----------------------------------------------------------------------
 
 
@@ -226,7 +236,7 @@ c the cell dimensions since dz_grid is not equal to dz_cell on non-
 c uniform grid.
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b1(nx,ny,nz,3),
 c     x     nf(nx,ny,nz),
@@ -282,7 +292,7 @@ c     x                 + 0.5*(np(i,j,k)+np(i,j,kp))
 c      call periodic(aj)
 
       return
-      end
+      end SUBROUTINE curlB
 c----------------------------------------------------------------------
 
 
@@ -292,7 +302,7 @@ c E is dual cell covarient, and curl_E will be returned as main
 c cell covarient...as all magnetic fields are.  All i,j,k exclude
 c boundaries.  Boundaries are taken care of in main fluid code.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real E(nx,ny,nz,3)      !E field, main cell contravarient
       real curl_E(nx,ny,nz,3) !curl of E, main cell covarient
@@ -320,7 +330,7 @@ c      call periodic(E)
 c      call periodic(curl_E)
 
       return
-      end
+      end SUBROUTINE curlE
 c----------------------------------------------------------------------
 
 
@@ -1011,7 +1021,7 @@ c E must be at time level m. We have uf at levels m-1/2 and m+1/2, so
 c the average value is used for uf in the calculation of ui.
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real E(nx,ny,nz,3),
      x     b0(nx,ny,nz,3),
@@ -1114,7 +1124,7 @@ c      E(nx-1:nx,:,:,2) = 0.0
 cc      E(nx-1:nx,:,:,1) = 0.0
 
       return
-      end
+      end SUBROUTINE get_E
 c----------------------------------------------------------------------
 
 
@@ -1123,7 +1133,7 @@ c----------------------------------------------------------------------
 c Predictor step in magnetic field update.
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b0(nx,ny,nz,3),
      x     b1(nx,ny,nz,3),
@@ -1173,7 +1183,7 @@ c      call damp(b1p2)
 c      call fix_normal_b(b1p2)
 
       return
-      end
+      end SUBROUTINE predict_B
 c----------------------------------------------------------------------
 
 
@@ -1185,7 +1195,7 @@ c calculated as 0.5*(b1 + b1p2).  uf and np are already at time level
 c m + 1/2, so they are used as is. 
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real E(nx,ny,nz,3),
      x     b0(nx,ny,nz,3),
@@ -1304,7 +1314,7 @@ c      E(nx-1:nx,:,:,2) = 0.0
 cc      E(nx-1:nx,:,:,1) = 0.0
 
       return
-      end
+      end SUBROUTINE get_Ep1
 c----------------------------------------------------------------------
 
 
@@ -1313,7 +1323,7 @@ c----------------------------------------------------------------------
 c Corrector step in magnetic field update.
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b0(nx,ny,nz,3),
      x     b1(nx,ny,nz,3),
@@ -1362,7 +1372,7 @@ c      call damp(b1p2)
 c      call fix_normal_b(b1p2)
 
       return
-      end
+      end SUBROUTINE correct_B
 c----------------------------------------------------------------------
 
 
@@ -1778,6 +1788,156 @@ c      return
 c      end
 cc----------------------------------------------------------------------
 
+
+c----------------------------------------------------------------------
+      SUBROUTINE Momentum_diag(up,uf,np,nf,E,b1,pup,puf,peb,input_p)
+c----------------------------------------------------------------------
+      include 'incurv.h'
+
+      real up(nx,ny,nz,3),
+     x     uf(nx,ny,nz,3),
+     x     np(nx,ny,nz),
+     x     nf(nx,ny,nz),
+     x     E(nx,ny,nz,3),
+     x     b1(nx,ny,nz,3),
+     x     pup(3),
+     x     puf(3),
+     x     peb(3),
+     x     input_p(3)
+
+      real vol
+      real mom_flux
+      real exb(nx,ny,nz,3)
+      real npave(3),nfave(3)
+
+
+      call crossf(E,b1,exb)
+
+      do 5 m=1,3
+         pup(m) = 0
+         puf(m) = 0
+         peb(m) = 0
+ 5              continue
+
+      do 10 i=2,nx-1
+         do 10 j=2,ny-1
+            do 10 k=2,nz-1
+               ip = i+1
+               jp = j+1
+               kp = k+1
+               if (ip .eq. nx) then ip = nx-1
+               if (jp .eq. ny) then jp = ny-1
+               if (kp .eq. nz) then kp = nz-1
+               vol = dx*dy*dz_cell(k)
+               npave(1) = 0.5*(np(i,j,k) + np(ip,j,k))
+               npave(2) = 0.5*(np(i,j,k) + np(i,jp,k))
+               npave(3) = 0.5*(np(i,j,k) + np(i,j,kp))
+               nfave(1) = 0.5*(nf(i,j,k) + nf(ip,j,k))
+               nfave(2) = 0.5*(nf(i,j,k) + nf(i,jp,k))
+               nfave(3) = 0.5*(nf(i,j,k) + nf(i,j,kp))
+               do 10 m=1,3
+c                  pup(m) = pup(m) + npave(m)*vol*mBa*up(i,j,k,m)
+                  pup(m) = pup(m) + np(i,j,k)*vol*mBa*up(i,j,k,m)
+c                  puf(m) = puf(m) + nfave(m)*vol*mO*uf(i,j,k,m)
+                  puf(m) = puf(m) + nf(i,j,k)*vol*mO*uf(i,j,k,m)
+                  peb(m) = peb(m) + epsilon*1e3*exb(i,j,k,m)*vol*(mO/q)
+ 10               continue
+
+c      write(*,*) 'Momentum conservation...'
+c      write(*,*) '  Particles.............',pup(1),pup(2),pup(3)
+c      write(*,*) '  Fluid.................',puf(1),puf(2),puf(3)
+c      write(*,*) '  ExB...................',peb(1),peb(2),peb(3)
+c      write(*,*) '  Normalized............',
+c     x                     (pup(1)+puf(1)+peb(1))/input_p(1),
+c     x                     (pup(2)+puf(2)+peb(2))/input_p(2),
+c     x                     (pup(3)+puf(3)+peb(3))/input_p(3)
+
+c Momentum flux through boundary faces
+
+c i = 2 face
+
+c      do 20 j=2,ny
+c         do 20 k=2,nz
+c            m=1
+c            i=2
+c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
+c            mom_flux = nf(i,j,k)*vol*mO*uf(i,j,k,m)
+c            input_p(m) = input_p(m) + mom_flux  !+ sign since pos 
+                                                !is flux into domain
+c 20         continue
+
+c i = nx face
+
+c      do 30 j=2,ny
+c         do 30 k=2,nz
+c            m=1
+c            i=nx
+c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
+c            mom_flux = nf(i,j,k)*vol*mO*uf(i,j,k,m)
+c            input_p(m) = input_p(m) - mom_flux  !- sign since pos 
+                                                !is flux out domain
+c 30         continue
+c**********************
+c j = 2 face
+
+c      do 40 i=2,nx
+c         do 40 k=2,nz
+c            m=2
+c            j=2
+c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
+c            mom_flux = nf(i,j,k)*vol*mO*uf(i,j,k,m)
+c            input_p(m) = input_p(m) + mom_flux  !+ sign since pos 
+                                                !is flux into domain
+c 40         continue
+
+c j = ny face
+
+c      do 50 i=2,nx
+c         do 50 k=2,nz
+c            m=2
+c            j=ny
+c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
+c            mom_flux = nf(i,j,k)*vol*mO*uf(i,j,k,m)
+c            input_p(m) = input_p(m) - mom_flux  !- sign since pos 
+                                                !is flux out domain
+c 50         continue
+c****************
+c k = 2 face
+
+c      do 60 i=2,nx
+c         do 60 j=2,ny
+c            m=3
+c            k=2
+c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
+c            mom_flux = nf(i,j,k)*vol*mO*uf(i,j,k,m)
+c            input_p(m) = input_p(m) + mom_flux  !+ sign since pos 
+                                                !is flux into domain
+c 60         continue
+
+c k = nz face
+
+c      do 70 i=2,nx
+c         do 70 j=2,ny
+c            m=3
+c            k=nz
+c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
+c            mom_flux = nf(i,j,k)*vol*mO*uf(i,j,k,m)
+c            input_p(m) = input_p(m) - mom_flux  !- sign since pos 
+                                                !is flux out domain
+c 70         continue
+
+c      write(*,*) 'Normalized x momentum...',(pup(1)+puf(1))/input_p(1)
+c      write(*,*) 'Normalized y momentum...',(pup(2)+puf(2))/input_p(2)
+c      write(*,*) 'Normalized z momentum...',(pup(3)+puf(3))/input_p(3)
+
+      return
+      end SUBROUTINE Momentum_diag
+c----------------------------------------------------------------------
+
+
+
+
+      end MODULE gutsf
 
 
 

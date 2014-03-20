@@ -1,7 +1,17 @@
+      MODULE gutsp_buf
+
+      USE dimensions
+      USE global
+      USE misc
+      USE part_init
+
+      contains
+
+
 c----------------------------------------------------------------------
       SUBROUTINE part_setup_buf(xp_buf,vp_buf)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real vp_buf(Ni_max_buf,3)
       real xp_buf(Ni_max_buf,3)
@@ -100,7 +110,7 @@ c add shell distribution
 
 
       return
-      end
+      end SUBROUTINE part_setup_buf
 c----------------------------------------------------------------------
 
 
@@ -109,7 +119,7 @@ c----------------------------------------------------------------------
       SUBROUTINE part_setup_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x            B_out_buf,mrat_out_buf,m_arr_out_buf,b0)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real vp_out_buf(Ni_max_buf,3)
       real xp_out_buf(Ni_max_buf,3)
@@ -190,7 +200,7 @@ c----------------------------------------------------------------------
       mrat_out_buf(Ni_tot_out_buf+1:) = 1.0/m_pu       
 
       return
-      end
+      end SUBROUTINE part_setup_out_buf
 c----------------------------------------------------------------------
 
 
@@ -199,7 +209,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_Ep_buf(Ep_buf,b0,xp_buf,up)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real Ep_buf(Ni_max_buf,3)
       real b0(nx,ny,nz,3)
@@ -252,7 +262,7 @@ c         up3(3) = 0.0
  10      continue
 
       return
-      end
+      end SUBROUTINE get_Ep_buf
 c----------------------------------------------------------------------
 
 
@@ -261,7 +271,7 @@ c----------------------------------------------------------------------
      x                                vminus_buf,b0)
 c----------------------------------------------------------------------
 
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real Ep_buf(Ni_max_buf,3),
      x     vp_buf(Ni_max_buf,3),      !particle velocities at t level n-1/2
@@ -321,14 +331,14 @@ c----------------------------------------------------------------------
  30   continue
 
       return
-      end
+      end SUBROUTINE get_vplus_vminus_buf
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE get_vp_buf_final(Ep_buf,vp_buf,vplus_buf)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real Ep_buf(Ni_max_buf,3),
      x     vp_buf(Ni_max_buf,3),    !particle velocities at t level n+1/2
@@ -340,14 +350,14 @@ c----------------------------------------------------------------------
  10         continue
 
       return
-      end
+      end SUBROUTINE get_vp_buf_final
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp_buf(Ni_max_buf,3),
      x     vp_buf(Ni_max_buf,3),
@@ -420,7 +430,7 @@ c----------------------------------------------------------------------
      x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
 
 
-      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
+c      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
       ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
      x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
       do l = Ni_tot+1,Ni_tot+Ni_out 
@@ -460,14 +470,14 @@ c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
 
 
       return
-      end
+      end SUBROUTINE exchange_ion_half_buf
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp_buf(Ni_max_buf,3),
      x     vp_buf(Ni_max_buf,3),
@@ -599,7 +609,7 @@ c add shell distribution
 
 
       return
-      end
+      end SUBROUTINE move_ion_half_buf
 c----------------------------------------------------------------------
 
 
@@ -607,7 +617,7 @@ c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf,m_arr_out_buf,xp,vp,vp1)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp_out_buf(Ni_max_buf,3),
      x     vp_out_buf(Ni_max_buf,3),
@@ -677,7 +687,7 @@ c move back into main domain
 
       ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
      x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
-      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
+c      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
       ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
      x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
       do l = Ni_tot+1,Ni_tot+Ni_out 
@@ -757,7 +767,7 @@ c      write(*,*) 'Ni out removed past 10 dx...',Ni_out
 
 
       return
-      end
+      end SUBROUTINE exchange_ion_out_buf
 c----------------------------------------------------------------------
 
 
@@ -766,7 +776,7 @@ c----------------------------------------------------------------------
       SUBROUTINE move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf,m_arr_out_buf)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp_out_buf(Ni_max_buf,3),
      x     vp_out_buf(Ni_max_buf,3),
@@ -1153,7 +1163,7 @@ c      deallocate(in_mass)
 
 
       return
-      end
+      end SUBROUTINE move_ion_out_buf
 c----------------------------------------------------------------------
 
 
@@ -1161,7 +1171,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE push_part_test(E,B,x,v,mr,vpls_out_buf)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real E(3)
       real B(3)
@@ -1234,8 +1244,8 @@ c     x               x(1),v(1),mr
 c      write(*,*) 'part push 2...',vpls_out_buf(:)
 
       return
-      end
+      end SUBROUTINE push_part_test
 c----------------------------------------------------------------------
 
-
+      end MODULE gutsp_buf
 

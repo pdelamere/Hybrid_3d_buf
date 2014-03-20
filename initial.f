@@ -1,12 +1,21 @@
+      MODULE initial
+
+      USE global
+c      USE dimensions
+c      USE inputs
+
+      contains
+
+
 c----------------------------------------------------------------------
       SUBROUTINE grd6_setup(b0,bt,b12,b1,b1p2,nu)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
 c      real eoverm
 c      parameter(eoverm = q/mO)
       real mO_q
-      parameter(mO_q = mO/q)
+
       real vol
 
       real b0(nx,ny,nz,3),
@@ -20,7 +29,7 @@ c      parameter(eoverm = q/mO)
       real b0_1x, b0_2x, b0_1y, b0_2y
       real phi
 
-
+      mO_q = mO/q
 
       phi = 0.0*PI/180.
 
@@ -121,14 +130,14 @@ c      close(30)
       close(40)
 
       return
-      end
+      end SUBROUTINE grd6_setup
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE grd7()
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
 
       parameter(nrgrd = 0)
@@ -216,7 +225,7 @@ c      open(40,file='coord.dat',status='unknown',form='unformatted')
       close(40)
 
       return
-      end
+      end SUBROUTINE grd7
 c----------------------------------------------------------------------
 
 
@@ -224,7 +233,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE grd9()
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       parameter(nrgrd = 40)
 
@@ -295,8 +304,9 @@ c      open(40,file='coord.dat',status='unknown',form='unformatted')
       close(40)
 
       return
-      end
+      end SUBROUTINE grd9
 c----------------------------------------------------------------------
 
 
 
+      end module initial

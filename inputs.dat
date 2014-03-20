@@ -1,0 +1,13 @@
+0.2e-9               !magnetic field (Tesla)
+1                    !atomic mass for reference species
+32                    !mass of pickup ion species
+0.01e15               !density (km^-3)
+0.04                   !particle time step (fraction of omega_i)
+50                   !number of time steps
+5                     !diagnostic output interval
+340.0                   !flow speed (km/s) 
+19.3                  !thermal speed for Maxwellian (km/s)
+0.2                   !Ni_tot initial (fraction of Ni_max)
+0.8                   !grid size as fraction of lambda_i
+0.02 		      !nu_init_frac, fraction of gyrofrequency for nu_init
+'./tmp3/'             !output directory 

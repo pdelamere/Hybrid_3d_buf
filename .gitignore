@@ -1,2 +1,9 @@
 *.o
 *.mod
+tmp*
+*~
+*.pro
+*.png
+#makefile#
+#para.h#
+b0.dat

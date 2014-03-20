@@ -1,8 +1,16 @@
+      MODULE boundary
+
+      USE global
+c      USE chem_rates
+     
+      contains
+
+
 c---------------------------------------------------------------------
       SUBROUTINE periodic(b)
 c---------------------------------------------------------------------
 CVD$F VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b(nx,ny,nz,3)
 
@@ -76,14 +84,14 @@ c     z direction
 
 
       return
-      end
+      end SUBROUTINE periodic
 c---------------------------------------------------------------------
 
 
 c---------------------------------------------------------------------
       SUBROUTINE obstacle_boundary(E)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real E(nx,ny,nz,3)
       real r,cx,cy,cz
@@ -102,14 +110,14 @@ c---------------------------------------------------------------------
  10   continue
             
       return
-      end
+      end SUBROUTINE obstacle_boundary
 c---------------------------------------------------------------------
 
 
 c---------------------------------------------------------------------
       SUBROUTINE obstacle_boundary_nu(nu)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real nu(nx,ny,nz)
       real r,cx,cy,cz
@@ -124,7 +132,7 @@ c---------------------------------------------------------------------
  10   continue
             
       return
-      end
+      end SUBROUTINE obstacle_boundary_nu
 c---------------------------------------------------------------------
 
 
@@ -132,7 +140,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
       SUBROUTINE obstacle_boundary_B(b0,b1p2)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b0(nx,ny,nz,3)
       real b1p2(nx,ny,nz,3)
@@ -159,7 +167,7 @@ c               endif
  10   continue
             
       return
-      end
+      end SUBROUTINE obstacle_boundary_B
 c---------------------------------------------------------------------
 
 
@@ -591,7 +599,7 @@ cc---------------------------------------------------------------------
 c---------------------------------------------------------------------
       SUBROUTINE periodic_scalar(b)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b(nx,ny,nz)
 
@@ -656,7 +664,7 @@ c             do 30 m=1,3
 
 
       return
-      end
+      end SUBROUTINE periodic_scalar
 c---------------------------------------------------------------------
 
 
@@ -664,7 +672,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
       SUBROUTINE fix_normal_b(b)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b(nx,ny,nz,3)
 
@@ -708,7 +716,7 @@ c 30         continue
 
 
       return
-      end
+      end SUBROUTINE fix_normal_b
 c---------------------------------------------------------------------
 
 cc---------------------------------------------------------------------
@@ -750,7 +758,7 @@ cc---------------------------------------------------------------------
 c---------------------------------------------------------------------
       SUBROUTINE fix_tangential_E(E)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real E(nx,ny,nz,3)
 
@@ -800,14 +808,14 @@ c 30         continue
 c      call periodic(E)
 
       return
-      end
+      end SUBROUTINE fix_tangential_E
 c---------------------------------------------------------------------
 
 
 c---------------------------------------------------------------------
       SUBROUTINE boundaries(b)
 c---------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real b(nx,ny,nz,3)
 
@@ -825,10 +833,46 @@ c      call fix_normal_b(b)
 c      call smooth_boundary(b)
 
       return
-      end
+      end SUBROUTINE boundaries
 c---------------------------------------------------------------------
 
 
+c----------------------------------------------------------------------
+      SUBROUTINE Neut_Center(cx,cy,cz)
+c Locates the cartisian coords of the center of the neutral cloud
+c at a given time t.
+c----------------------------------------------------------------------
+CVD$F NOVECTOR
+c      include 'incurv.h'
+
+c      t = m*dt + tstart          !0.2 reflects canister evacuation time
+c      cx = qx(ri) + vsat*(t-0.2) !release point + cloud expansion
+c      cx = qx(ri) + vsat*t       !release point 
+c      cy = qy(rj) + dy/1e10      !second term to avoid division
+c      cz = qz(rk)                !by zero.  That is to avoid
+
+      x0 = dx/2
+      y0 = dy/2
+      z0 = dz_grid(nz/2)/2
+      
+      cx = qx(nx/2+20) + x0
+      cy = qy(ny/2) + y0
+c      cz = qz(rk/2) + io_proc*qz(nz) + z0 !defines second proc from bottom
+      cz = qz(1) + io_proc*qz(nz-1) + z0 !defines second proc from bottom
+                                    !in global coordinates
+
+
+                                 !centering the sat track on 
+                                 !whole grid points, otherwise
+                                 !danger of r = 0.
+      return
+      end SUBROUTINE Neut_Center
+c----------------------------------------------------------------------
+
+
+
+
+      end MODULE boundary
 
 
 
@@ -844,6 +888,6 @@ c---------------------------------------------------------------------
 
 
 
-
+      
 
 

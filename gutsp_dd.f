@@ -1,3 +1,13 @@
+      MODULE gutsp_dd
+
+      USE global
+      USE misc
+      USE mpi
+      USE boundary
+c      USE grid_interp
+
+      contains
+
 c----------------------------------------------------------------------
       SUBROUTINE remove_ion(xp,vp,vp1,ion_l)
 c Removes particles from simulation that have gone out of bounds
@@ -5,7 +15,7 @@ c----------------------------------------------------------------------
 CVD$R VECTOR
 
 
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp(Ni_max,3)
       real vp(Ni_max,3)
@@ -25,7 +35,7 @@ CVD$R VECTOR
             vp(l,m) = vp(l+1,m)
             vp1(l,m) = vp1(l+1,m)
             ijkp(l,m) = ijkp(l+1,m)
-            wquad(l,m) = wquad(l+1,m)
+c            wquad(l,m) = wquad(l+1,m)
  10      continue
 
 
@@ -38,14 +48,14 @@ CVD$R VECTOR
       Ni_tot = Ni_tot - 1
 
       return
-      end
+      end SUBROUTINE remove_ion
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE check_min_den(np,xp,vp,vp1,up,bt)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz),
      x     xp(Ni_max,3),
@@ -121,6 +131,8 @@ c     x                                  npart,ipart
                      if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
                         ijkp(l,3) = kk+1
                      endif
+
+
                      mrat(l) = 1.0
                      m_arr(l) = mproton
                      beta_p(l) = 1.0
@@ -146,7 +158,7 @@ c      endwhere
       where (xp(1:Ni_tot,3) .le. qz(2))
          in_bounds(1:Ni_tot)= .false.
          ijkp(1:Ni_tot,3) = nz
-         wquad(1:Ni_tot,3) = -1.0
+c         wquad(1:Ni_tot,3) = -1.0
          xp(1:Ni_tot,3) = qz(nz)-(qz(2)-xp(1:Ni_tot,3))
       endwhere
 
@@ -243,21 +255,21 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
       ijkp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_ijkp(:,:)
 
 
-      do m = 1,3
-         out_part(1:Ni_out,m) = 
-     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-         wquad(1:Ni_tot_in,m) = 
-     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
-      enddo
+c      do m = 1,3
+c         out_part(1:Ni_out,m) = 
+c     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
+c         wquad(1:Ni_tot_in,m) = 
+c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
+c      enddo
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
+c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c     x     cartcomm, reqs(1), ierr)
+c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c     x     cartcomm, reqs(2), ierr)
       
-      call MPI_WAITALL(2, reqs, stats, ierr)
+c      call MPI_WAITALL(2, reqs, stats, ierr)
       
-      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
+c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,9
          out_part_wght(1:Ni_out,m) = 
@@ -345,7 +357,7 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
       deallocate(in_mass)
 
       return
-      end
+      end SUBROUTINE check_min_den
 c----------------------------------------------------------------------
 
 
@@ -357,7 +369,7 @@ c bulk flow velocity to time level n, and replaces up_n-3/2
 c with up_n-1/2
 c----------------------------------------------------------------------
 CVD$R VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real up(nx,ny,nz,3),
      x     vp(Ni_max,3),
@@ -374,7 +386,7 @@ CVD$R VECTOR
       call update_up(v_at_n,np,up)
 
       return
-      end
+      end SUBROUTINE extrapol_up
 c----------------------------------------------------------------------
 
 
@@ -383,7 +395,7 @@ c----------------------------------------------------------------------
       SUBROUTINE get_Ep(Ep,aj,np,up,btc,nu)
 c----------------------------------------------------------------------
 CVD$F VECTOR
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real Ep(Ni_max,3),
      x     aj(nx,ny,nz,3),
@@ -415,9 +427,9 @@ c      call face_to_center(gradP,gradPc)
 
       do 10 l=1,Ni_tot
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          ip = i+1
          jp = j+1
@@ -504,7 +516,7 @@ c                     + etar(i,j,k,m)*aj3(m)
  10      continue
 
       return
-      end
+      end SUBROUTINE get_Ep
 c----------------------------------------------------------------------
 
 
@@ -512,7 +524,7 @@ c----------------------------------------------------------------------
       SUBROUTINE get_vplus_vminus(Ep,btc,vp,vplus,vminus)
 c----------------------------------------------------------------------
 
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real Ep(Ni_max,3),
      x     btc(nx,ny,nz,3),   !bt at cell center
@@ -575,9 +587,9 @@ c 20   continue
    
       do 30 l=1,Ni_tot 
 
-         i = ijkp(l,1)+wquad(l,1)
-         j = ijkp(l,2)+wquad(l,2)
-         k = ijkp(l,3)+wquad(l,3)
+         i = ijkp(l,1)!+wquad(l,1)
+         j = ijkp(l,2)!+wquad(l,2)
+         k = ijkp(l,3)!+wquad(l,3)
    
          ip = i+1
          jp = j+1
@@ -632,7 +644,7 @@ c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
 
 
       return
-      end
+      end SUBROUTINE get_vplus_vminus
 c----------------------------------------------------------------------
 
 
@@ -642,7 +654,7 @@ c The routine calculates v at time level n, and the associated bulk
 c flow velocity up using the v+, v- technique.  The new up at
 c time level n replaces the provisional extrapolation for up.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real vp1(Ni_max,3),    !particle velocities at t level n
      x     vplus(Ni_max,3),
@@ -659,14 +671,14 @@ c            write(*,*) 'vp1....',m,vp1(l,m)
       call update_up(vp1,np,up)
 
       return
-      end
+      end SUBROUTINE improve_up
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE get_vp_final(Ep,vp,vp1,vplus)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real Ep(Ni_max,3),
      x     vp(Ni_max,3),    !particle velocities at t level n+1/2
@@ -681,7 +693,7 @@ c----------------------------------------------------------------------
  10         continue
 
       return
-      end
+      end SUBROUTINE get_vp_final
 c----------------------------------------------------------------------
 
 
@@ -690,7 +702,7 @@ c----------------------------------------------------------------------
      x                      xp_out_buf,vp_out_buf,E_out_buf,
      x                      B_out_buf,mrat_out_buf,m_arr_out_buf) 
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
@@ -752,8 +764,8 @@ c     ijkp(:,1) = nint(xp(:,1)/dx)
      x        in_bounds(1:Ni_tot))
          ijkp(1:Ni_tot_in,m) = pack(ijkp(1:Ni_tot,m),
      x        in_bounds(1:Ni_tot))
-         wquad(1:Ni_tot_in,m) = pack(wquad(1:Ni_tot,m),
-     x        in_bounds(1:Ni_tot))
+c         wquad(1:Ni_tot_in,m) = pack(wquad(1:Ni_tot,m),
+c     x        in_bounds(1:Ni_tot))
       enddo
       
       do m = 1,9
@@ -843,7 +855,7 @@ c      endwhere
          vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
          vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
          ijkp(1:Ni_tot_in,m)=pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
+c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
       enddo
       
       do l = 1,Ni_out 
@@ -917,7 +929,7 @@ c      endif
       Ni_tot = count(in_bounds)
          
       return
-      end
+      end SUBROUTINE exchange_ion_half
 c----------------------------------------------------------------------
 
 
@@ -926,7 +938,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE move_ion_half(xp,vp,vp1,input_p,Ep)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
@@ -964,36 +976,36 @@ c----------------------------------------------------------------------
          xp0 = xp(l,1)
          vp0 = vp(l,1)
          xp(l,1) = xp(l,1) + dth*vp(l,1)
-         ijkp(l,1) = nint(xp(l,1)/dx) 
+c         ijkp(l,1) = nint(xp(l,1)/dx) 
 
 
 c         if ((xp(l,1) .gt. qx(nx)) .or. (xp(l,1) .lt. qx(1))) then
 c            write(*,*) 'WARNING...part OB...',xp(l,:),nint(xp(l,:)/dx)
 c         endif
-         if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,1) .lt. 1)) then
-            write(*,*) 'WARNING...part OB...',ijkp(l,:),xp(l,1),vp(l,1),
-     x                  xp0,vp0,vp1(l,1),Ep(l,:)
+c         if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,1) .lt. 1)) then
+c            write(*,*) 'WARNING...part OB...',ijkp(l,:),xp(l,1),vp(l,1),
+c     x                  xp0,vp0,vp1(l,1),Ep(l,:)
 c            stop
-         endif
+c         endif
 
  
 
 
          xp(l,2) = xp(l,2) + dth*vp(l,2)
-         ijkp(l,2) = nint(xp(l,2)/dy) 
+c         ijkp(l,2) = nint(xp(l,2)/dy) 
 
          xp(l,3) = xp(l,3) + dth*vp(l,3)
 c         ijkp(l,3) = nint(xp(l,3)/delz)
 
-         k=1
-         do 15 while((xp(l,3) .gt. qz(k)) .and. (k .le. nz))  !find k
-            ijkp(l,3) = k                 !grid
-            k=k+1
- 15      continue
-         k=ijkp(l,3)
-         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-            ijkp(l,3) = k+1
-         endif
+c         k=1
+c         do 15 while((xp(l,3) .gt. qz(k)) .and. (k .le. nz))  !find k
+c            ijkp(l,3) = k                 !grid
+c            k=k+1
+c 15      continue
+c         k=ijkp(l,3)
+c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
+c            ijkp(l,3) = k+1
+c         endif
 
 c         if (abs(xp(l,3)-qz(ijkp(l,3))) .gt. delz) then
 c            write(*,*) 'k index error...',xp(l,3),ijkp(l,3)
@@ -1163,14 +1175,14 @@ c      endwhere
 c         ijkp(:,2) = 1
 c         wquad(:,2) = 0
          xp(:,2) = qy(1) + ( xp(:,2) - qy(ny-1) )
-         ijkp(:,2) = nint(xp(:,2)/dy)
+c         ijkp(:,2) = nint(xp(:,2)/dy)
       endwhere
 
       where (xp(:,2) .le. qy(1)) 
 c         ijkp(:,2) = ny-1
 c         wquad(:,2) = -1
          xp(:,2) = qy(ny-1) - (qy(1) - xp(:,2))
-         ijkp(:,2) = nint(xp(:,2)/dy)
+c         ijkp(:,2) = nint(xp(:,2)/dy)
       endwhere
 
 c -------------------z exchange, up-----------------------------
@@ -1182,8 +1194,8 @@ c -------------------z exchange, up-----------------------------
 
       where (xp(1:Ni_tot,3) .gt. qz(nz))
          in_bounds(1:Ni_tot)= .false.
-         ijkp(1:Ni_tot,3) = 2
-         wquad(1:Ni_tot,3) = 0.0
+c         ijkp(1:Ni_tot,3) = 2
+c         wquad(1:Ni_tot,3) = 0.0
          xp(1:Ni_tot,3) = qz(2)+(xp(1:Ni_tot,3)-qz(nz))
       endwhere
 
@@ -1322,30 +1334,30 @@ c     x     cartcomm, stat, ierr)
       ijkp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_ijkp(:,:)
 
 
-      do m = 1,3
-         out_part(1:Ni_out,m) = 
-     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-         wquad(1:Ni_tot_in,m) = 
-     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
-      enddo
+c      do m = 1,3
+c         out_part(1:Ni_out,m) = 
+c     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
+c         wquad(1:Ni_tot_in,m) = 
+c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
+c      enddo
 
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
+c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c     x     cartcomm, reqs(1), ierr)
+c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c     x     cartcomm, reqs(2), ierr)
+c      
+c      call MPI_WAITALL(2, reqs, stats, ierr)
+
+cc      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
+cc      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+cc     x     cartcomm, ierr)
+cc      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+cc     x     cartcomm, stat, ierr)
       
-      call MPI_WAITALL(2, reqs, stats, ierr)
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, stat, ierr)
       
-      
-      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
+c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,9
          out_part_wght(1:Ni_out,m) = 
@@ -1480,8 +1492,8 @@ c      endwhere
 
       where (xp(1:Ni_tot,3) .le. qz(2))
          in_bounds(1:Ni_tot)= .false.
-         ijkp(1:Ni_tot,3) = nz
-         wquad(1:Ni_tot,3) = -1.0
+c         ijkp(1:Ni_tot,3) = nz
+c         wquad(1:Ni_tot,3) = -1.0
          xp(1:Ni_tot,3) = qz(nz)-(qz(2)-xp(1:Ni_tot,3))
       endwhere
 
@@ -1586,21 +1598,21 @@ c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
       ijkp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_ijkp(:,:)
 
 
-      do m = 1,3
-         out_part(1:Ni_out,m) = 
-     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-         wquad(1:Ni_tot_in,m) = 
-     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
-      enddo
+c      do m = 1,3
+c         out_part(1:Ni_out,m) = 
+c     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
+c         wquad(1:Ni_tot_in,m) = 
+c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
+c      enddo
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
+c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c     x     cartcomm, reqs(1), ierr)
+c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c     x     cartcomm, reqs(2), ierr)
       
-      call MPI_WAITALL(2, reqs, stats, ierr)
+c      call MPI_WAITALL(2, reqs, stats, ierr)
       
-      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
+c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,9
          out_part_wght(1:Ni_out,m) = 
@@ -1689,19 +1701,19 @@ c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
       deallocate(in_mass)
 
       return
-      end
+      end SUBROUTINE move_ion_half
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE get_interp_weights(xp)
+      SUBROUTINE get_interp_weights_2(xp)
 c Weights are used for trilinear interpolation to/from main cell
 c centers to particle positions.  For each particle there are 8
 c grid points associated with the interpolation.  These 8 points
 c are determined by the location of the particle within the main
 c cell.  There are 8 sets of 8 grid points for each cell.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real xp(Ni_max,3)
       real x1,x2,y1,y2,z1,z2,vol
@@ -1770,9 +1782,9 @@ c 111111111111111111111111111111111111111111111111111111111111111111111
 
       if ((xp(l,1) .le. qx(i)) .and. (xp(l,2) .le. qy(j)) .and. 
      x    (xp(l,3) .le. qz(k))) then
-         wquad(l,1) = -1
-         wquad(l,2) = -1
-         wquad(l,3) = -1
+c         wquad(l,1) = -1
+c         wquad(l,2) = -1
+c         wquad(l,3) = -1
          vol = dx*dy*(qz(k)-qz(k-1))
          x1=abs(xp(l,1)-qx(i-1))
          x2=abs(xp(l,1)-qx(i))
@@ -1795,9 +1807,9 @@ c 222222222222222222222222222222222222222222222222222222222222222222222
 
       if ((xp(l,1) .gt. qx(i)) .and. (xp(l,2) .le. qy(j)) .and. 
      x    (xp(l,3) .le. qz(k))) then
-         wquad(l,1) = 0
-         wquad(l,2) = -1
-         wquad(l,3) = -1
+c         wquad(l,1) = 0
+c         wquad(l,2) = -1
+c         wquad(l,3) = -1
          vol = dx*dy*(qz(k)-qz(k-1))
          x1=abs(xp(l,1)-qx(i))
          x2=abs(xp(l,1)-qx(i+1))
@@ -1820,9 +1832,9 @@ c 333333333333333333333333333333333333333333333333333333333333333333333
 
       if ((xp(l,1) .le. qx(i)) .and. (xp(l,2) .le. qy(j)) .and. 
      x    (xp(l,3) .gt. qz(k))) then
-         wquad(l,1) = -1
-         wquad(l,2) = -1
-         wquad(l,3) = 0
+c         wquad(l,1) = -1
+c         wquad(l,2) = -1
+c         wquad(l,3) = 0
          vol = dx*dy*(qz(k+1)-qz(k))
          x1=abs(xp(l,1)-qx(i-1))
          x2=abs(xp(l,1)-qx(i))
@@ -1846,9 +1858,9 @@ c 444444444444444444444444444444444444444444444444444444444444444444444
 
       if ((xp(l,1) .gt. qx(i)) .and. (xp(l,2) .le. qy(j)) .and. 
      x    (xp(l,3) .gt. qz(k))) then
-         wquad(l,1) = 0
-         wquad(l,2) = -1
-         wquad(l,3) = 0
+c         wquad(l,1) = 0
+c         wquad(l,2) = -1
+c         wquad(l,3) = 0
          vol = dx*dy*(qz(k+1)-qz(k))
          x1=abs(xp(l,1)-qx(i))
          x2=abs(xp(l,1)-qx(i+1))
@@ -1871,9 +1883,9 @@ c 555555555555555555555555555555555555555555555555555555555555555555555
 
       if ((xp(l,1) .le. qx(i)) .and. (xp(l,2) .gt. qy(j)) .and. 
      x    (xp(l,3) .le. qz(k))) then
-         wquad(l,1) = -1
-         wquad(l,2) = 0
-         wquad(l,3) = -1
+c         wquad(l,1) = -1
+c         wquad(l,2) = 0
+c         wquad(l,3) = -1
          vol = dx*dy*(qz(k)-qz(k-1))
          x1=abs(xp(l,1)-qx(i-1))
          x2=abs(xp(l,1)-qx(i))
@@ -1896,9 +1908,9 @@ c 666666666666666666666666666666666666666666666666666666666666666666666
 
       if ((xp(l,1) .gt. qx(i)) .and. (xp(l,2) .gt. qy(j)) .and. 
      x    (xp(l,3) .le. qz(k))) then
-         wquad(l,1) = 0
-         wquad(l,2) = 0
-         wquad(l,3) = -1
+c         wquad(l,1) = 0
+c         wquad(l,2) = 0
+c         wquad(l,3) = -1
          vol = dx*dy*(qz(k)-qz(k-1))
          x1=abs(xp(l,1)-qx(i))
          x2=abs(xp(l,1)-qx(i+1))
@@ -1921,9 +1933,9 @@ c 777777777777777777777777777777777777777777777777777777777777777777777
 
       if ((xp(l,1) .le. qx(i)) .and. (xp(l,2) .gt. qy(j)) .and. 
      x    (xp(l,3) .gt. qz(k))) then
-         wquad(l,1) = -1
-         wquad(l,2) = 0
-         wquad(l,3) = 0
+c         wquad(l,1) = -1
+c         wquad(l,2) = 0
+c         wquad(l,3) = 0
          vol = dx*dy*(qz(k+1)-qz(k))
          x1=abs(xp(l,1)-qx(i-1))
          x2=abs(xp(l,1)-qx(i))
@@ -1946,9 +1958,9 @@ c 888888888888888888888888888888888888888888888888888888888888888888888
 
       if ((xp(l,1) .gt. qx(i)) .and. (xp(l,2) .gt. qy(j)) .and. 
      x    (xp(l,3) .gt. qz(k))) then
-         wquad(l,1) = 0
-         wquad(l,2) = 0
-         wquad(l,3) = 0
+c         wquad(l,1) = 0
+c         wquad(l,2) = 0
+c         wquad(l,3) = 0
          vol = dx*dy*(qz(k+1)-qz(k))
          x1=abs(xp(l,1)-qx(i))
          x2=abs(xp(l,1)-qx(i+1))
@@ -1984,7 +1996,69 @@ c      endif
       
       
       return
-      end
+      end SUBROUTINE get_interp_weights_2
+c----------------------------------------------------------------------
+
+
+c----------------------------------------------------------------------
+      SUBROUTINE get_interp_weights(xp)
+c Weights are used for trilinear interpolation to/from main cell
+c centers to particle positions.  For each particle there are 8
+c grid points associated with the interpolation.  These 8 points
+c are determined by the location of the particle within the main
+c cell.  There are 8 sets of 8 grid points for each cell.
+c----------------------------------------------------------------------
+      !!include 'incurv.h'
+
+      real xp(Ni_max,3)
+      real x1,x2,y1,y2,z1,z2,vol
+
+
+      do 10 l=1,Ni_tot
+
+c         i = floor(xp(l,1)/dx) 
+c         ijkp(l,1) = i
+
+         i=0
+ 16      continue
+         i = i + 1
+         if (xp(l,1) .gt. qx(i)) go to 16 !find i on non-uniform 
+         i = i-1
+         ijkp(l,1)= i
+
+
+         j = floor(xp(l,2)/dy) 
+         ijkp(l,2) = j
+
+         k=0
+ 15      continue
+         k = k + 1
+         if (xp(l,3) .gt. qz(k)) go to 15  !find k on non-uniform 
+         k = k-1
+         ijkp(l,3)= k
+
+c         vol = 1.0/(dx*dy*(qz(k+1)-qz(k)))
+         vol = 1.0/((qx(i+1)-qx(i))*(qy(j+1)-qy(j))*(qz(k+1)-qz(k)))
+         x1=abs(xp(l,1)-qx(i))
+         x2=abs(xp(l,1)-qx(i+1))
+         y1=abs(xp(l,2)-qy(j))
+         y2=abs(xp(l,2)-qy(j+1))
+         z1=abs(xp(l,3)-qz(k))
+         z2=abs(xp(l,3)-qz(k+1))
+         wght(l,1) = x2*y2*z2*vol
+         wght(l,2) = x1*y2*z2*vol
+         wght(l,3) = x2*y2*z1*vol
+         wght(l,4) = x1*y2*z1*vol
+         wght(l,5) = x2*y1*z2*vol
+         wght(l,6) = x1*y1*z2*vol
+         wght(l,7) = x2*y1*z1*vol
+         wght(l,8) = x1*y1*z1*vol
+
+
+ 10   continue
+
+      return
+      end SUBROUTINE get_interp_weights
 c----------------------------------------------------------------------
 
 
@@ -1992,7 +2066,7 @@ c----------------------------------------------------------------------
       SUBROUTINE update_np(np)
 c Weight density to eight nearest grid points.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz)
 
@@ -2013,21 +2087,21 @@ c      real sumnp,vol
 
       do 20 l=1,Ni_tot
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          if (i .lt. 1) then
             i = 1
-            write(*,*) 'i index error...',ijkp(l,1),wquad(l,1)
+            write(*,*) 'i index error...',ijkp(l,1)!,wquad(l,1)
          endif
          if (j .lt. 1) then 
             j = 1
-            write(*,*) 'j index error...',ijkp(l,2),wquad(l,2)
+            write(*,*) 'j index error...',ijkp(l,2)!,wquad(l,2)
          endif
          if (k .lt. 1) then
             k = 1
-            write(*,*) 'k index error...',ijkp(l,3),wquad(l,3)
+            write(*,*) 'k index error...',ijkp(l,3)!,wquad(l,3)
          endif
 
          ip = i+1
@@ -2098,7 +2172,7 @@ c         write(*,*) 'np1...',np(20,20,20)
       call periodic_scalar(np)
 
       return
-      end
+      end SUBROUTINE update_np
 c----------------------------------------------------------------------
 
 
@@ -2106,7 +2180,7 @@ c----------------------------------------------------------------------
       SUBROUTINE separate_np(np,mr)
 c Weight density to eight nearest grid points.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz)
       real mr
@@ -2127,9 +2201,9 @@ c----------------------------------------------------------------------
          if (mrat(l) .eq. mr) then 
             
 
-            i=ijkp(l,1)+wquad(l,1)
-            j=ijkp(l,2)+wquad(l,2)
-            k=ijkp(l,3)+wquad(l,3)
+            i=ijkp(l,1)!+wquad(l,1)
+            j=ijkp(l,2)!+wquad(l,2)
+            k=ijkp(l,3)!+wquad(l,3)
             
             ip = i+1
             jp = j+1
@@ -2158,7 +2232,7 @@ c     np(:,:,nz-1) = np(:,:,nz-1)+np(:,:,1)
       call periodic_scalar(np)
 
       return
-      end
+      end SUBROUTINE separate_np
 c----------------------------------------------------------------------
 
 
@@ -2166,7 +2240,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE update_up(vp,np,up)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real vp(Ni_max,3),
      x     np(nx,ny,nz),
@@ -2213,9 +2287,9 @@ c      endwhere
       do 20 l=1,Ni_tot
 
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          ip = i+1
          jp = j+1
@@ -2402,14 +2476,14 @@ c      up(nx,:,:,3) = 0.0
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       return
-      end
+      end SUBROUTINE update_up
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE update_np_boundary(np)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real np(nx,ny,nz)
 
@@ -2452,14 +2526,14 @@ c      np(:,:,nz) = np(:,:,nz) + in_buf_z
 
 
       return 
-      end
+      end SUBROUTINE update_np_boundary
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE face_to_center(v,vc)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
       real v(nx,ny,nz,3)        !vector at contravarient position
       real vc(nx,ny,nz,3)       !vector at cell center
@@ -2492,14 +2566,14 @@ c               if (km .lt. 2) then km = 2
       call periodic(vc)
 
       return
-      end
+      end SUBROUTINE face_to_center
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE get_temperature(xp,vp,np,temp_p)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
       
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
@@ -2555,9 +2629,9 @@ c      enddo
       do 20 l=1,Ni_tot
 
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          ip = i+1
          jp = j+1
@@ -2699,9 +2773,9 @@ c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
 
       do 40 l=1,Ni_tot
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          ip = i+1
          jp = j+1
@@ -2852,14 +2926,14 @@ c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
 
 
       return
-      end
+      end SUBROUTINE get_temperature
 c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
       SUBROUTINE separate_temp(vp,temp_p,mr)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
       
       real vp(Ni_max,3)
       real temp_p(nx,ny,nz)
@@ -2897,9 +2971,9 @@ c----------------------------------------------------------------------
 
          if (mrat(l) .eq. mr) then
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          ip = i+1
          jp = j+1
@@ -3003,9 +3077,9 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 
          if (mrat(l) .eq. mr) then
 
-         i=ijkp(l,1)+wquad(l,1)
-         j=ijkp(l,2)+wquad(l,2)
-         k=ijkp(l,3)+wquad(l,3)
+         i=ijkp(l,1)!+wquad(l,1)
+         j=ijkp(l,2)!+wquad(l,2)
+         k=ijkp(l,3)!+wquad(l,3)
 
          ip = i+1
          jp = j+1
@@ -3117,9 +3191,41 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 
 
       return
-      end
+      end SUBROUTINE separate_temp
+c----------------------------------------------------------------------
+      
+
+c----------------------------------------------------------------------
+      SUBROUTINE get_np3(np,np3)
+c----------------------------------------------------------------------
+c      include 'incurv.h'
+
+      real np(nx,ny,nz)
+c      real nf(nx,ny,nz)
+      real np3(nx,ny,nz,3)
+
+      real nfp(nx,ny,nz)
+
+      nfp = np
+
+      do i = 2,nx-1
+         do j = 2,ny-1
+            do k = 2,nz-1
+               np3(i,j,k,1) = 0.5*(nfp(i,j,k)+nfp(i+1,j,k))
+               np3(i,j,k,2) = 0.5*(nfp(i,j,k)+nfp(i,j+1,k))
+               np3(i,j,k,3) = 0.5*(nfp(i,j,k)+nfp(i,j,k+1))
+            enddo
+         enddo
+      enddo
+
+      call periodic(np3)
+
+      return
+      end SUBROUTINE get_np3
 c----------------------------------------------------------------------
 
+
+      end MODULE gutsp_dd
 
 
 
