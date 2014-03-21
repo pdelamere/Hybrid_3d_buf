@@ -4,7 +4,7 @@
       USE misc
       USE mpi
       USE boundary
-c      USE grid_interp
+      USE grid_interp
 
       contains
 
@@ -1194,7 +1194,7 @@ c -------------------z exchange, up-----------------------------
 
       where (xp(1:Ni_tot,3) .gt. qz(nz))
          in_bounds(1:Ni_tot)= .false.
-c         ijkp(1:Ni_tot,3) = 2
+         ijkp(1:Ni_tot,3) = 2
 c         wquad(1:Ni_tot,3) = 0.0
          xp(1:Ni_tot,3) = qz(2)+(xp(1:Ni_tot,3)-qz(nz))
       endwhere
@@ -1492,7 +1492,7 @@ c      endwhere
 
       where (xp(1:Ni_tot,3) .le. qz(2))
          in_bounds(1:Ni_tot)= .false.
-c         ijkp(1:Ni_tot,3) = nz
+         ijkp(1:Ni_tot,3) = nz
 c         wquad(1:Ni_tot,3) = -1.0
          xp(1:Ni_tot,3) = qz(nz)-(qz(2)-xp(1:Ni_tot,3))
       endwhere
@@ -2113,17 +2113,17 @@ c      real sumnp,vol
          if (kp .gt. nz) write(*,*) 'kp index error...',kp !kp = 2      !periodic boundary conditions
 
 c         volb = dx*dy*(qz(k+1)-qz(k))*beta
-         volb = dx*dy*dz_cell(k)*beta
+c         volb = dx*dy*dz_cell(k)*beta
+         volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta)
 
-
-         np(i,j,k) = np(i,j,k) + wght(l,1)/volb
-         np(ip,j,k) = np(ip,j,k) + wght(l,2)/volb
-         np(i,j,kp) = np(i,j,kp) + wght(l,3)/volb
-         np(ip,j,kp) = np(ip,j,kp) + wght(l,4)/volb
-         np(i,jp,k) = np(i,jp,k) + wght(l,5)/volb
-         np(ip,jp,k) = np(ip,jp,k) + wght(l,6)/volb
-         np(i,jp,kp) = np(i,jp,kp) + wght(l,7)/volb
-         np(ip,jp,kp) = np(ip,jp,kp) + wght(l,8)/volb
+         np(i,j,k) = np(i,j,k) + wght(l,1)*volb
+         np(ip,j,k) = np(ip,j,k) + wght(l,2)*volb
+         np(i,j,kp) = np(i,j,kp) + wght(l,3)*volb
+         np(ip,j,kp) = np(ip,j,kp) + wght(l,4)*volb
+         np(i,jp,k) = np(i,jp,k) + wght(l,5)*volb
+         np(ip,jp,k) = np(ip,jp,k) + wght(l,6)*volb
+         np(i,jp,kp) = np(i,jp,kp) + wght(l,7)*volb
+         np(ip,jp,kp) = np(ip,jp,kp) + wght(l,8)*volb
 
  20      continue
 

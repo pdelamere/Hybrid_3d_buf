@@ -16,7 +16,7 @@ c----------------------------------------------------------------------
       USE gutsp_buf
       USE gutsf
       USE part_init
-c      USE grid_interp
+      USE grid_interp
       USE chem_rates
 
 c      include 'incurv.h'
@@ -262,7 +262,7 @@ c      Ni_tot = 4000000
          beta_p(Ni_tot+1:) = beta_pu
       endif
 
-      call grd7()
+      call grd8()
       call grd6_setup(b0,bt,b12,b1,b1p2,nu)
 
 c      call obstacle_boundary_nu(nu)
@@ -639,6 +639,8 @@ c         call obstacle_boundary_B(b0,b1)
          call cov_to_contra(bt,btmf)
          call face_to_center(btmf,btc)       !interp bt to cell center
          
+c         call edge_to_center(bt,btc)
+
          call extrapol_up(up,vp,vp1,np)
          call get_Ep(Ep,aj,np,up,btc,nu)
          call get_vplus_vminus(Ep,btc,vp,vplus,vminus)
@@ -734,6 +736,7 @@ c         write(*,*) 'subcycle step...',n,ntf
 
          !convert main cell covarient bt to main cell contravarient
          call cov_to_contra(bt,btmf) 
+c         call edge_to_center(bt,btc)
          call curlB(b1,np,aj)     
 c         call obstacle_boundary_B(b0,b1)
 
@@ -761,8 +764,6 @@ c         call trans_pf_LaxWend2(pf,pf1,ufp1)
          !update magnetic field, b1
 c         call predict_B(b1,b12,b1p2,bt,btmf,E,aj,up,uf,uf2,np,nf,nu,
 c     x                  gradP) 
-
-
 
 
          call predict_B(b0,b1,b12,b1p2,bt,btmf,E,aj,up,np,nu) 

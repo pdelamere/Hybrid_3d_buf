@@ -408,18 +408,37 @@ c initialize protons
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          
-         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-         ijkp(l,2) = nint(xp(l,2)/dy)
+
+         i=0
+ 11      continue
+         i = i + 1
+         if (xp(l,1) .gt. qx(i)) go to 11 !find i on non-uniform 
+         i = i-1
+         ijkp(l,1)= i
+
+
+         ijkp(l,2) = floor(xp(l,2)/dy) 
          
-         k=1
-         do 12 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-            ijkp(l,3) = k       !grid
-            k=k+1
+         k=0
  12      continue
-         k=ijkp(l,3)
-         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-            ijkp(l,3) = k+1
-         endif
+         k = k + 1
+         if (xp(l,3) .gt. qz(k)) go to 12 !find k on non-uniform 
+         k = k-1
+         ijkp(l,3)= k
+
+
+c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
+c         ijkp(l,2) = nint(xp(l,2)/dy)
+         
+c         k=1
+c         do 12 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
+c            ijkp(l,3) = k       !grid
+c            k=k+1
+c 12      continue
+c         k=ijkp(l,3)
+c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
+c            ijkp(l,3) = k+1
+c         endif
 
          call maxwl_init(vth,vx,vy,vz)
 
@@ -458,18 +477,36 @@ c initialize He++
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          
-         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-         ijkp(l,2) = nint(xp(l,2)/dy)
+
+         i=0
+ 31      continue
+         i = i + 1
+         if (xp(l,1) .gt. qx(i)) go to 31 !find i on non-uniform 
+         i = i-1
+         ijkp(l,1)= i
+
+
+         ijkp(l,2) = floor(xp(l,2)/dy) 
          
-         k=1
-         do 32 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-            ijkp(l,3) = k       !grid
-            k=k+1
+         k=0
  32      continue
-         k=ijkp(l,3)
-         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-            ijkp(l,3) = k+1
-         endif
+         k = k + 1
+         if (xp(l,3) .gt. qz(k)) go to 32 !find k on non-uniform 
+         k = k-1
+         ijkp(l,3)= k
+
+c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
+c         ijkp(l,2) = nint(xp(l,2)/dy)
+         
+c         k=1
+c         do 32 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
+c            ijkp(l,3) = k       !grid
+c            k=k+1
+c 32      continue
+c         k=ijkp(l,3)
+c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
+c            ijkp(l,3) = k+1
+c         endif
 
          vth = 0.5*(vth_top + vth_bottom) + 
      x     0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
@@ -515,18 +552,36 @@ c add shell distribution
             mrat(l) = 1.0
             beta_p(l) = b_shl
 
-            ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-            ijkp(l,2) = nint(xp(l,2)/dy)
+
+            i=0
+ 71         continue
+            i = i + 1
+            if (xp(l,1) .gt. qx(i)) go to 71 !find i on non-uniform 
+            i = i-1
+            ijkp(l,1)= i
             
-            k=1
-            do 70 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-               ijkp(l,3) = k    !grid
-               k=k+1
- 70         continue
-            k=ijkp(l,3)
-            if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-               ijkp(l,3) = k+1
-            endif
+            
+            ijkp(l,2) = floor(xp(l,2)/dy) 
+            
+            k=0
+ 72         continue
+            k = k + 1
+            if (xp(l,3) .gt. qz(k)) go to 72 !find k on non-uniform 
+            k = k-1
+            ijkp(l,3)= k
+
+c            ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
+c            ijkp(l,2) = nint(xp(l,2)/dy)
+            
+c            k=1
+c            do 70 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
+c               ijkp(l,3) = k    !grid
+c               k=k+1
+c 70         continue
+c            k=ijkp(l,3)
+c            if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
+c               ijkp(l,3) = k+1
+c            endif
             
             ii = ijkp(l,1)
             kk = ijkp(l,3)

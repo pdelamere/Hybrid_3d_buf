@@ -4,6 +4,7 @@
       USE global
       USE inputs
       USE gutsp_dd
+      USE grid_interp
       
       contains
 

@@ -1,9 +1,8 @@
 *.o
 *.mod
-tmp*
-*~
+tmp3
+b0.dat
+hybrid
+*.*~
 *.pro
 *.png
-#makefile#
-#para.h#
-b0.dat

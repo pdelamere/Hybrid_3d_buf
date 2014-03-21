@@ -3,7 +3,7 @@
 
       USE global
       USE boundary
-c      USE grid_interp
+      USE grid_interp
       
       contains
 
@@ -139,6 +139,76 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
+      SUBROUTINE crossf2(aa,btc,cc)
+c The cross product is formed at the main cell center.  aa and btc must
+c be given already extrapolated to the main cell center.
+c----------------------------------------------------------------------
+      !include 'incurv.h'
+
+      real aa(nx,ny,nz,3)        !main cell contravarient vector 
+      real btc(nx,ny,nz,3)      !main cell contravarient vector
+      real cc(nx,ny,nz,3)        !cross product result, main cell
+                                 !contravarient (cell face)
+
+      real ax,ay,az,bx,by,bz    !dummy vars
+
+
+      call periodic(aa)
+      call periodic(btc)
+
+      do 10 k=2,nz-1      
+         do 10 j=2,ny-1
+            do 10 i=2,nx-1
+
+               im = i-1    
+               jm = j-1    
+               km = k-1
+
+               ax = aa(i,j,k,1) 
+               bx = btc(i,j,k,1)
+
+               ay = aa(i,j,k,2)
+               by = btc(i,j,k,2)
+
+               az = aa(i,j,k,3)
+               bz = btc(i,j,k,3)
+
+               ct(i,j,k,1) = ay*bz - az*by
+               ct(i,j,k,2) = az*bx - ax*bz
+               ct(i,j,k,3) = ax*by - ay*bx
+
+ 10            continue
+
+       call periodic(ct)
+
+c extrapolate back to main cell contravarient positions.
+c ...just average across cells since cell edges are centered
+c about the grid points.
+      
+      do 60 k=2,nz-1
+         do 60 j=2,ny-1
+            do 60 i=2,nx-1
+
+               ip = i+1
+               jp = j+1
+               kp = k+1
+
+               cc(i,j,k,1) = 0.5*(ct(i,j,k,1) + ct(ip,j,k,1))
+               cc(i,j,k,2) = 0.5*(ct(i,j,k,2) + ct(i,jp,k,2))
+               cc(i,j,k,3) = 0.5*(ct(i,j,k,3) + ct(i,j,kp,3))
+
+ 60            continue
+
+      call periodic(cc)
+
+
+      return
+      end SUBROUTINE crossf2
+c----------------------------------------------------------------------
+
+
+
+c----------------------------------------------------------------------
       SUBROUTINE cov_to_contra(bt,btmf)
 c Converts total magnetic field from main cell covarient positions
 c to main cell contravarient positions.  This is then used in the
@@ -227,7 +297,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE curlB(b1,np,aj)
+      SUBROUTINE curlB2(b1,np,aj)
 c Calculates curl B / n*alpha.  The resulting "current" is called aj
 c which is used in several other places in the code.  This curl is 
 c performed on the main cell where B is covarient.  The resulting
@@ -292,12 +362,85 @@ c     x                 + 0.5*(np(i,j,k)+np(i,j,kp))
 c      call periodic(aj)
 
       return
+      end SUBROUTINE curlB2
+c----------------------------------------------------------------------
+
+
+c----------------------------------------------------------------------
+      SUBROUTINE curlB(b1,np,aj)
+c Calculates curl B / n*alpha.  The resulting "current" is called aj
+c which is used in several other places in the code.  This curl is 
+c performed on the main cell where B is covarient.  The resulting
+c current is main cell contravarient.  Note that dz_cell is used for
+c the cell dimensions since dz_grid is not equal to dz_cell on non-
+c uniform grid.
+c----------------------------------------------------------------------
+CVD$R VECTOR
+      !include 'incurv.h'
+
+      real b1(nx,ny,nz,3),
+c     x     nf(nx,ny,nz),
+     x     np(nx,ny,nz),
+     x     aj(nx,ny,nz,3)
+
+      real curl_B(3)      !dummy for holding curl vector
+      real ntot(3)        !total density, np + nf
+
+c      call periodic_scalar(np)
+c      call periodic_scalar(nf)
+      call periodic(b1)
+cc     call fix_normal_b(b1)
+
+      do 10 k=2,nz-1   
+         do 10 j=2,ny-1
+            do 10 i=2,nx-1
+
+               ip = i+1
+               jp = j+1
+               kp = k+1
+
+c               if (ip .gt. nx) then ip = nx
+c               if (jp .gt. ny) then jp = ny
+c               if (kp .gt. nz) then kp = nz
+
+c               ntot(1) = 0.5*(nf(i,j,k)+nf(ip,j,k))
+c     x                 + 0.5*(np(i,j,k)+np(ip,j,k))
+c               ntot(2) = 0.5*(nf(i,j,k)+nf(i,jp,k))
+c     x                 + 0.5*(np(i,j,k)+np(i,jp,k))
+c               ntot(3) = 0.5*(nf(i,j,k)+nf(i,j,kp))
+c     x                 + 0.5*(np(i,j,k)+np(i,j,kp))
+
+
+               ntot(1) = 0.5*(np(i,j,k)+np(ip,j,k))
+               ntot(2) = 0.5*(np(i,j,k)+np(i,jp,k))
+               ntot(3) = 0.5*(np(i,j,k)+np(i,j,kp))
+
+               curl_B(1) = (b1(i,j,k,3) - 
+     x              b1(i,j-1,k,3))/dy_cell(j) +
+     x              (b1(i,j,k-1,2) - b1(i,j,k,2))/dz_cell(k)
+               curl_B(2) = (b1(i,j,k,1) - 
+     x              b1(i,j,k-1,1))/dz_cell(k) +
+     x              (b1(i-1,j,k,3) - b1(i,j,k,3))/dx_cell(i)
+               curl_B(3) = (b1(i,j,k,2) - 
+     x              b1(i-1,j,k,2))/dx_cell(i) + 
+     x              (b1(i,j-1,k,1) - b1(i,j,k,1))/dy_cell(j)
+
+
+               do 10 m=1,3
+                  aj(i,j,k,m) = curl_B(m)/(ntot(m)*alpha)
+ 10            continue
+
+c      call periodic(aj)
+
+      return
       end SUBROUTINE curlB
 c----------------------------------------------------------------------
 
 
+
+
 c----------------------------------------------------------------------
-      SUBROUTINE curlE(E,curl_E)
+      SUBROUTINE curlE2(E,curl_E)
 c E is dual cell covarient, and curl_E will be returned as main
 c cell covarient...as all magnetic fields are.  All i,j,k exclude
 c boundaries.  Boundaries are taken care of in main fluid code.
@@ -330,8 +473,74 @@ c      call periodic(E)
 c      call periodic(curl_E)
 
       return
+      end SUBROUTINE curlE2
+c----------------------------------------------------------------------
+
+
+c----------------------------------------------------------------------
+      SUBROUTINE curlE(E,curl_E)
+c E is dual cell covarient, and curl_E will be returned as main
+c cell covarient...as all magnetic fields are.  All i,j,k exclude
+c boundaries.  Boundaries are taken care of in main fluid code.
+c----------------------------------------------------------------------
+      !include 'incurv.h'
+
+      real E(nx,ny,nz,3)      !E field, main cell contravarient
+      real curl_E(nx,ny,nz,3) !curl of E, main cell covarient
+      real lx, ly, lz         !lengths of dual cell edges
+
+c      call periodic(E)
+
+      do 10 i=2,nx-1
+         do 10 j=2,ny-1
+            do 10 k=2,nz-1
+
+c               lx = qx(i+1) - qx(i)
+c               ly = qy(j+1) - qy(j)
+c               lz = qz(k+1) - qz(k)
+
+c               lx = dx_grid(i)
+c               ly = dy_grid(j)
+c               lz = dz_grid(k)
+
+c               curl_E(i,j,k,1) =  (E(i,j+1,k,3)/dy_grid(j)) - 
+c     x              (E(i,j,k,3)/dy_grid(j))
+c     x              + (E(i,j,k,2)/dz_grid(k)) - 
+c     x              (E(i,j,k+1,2)/dz_grid(k))
+c               curl_E(i,j,k,2) =  (E(i,j,k,3)/dx_grid(i)) - 
+c     x              (E(i+1,j,k,3)/dx_grid(i))
+c     x              + (E(i,j,k+1,1)/dz_grid(k)) - 
+c     x              (E(i,j,k,1)/dz_grid(k))
+c               curl_E(i,j,k,3) =  (E(i,j,k,1)/dy_grid(j)) - 
+c     x              (E(i,j+1,k,1)/dy_grid(j))
+c     x              + (E(i+1,j,k,2)/dx_grid(i)) - 
+c     x              (E(i,j,k,2)/dx_grid(i))
+
+
+               curl_E(i,j,k,1) =  (E(i,j+1,k,3)- 
+     x              E(i,j,k,3))/dy_grid(j)
+     x              + (E(i,j,k,2)- 
+     x              E(i,j,k+1,2))/dz_grid(k)
+               curl_E(i,j,k,2) =  (E(i,j,k,3) - 
+     x              E(i+1,j,k,3))/dx_grid(i)
+     x              + (E(i,j,k+1,1) - 
+     x              E(i,j,k,1))/dz_grid(k)
+               curl_E(i,j,k,3) =  (E(i,j,k,1) - 
+     x              E(i,j+1,k,1))/dy_grid(j)
+     x              + (E(i+1,j,k,2) - 
+     x              E(i,j,k,2))/dx_grid(i)
+
+
+
+ 10          continue
+
+c      call periodic(curl_E)
+
+      return
       end SUBROUTINE curlE
 c----------------------------------------------------------------------
+
+
 
 
 cc----------------------------------------------------------------------
@@ -1043,6 +1252,8 @@ c     x     gradP(nx,ny,nz,3)
 c      real a(nx,ny,nz,3), 
 c     x     c(nx,ny,nz,3)  !dummy vars for doing cross product
 
+      real aa(nx,ny,nz,3)
+
       call periodic_scalar(np)
 c      call periodic_scalar(nf)
 
@@ -1087,9 +1298,13 @@ c     x                         fnf(m)*0.5*(uf2(i,j,k,m)+uf(i,j,k,m))
  10               continue
 
 
-      call crossf(a,btmf,c)
 
-               
+
+      call crossf(a,btmf,c)
+c      call face_to_center(a,aa)
+c      call crossf2(aa,btc,c)
+
+
       do 20 k=2,nz-1      
          do 20 j=2,ny-1   
             do 20 i=2,nx-1
@@ -1213,6 +1428,10 @@ c     x     bdp(nx,ny,nz,3)
       real b1p1(nx,ny,nz,3)   !b1 at time level m + 1/2
       real btp1(nx,ny,nz,3)   !bt at time level m + 1/2
       real btp1mf(nx,ny,nz,3) !btp1 at contravarient position
+      real btc(nx,ny,nz,3) 
+      real aa(nx,ny,nz,3) 
+    
+
       real ntot(3)            !total density np + nf
       real fnp(3),fnf(3)      !fraction np and nf of n
       real npave(3)
@@ -1282,9 +1501,11 @@ c     x                           fnf(m)*uf(i,j,k,m)
  10               continue
 
       call cov_to_contra(btp1,btp1mf)
+c      call edge_to_center(btp1,btc)
+c      call face_to_center(a,aa)
 
-      call crossf(a,btp1mf,c)
-
+       call crossf(a,btp1mf,c)
+c       call crossf2(aa,btc,c)
 
       do 20 k=2,nz-1       
          do 20 j=2,ny-1     
@@ -1811,7 +2032,7 @@ c----------------------------------------------------------------------
       real npave(3),nfave(3)
 
 
-      call crossf(E,b1,exb)
+      call crossf2(E,b1,exb)
 
       do 5 m=1,3
          pup(m) = 0

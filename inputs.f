@@ -91,7 +91,7 @@ c      PARAMETER (N_o = 5e34)   !Steady state neutral particle constant
       PARAMETER (tau_photo = 1.2e9)
       PARAMETER (k_rec = 1e-6/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
-      PARAMETER (S_radius = 30) !units of dx
+      PARAMETER (S_radius = 50) !units of dx
 
 c domain decompostion parameters
 

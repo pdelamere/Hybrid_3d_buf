@@ -19,7 +19,10 @@ c raw grid coordinate data
       integer ri, rj, rk    !release coordinates
       real dz_grid(nz)      !dz for grid, variable in z direction
       real dz_cell(nz)      !dz for cell, variable in z direction 
-
+      real dx_grid(nx),dx_cell(nx)
+      real dy_grid(ny),dy_cell(ny)
+      real xrat(nx), yrat(ny), zrat(nz)
+      
       common /coords/ qx,qy,qz,gz,lambda,ri,rj,rk,dz_grid,dz_cell
 
 

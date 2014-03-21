@@ -3,8 +3,8 @@
 32                    !mass of pickup ion species
 0.01e15               !density (km^-3)
 0.04                   !particle time step (fraction of omega_i)
-50                   !number of time steps
-5                     !diagnostic output interval
+100                   !number of time steps
+10                     !diagnostic output interval
 340.0                   !flow speed (km/s) 
 19.3                  !thermal speed for Maxwellian (km/s)
 0.2                   !Ni_tot initial (fraction of Ni_max)
