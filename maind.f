@@ -1030,9 +1030,11 @@ c       endif
 
        call system_clock(t2,cnt_rt)
        time = (real(t2) - real(t1))/real(cnt_rt)
-       write(*,*) 
-       write(*,*) 'Elapsed time....',time,' sec'
-       write(*,*)
+       if (my_rank .eq. 0) then
+          write(*,*) 
+          write(*,*) 'Elapsed time....',time,' sec'
+          write(*,*)
+       endif
 
          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 

@@ -107,6 +107,8 @@ c      write(*,*) 'recvbuf...',recvbuf,Evp
       total_E = S_Evp+EE+EB1
       aveEvp = S_Evp/S_input_E
 
+      if (my_rank .eq. 0) then
+
 c      write(*,*) 'Input energy (J).............',S_input_E
 cc      write(*,*) 'Input EeP energy (J).........',input_EeP
 c      write(*,*) 'Total vp energy (J)..........',S_Evp
@@ -128,6 +130,10 @@ c     x                                            EB1y)/S_input_E
 cc      write(*,*) 'Normalized energy (w/ eP)....',
 cc     x                             (total_E+EeP)/(input_E + input_EeP)
 c      write(*,*) ' '
+
+      endif
+      
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       norm_E = total_E/S_input_E
 

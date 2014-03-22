@@ -181,18 +181,26 @@ c                  write(*,*) 'ndot...',delta_N
                      xp(l,2) = qy(j) + (pad_ranf())*dy
                      xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
                      
-                     ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-                     ijkp(l,2) = nint(xp(l,2)/dy)
+                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+                     ijkp(l,2) = floor(xp(l,2)/dy)
                      
-                     kk=1
-                     do 16 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-                        ijkp(l,3) = kk !grid
-                        kk=kk+1
+
+                     kk=0
  16                  continue
-                     kk=ijkp(l,3)
-                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-                        ijkp(l,3) = kk+1
-                     endif
+                     kk = kk + 1
+                     if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 
+                     kk = kk-1
+                     ijkp(l,3)= kk
+
+c                     kk=1
+c                     do 16 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
+c                        ijkp(l,3) = kk !grid
+c                        kk=kk+1
+c 16                  continue
+c                     kk=ijkp(l,3)
+c                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
+c                        ijkp(l,3) = kk+1
+c                     endif
                      
                      mrat(l) = 1.0/m_pu
                      m_arr(l) = mproton*m_pu
@@ -217,18 +225,25 @@ c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
                      xp(l,2) = qy(j) + (pad_ranf())*dy
                      xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
                      
-                     ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-                     ijkp(l,2) = nint(xp(l,2)/dy)
-                     
-                     kk=1
-                     do 18 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-                        ijkp(l,3) = kk !grid
-                        kk=kk+1
+                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+                     ijkp(l,2) = floor(xp(l,2)/dy)
+
+                     kk=0
  18                  continue
-                     kk=ijkp(l,3)
-                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-                        ijkp(l,3) = kk+1
-                     endif
+                     kk = kk + 1
+                     if (xp(l,3) .gt. qz(kk)) go to 18 !find k on non-uniform 
+                     kk = kk-1
+                     ijkp(l,3)= kk
+                     
+c                     kk=1
+c                     do 18 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
+c                        ijkp(l,3) = kk !grid
+c                        kk=kk+1
+c 18                  continue
+c                     kk=ijkp(l,3)
+c                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
+c                        ijkp(l,3) = kk+1
+c                     endif
 
                      if (ijkp(l,3) .le. 0) then 
                      write(*,*) 'index error...',ijkp(l,3),qz(k),xp(l,3)
@@ -693,18 +708,25 @@ c                  write(*,*) 'npofr...',npofr
                         xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy
                         xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
-                        ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-                        ijkp(l,2) = nint(xp(l,2)/dy)
+                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+                        ijkp(l,2) = floor(xp(l,2)/dy)
 
-                        kk=1
-                       do 15 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-                           ijkp(l,3) = kk !grid
-                           kk=kk+1
+                        kk=0
  15                     continue
-                        kk=ijkp(l,3)
-                        if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-                           ijkp(l,3) = kk+1
-                        endif
+                        kk = kk + 1
+                        if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
+                        kk = kk-1
+                        ijkp(l,3)= kk
+
+c                        kk=1
+c                       do 15 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find ck
+c                           ijkp(l,3) = kk !grid
+c                           kk=kk+1
+c 15                     continue
+c                        kk=ijkp(l,3)
+c                        if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
+c                           ijkp(l,3) = kk+1
+c                        endif
                         
                         mrat(l) = 1.0/m_pu
                         m_arr(l) = mproton*m_pu
@@ -733,18 +755,26 @@ c                  write(*,*) 'npofr...',npofr
                         xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy
                         xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
-                        ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-                        ijkp(l,2) = nint(xp(l,2)/dy)
+                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+                        ijkp(l,2) = floor(xp(l,2)/dy)
                         
-                        kk=1
-                       do 16 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-                           ijkp(l,3) = kk !grid
-                           kk=kk+1
+
+                        kk=0
  16                     continue
-                        kk=ijkp(l,3)
-                        if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-                           ijkp(l,3) = kk+1
-                        endif
+                        kk = kk + 1
+                        if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 
+                        kk = kk-1
+                        ijkp(l,3)= kk
+
+c                        kk=1
+c                       do 16 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find ck
+c                           ijkp(l,3) = kk !grid
+c                           kk=kk+1
+c 16                     continue
+c                        kk=ijkp(l,3)
+cc                        if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
+c                          ijkp(l,3) = kk+1
+c                        endif
                         
                         mrat(l) = 1.0/m_pu
                         m_arr(l) = mproton*m_pu
@@ -829,7 +859,7 @@ c                  endif
       enddo
 
       
-      write(*,*) 'total new ions....',my_rank,cnt,Ni_tot         
+c      write(*,*) 'total new ions....',my_rank,cnt,Ni_tot         
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
 c      stop

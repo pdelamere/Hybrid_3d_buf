@@ -119,8 +119,8 @@ c     x                                  npart,ipart
                      xp(l,2) = qy(j) + (0.5-pad_ranf())*dy
                      xp(l,3) = qz(k) + (0.5-pad_ranf())*dz_grid(k)
                      
-                     ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-                     ijkp(l,2) = nint(xp(l,2)/dy)
+                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+                     ijkp(l,2) = floor(xp(l,2)/dy)
                      
                      kk=1
                      do 100 while(xp(l,3) .gt. qz(kk)) !find k on non-uniform 
@@ -2013,6 +2013,7 @@ c----------------------------------------------------------------------
       real xp(Ni_max,3)
       real x1,x2,y1,y2,z1,z2,vol
 
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       do 10 l=1,Ni_tot
 

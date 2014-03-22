@@ -227,9 +227,9 @@ c      parameter (eoverm = q/mO)
 
       do 10 l=1,Ni_tot_buf
 
-c         i = nint(xp_buf(l,1)/dx)
-         j = nint(xp_buf(l,2)/dy)
-         k = nint(xp_buf(l,3)/delz)
+c         i = floor(xp_buf(l,1)/dx)
+         j = floor(xp_buf(l,2)/dy)
+         k = floor(xp_buf(l,3)/delz)
          
 c         up3(1) = -vsw
 c         up3(2) = 0.0
@@ -427,23 +427,33 @@ c      include 'incurv.h'
 
 
       ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
-     x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
-
-
+     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
 c      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
       ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
-     x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
+     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
+
       do l = Ni_tot+1,Ni_tot+Ni_out 
-         k=1
-         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-            ijkp(l,3) = k       !grid
-            k=k+1
+
+         kk=0
  50      continue
-         k=ijkp(l,3)
-         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-            ijkp(l,3) = k+1
-         endif
+         kk = kk + 1
+         if (xp(l,3) .gt. qz(kk)) go to 50 !find k on non-uniform 
+         kk = kk-1
+         ijkp(l,3)= kk
+
+
+c         k=1
+c         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
+c            ijkp(l,3) = k       !grid
+c            k=k+1
+c 50      continue
+c         k=ijkp(l,3)
+c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
+c            ijkp(l,3) = k+1
+c         endif
+
 c         beta_p(l) = 1.0    !add as solar wind ions
+
       enddo
 
       m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
@@ -686,20 +696,30 @@ c move back into main domain
       enddo
 
       ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
-     x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
+     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
 c      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
       ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
-     x          nint(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
+     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
+
       do l = Ni_tot+1,Ni_tot+Ni_out 
-         k=1
-         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-            ijkp(l,3) = k       !grid
-            k=k+1
+
+         kk=0
  50      continue
-         k=ijkp(l,3)
-         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-            ijkp(l,3) = k+1
-         endif
+         kk = kk + 1
+         if (xp(l,3) .gt. qz(kk)) go to 50 !find k on non-uniform 
+         kk = kk-1
+         ijkp(l,3)= kk
+
+
+c         k=1
+c         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
+c            ijkp(l,3) = k       !grid
+c            k=k+1
+c 50      continue
+c         k=ijkp(l,3)
+c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
+c            ijkp(l,3) = k+1
+c         endif
          
          write(*,*) 'k in...',ijkp(l,3),xp(l,3),Ni_out
       enddo
