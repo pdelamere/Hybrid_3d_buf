@@ -1256,7 +1256,7 @@ c     x     c(nx,ny,nz,3)  !dummy vars for doing cross product
 
       real aa(nx,ny,nz,3)
 
-      call periodic_scalar(np)
+c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
 
       do 10 k=2,nz-1    
@@ -1463,7 +1463,7 @@ c     x     c(nx,ny,nz,3)    !dummy vars for doing cross product
       call curlB(b1p1,np,aj)
 c      call obstacle_boundary_B(b0,b1p1)
 
-      call periodic_scalar(np)
+c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
 
       do 10 k=2,nz-1       
