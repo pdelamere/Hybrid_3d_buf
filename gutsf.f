@@ -1225,7 +1225,7 @@ cc----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE get_E(E,b0,bt,btmf,aj,up,np,nu)
+      SUBROUTINE get_E(E,b0,bt,aj,up,np,nu)
 c E must be at time level m. We have uf at levels m-1/2 and m+1/2, so
 c the average value is used for uf in the calculation of ui.
 c----------------------------------------------------------------------
@@ -1235,7 +1235,7 @@ c      include 'incurv.h'
       real E(nx,ny,nz,3),
      x     b0(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
-     x     btmf(nx,ny,nz,3),
+c     x     btmf(nx,ny,nz,3),
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
 c     x     uf(nx,ny,nz,3),
@@ -1244,6 +1244,8 @@ c     x     uf2(nx,ny,nz,3),
 c     x     nf(nx,ny,nz),
      x     nu(nx,ny,nz)
 c     x     gradP(nx,ny,nz,3)
+
+      real btc(nx,ny,nz,3)
 
       real ntot(3)         !total density np + nf
       real fnp(3),fnf(3)   !fraction np and nf of n
@@ -1300,9 +1302,10 @@ c     x                         fnf(m)*0.5*(uf2(i,j,k,m)+uf(i,j,k,m))
 
 
 
-      call crossf(a,btmf,c)
-c      call face_to_center(a,aa)
-c      call crossf2(aa,btc,c)
+c      call crossf(a,btmf,c)
+      call face_to_center(a,aa)
+      call edge_to_center(bt,btc)
+      call crossf2(aa,btc,c)
 
 
       do 20 k=2,nz-1      
@@ -1344,7 +1347,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE predict_B(b0,b1,b12,b1p2,bt,btmf,E,aj,up,np,nu)
+      SUBROUTINE predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu)
 c Predictor step in magnetic field update.
 c----------------------------------------------------------------------
 CVD$R VECTOR
@@ -1355,7 +1358,7 @@ c      include 'incurv.h'
      x     b12(nx,ny,nz,3),
      x     b1p2(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
-     x     btmf(nx,ny,nz,3),
+c     x     btmf(nx,ny,nz,3),
      x     E(nx,ny,nz,3),
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
@@ -1368,7 +1371,10 @@ c     x     gradP(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)   !curl of E
 
-      call get_E(E,b0,bt,btmf,aj,up,np,nu)  !E at time level m 
+c      call cov_to_contra(bt,btmf) 
+c      call edge_to_center(bt,btc)
+c      call get_E(E,b0,bt,btmf,aj,up,np,nu)  !E at time level m 
+      call get_E(E,b0,bt,aj,up,np,nu)  !E at time level m 
 
       call curlE(E,curl_E)
 c      call fix_tangential_E(E)
@@ -1380,15 +1386,15 @@ c      call fix_tangential_E(E)
             do 10 i=2,nx-1
                do 10 m=1,3
 
-                  b1p2(i,j,k,m)=lww1*(b12(i+1,j,k,m)+
-     x                 b12(i-1,j,k,m)+
-     x                 b12(i,j+1,k,m)+b12(i,j-1,k,m)+
-     x                 b12(i,j,k+1,m)+b12(i,j,k-1,m))+
-     x                 lww2*b12(i,j,k,m) -
-     x                 2.0*dtsub*curl_E(i,j,k,m)
+c                  b1p2(i,j,k,m)=lww1*(b12(i+1,j,k,m)+
+c     x                 b12(i-1,j,k,m)+
+c     x                 b12(i,j+1,k,m)+b12(i,j-1,k,m)+
+c     x                 b12(i,j,k+1,m)+b12(i,j,k-1,m))+
+c     x                 lww2*b12(i,j,k,m) -
+c     x                 2.0*dtsub*curl_E(i,j,k,m)
 
-c                  b1p2(i,j,k,m) = b12(i,j,k,m) - 
-c     x                            2.0*dtsub*curl_E(i,j,k,m)
+                  b1p2(i,j,k,m) = b12(i,j,k,m) - 
+     x                            2.0*dtsub*curl_E(i,j,k,m)
  10               continue
 
 c      call boundaries(b1p2)
@@ -1500,13 +1506,16 @@ c                  a(i,j,k,m) = - fnp(m)*up(i,j,k,m) -
 c     x                           fnf(m)*uf(i,j,k,m)
  10               continue
 
-      call cov_to_contra(btp1,btp1mf)
+c      call cov_to_contra(btp1,btp1mf)
+      call face_to_center(a,aa)
 c      call edge_to_center(btp1,btc)
-c      call face_to_center(a,aa)
+      call edge_to_face(btp1,btp1mf)   !add shift to cell face for smoothing
+      call face_to_center(btp1mf,btc)
+c      call face_to_center(btp1mf,btc)
 
-       call crossf(a,btp1mf,c)
-c       call crossf2(aa,btc,c)
-
+c       call crossf(a,btp1mf,c)
+      call crossf2(aa,btc,c)
+       
       do 20 k=2,nz-1       
          do 20 j=2,ny-1     
             do 20 i=2,nx-1  
@@ -1576,14 +1585,14 @@ c      write(*,*) 'E cb...',E(23,8,14,1),E(23,8,14,2),E(23,8,14,3)
             do 10 i=2,nx-1
                do 10 m=1,3
 
-                  b1p2(i,j,k,m)=lww1*(b1(i+1,j,k,m)+b1(i-1,j,k,m)+
-     x                 b1(i,j+1,k,m)+b1(i,j-1,k,m)+
-     x                 b1(i,j,k+1,m)+b1(i,j,k-1,m))+
-     x                 lww2*b1(i,j,k,m) -
-     x                 dtsub*curl_E(i,j,k,m)
+c                  b1p2(i,j,k,m)=lww1*(b1(i+1,j,k,m)+b1(i-1,j,k,m)+
+c     x                 b1(i,j+1,k,m)+b1(i,j-1,k,m)+
+c     x                 b1(i,j,k+1,m)+b1(i,j,k-1,m))+
+c     x                 lww2*b1(i,j,k,m) -
+c     x                 dtsub*curl_E(i,j,k,m)
 
-c                  b1p2(i,j,k,m) = b1(i,j,k,m) - 
-c     x                            dtsub*curl_E(i,j,k,m)
+                  b1p2(i,j,k,m) = b1(i,j,k,m) - 
+     x                            dtsub*curl_E(i,j,k,m)
  10               continue
 
 c      call boundaries(b1p2)

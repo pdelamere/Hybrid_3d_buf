@@ -41,7 +41,7 @@ c      external time
      x     b12(nx,ny,nz,3),   !b1 at previous time step
      x     b1p2(nx,ny,nz,3),  !temporary b1 at time level m+1
      x     bt(nx,ny,nz,3),    !total magnetic field..mc covarient
-     x     btmf(nx,ny,nz,3),  !main cell contravarient bt field
+c     x     btmf(nx,ny,nz,3),  !main cell contravarient bt field
      x     btc(nx,ny,nz,3),   !btmf at cell center for particle move
 c     x     bdp(nx,ny,nz,3),   !dipole magnetic field
 c     x     nf(nx,ny,nz),      !ambient fixed fluid density
@@ -125,7 +125,7 @@ c      real ugradu(nx,ny,nz,3)
 c      real minnf,maxnf
 c      real divu(nx,ny,nz)
       real mindt
-      integer t1,t2,cnt_rt
+      integer*4 t1,t2,cnt_rt
       real time
       integer ierr
 
@@ -281,24 +281,16 @@ c      enddo
 
 
       if (.not.(restart)) then
-c         write(*,*) 'SW particle setup maxwl 1...'
-
 c      call sw_part_setup_temp(np,vp,vp1,xp,input_p,up)
 c      call sw_part_setup_maxwl(np,vp,vp1,xp,xp1,input_p,up,np_t_flg,
 c     x                         np_b_flg)
          call sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
-c         write(*,*) 'SW particle setup complete...',Ni_tot,
-c     x        mrat(Ni_tot:Ni_tot+1)
-
 
          call part_setup_buf(xp_buf,vp_buf)
          
          call part_setup_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf,m_arr_out_buf,b0)
-         
-         
-c         write(*,*) 'buffer setup complete...'
-         
+                  
          call get_ndot(ndot)
          
          call f_update_tlev(b1,b12,b1p2,bt,b0)
@@ -319,7 +311,7 @@ c----------------------------------------------------------------------
      x        status='unknown',
      x        form='unformatted')
          
-         read(210)  b0,b1,b12,b1p2,bt,btmf,btc,np,np3,
+         read(210)  b0,b1,b12,b1p2,bt,btc,np,np3,
      x        up,aj,nu,E,input_E,input_p,mstart,input_EeP,prev_Etot
      x        Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP
 
@@ -604,14 +596,11 @@ c======================================================================
 
       do 1 m = mstart+1, nt
 
-c        write(*,*) ' '
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, m*dt
          endif
 
          !Calculate neutral density
-
-c         xp1 = xp  !save previous particle position for diagnosics
 
          !Ionize cloud and calculate ion density
          if (Ni_tot .lt. 0.9*Ni_max) then
@@ -636,10 +625,10 @@ c            write(*,*) 'max np_2...',maxval(np_2)
          call curlB(b1,np,aj)
 c         call obstacle_boundary_B(b0,b1)
 
-         call cov_to_contra(bt,btmf)
-         call face_to_center(btmf,btc)       !interp bt to cell center
+c         call cov_to_contra(bt,btmf)
+c         call face_to_center(btmf,btc)       !interp bt to cell center
          
-c         call edge_to_center(bt,btc)
+         call edge_to_center(bt,btc)
 
          call extrapol_up(up,vp,vp1,np)
          call get_Ep(Ep,aj,np,up,btc,nu)
@@ -649,8 +638,6 @@ c         call edge_to_center(bt,btc)
          call get_vplus_vminus(Ep,btc,vp,vplus,vminus)
          call get_vp_final(Ep,vp,vp1,vplus)
          
-c         call move_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt) 
-
          call move_ion_half(xp,vp,vp1,input_p,Ep)
 
                   !1/2 step ion move to n+1/2
@@ -689,8 +676,6 @@ c            mr = 1.0/m_pu
 c            call separate_temp(vp,temp_p_2,mr)
          endif
          call update_np_boundary(np)
-
-c         write(*,*) 'np max...',maxval(np(:,:,:))
 
          
 c**********************************************************************
@@ -735,7 +720,7 @@ c         enddo
 c         write(*,*) 'subcycle step...',n,ntf
 
          !convert main cell covarient bt to main cell contravarient
-         call cov_to_contra(bt,btmf) 
+c         call cov_to_contra(bt,btmf) 
 c         call edge_to_center(bt,btc)
          call curlB(b1,np,aj)     
 c         call obstacle_boundary_B(b0,b1)
@@ -766,7 +751,8 @@ c         call predict_B(b1,b12,b1p2,bt,btmf,E,aj,up,uf,uf2,np,nf,nu,
 c     x                  gradP) 
 
 
-         call predict_B(b0,b1,b12,b1p2,bt,btmf,E,aj,up,np,nu) 
+         call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
+c         call predict_B(b0,b1,b12,b1p2,bt,btmf,E,aj,up,np,nu) 
 
 
 c         call correct_nf(nf,nf1,ufp1)
@@ -787,13 +773,6 @@ c         write(192) surf_tot, graduu_tot, ugradu_tot
 
  2     continue
 c**********************************************************************
-
-
-
-c         call move_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
-c     x                      xp_out_buf,vp_out_buf,E_out_buf,
-c     x                      B_out_buf,mrat_out_buf,m_arr_out_buf)  
-c                     !final ion move to n+1
 
          call move_ion_half(xp,vp,vp1,input_p,Ep)
 
@@ -959,7 +938,7 @@ c         endif
      x           status='unknown',
      x           form='unformatted')
 
-          write(220)  b0,b1,b12,b1p2,bt,btmf,btc,np,np3,
+          write(220)  b0,b1,b12,b1p2,bt,btc,np,np3,
      x         up,aj,nu,E,input_E,input_p,mrestart,input_EeP,prev_Etot,
      x         Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP
 

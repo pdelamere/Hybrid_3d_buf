@@ -17,10 +17,11 @@ c                          !to grid point position.
       real zplus, zminus  !position of main cell edges up and down
       real b1,b2
 
+      call periodic(bt)
 
-      do 10 k=2,nz-1
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
+      do 10 k=2,nz
+         do 10 j=2,ny
+            do 10 i=2,nx
 
 c               ip = i+1
 c               jp = j+1
@@ -63,7 +64,76 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE face_to_center2(v,vc)
+      SUBROUTINE edge_to_face(bt,btmf)
+c----------------------------------------------------------------------
+      real bt(nx,ny,nz,3),   !main cell edge
+     x     btmf(nx,ny,nz,3)
+      real btc(nx,ny,nz,3)  !main cell center
+
+c      real zrat           !ratio for doing linear interpolation
+c                          !to grid point position.
+      real zplus, zminus  !position of main cell edges up and down
+      real b1,b2
+
+      call periodic(bt)
+
+      do 10 k=2,nz
+         do 10 j=2,ny
+            do 10 i=2,nx
+
+c               ip = i+1
+c               jp = j+1
+c               kp = k+1
+               im = i-1
+               jm = j-1
+               km = k-1
+
+c               b2 = 0.5*(bt(i,j,k,1)+bt(i,jm,k,1))
+c               b1 = 0.5*(bt(i,j,km,1)+bt(i,jm,km,1))
+               b2 = bt(i,jm,k,1) + yrat(j)*(bt(i,j,k,1)-bt(i,jm,k,1))
+               b1 = bt(i,jm,km,1) + yrat(j)*(bt(i,j,km,1)-bt(i,jm,km,1))
+ 
+               btc(i,j,k,1) = b1 + zrat(k)*(b2-b1)
+
+c               b2 = 0.5*(bt(i,j,k,2)+bt(im,j,k,2))
+c               b1 = 0.5*(bt(i,j,km,2)+bt(im,j,km,2))
+ 
+               b2 = bt(im,j,k,2) + xrat(i)*(bt(i,j,k,2)-bt(im,j,k,2))
+               b1 = bt(im,j,km,2) + xrat(i)*(bt(i,j,km,2)-bt(im,j,km,2))
+
+               btc(i,j,k,2) = b1 + zrat(k)*(b2-b1)
+
+               b2 = bt(i,jm,k,3) + yrat(j)*(bt(i,j,k,3)-bt(i,jm,k,3))
+               b1 = bt(im,jm,k,3) + yrat(j)*(bt(im,j,k,3)-bt(im,jm,k,3))
+
+               btc(i,j,k,3) = b1 + xrat(i)*(b2-b1)
+
+c               btc(i,j,k,3) = 0.25*(bt(i,j,k,3)+bt(im,j,k,3)+ 
+c     x              bt(im,jm,k,3) + bt(i,jm,k,3))
+
+      
+ 10         continue
+
+      call periodic(btc)
+
+      do 20 k=2,nz
+         do 20 j=2,ny
+            do 20 i=2,nx
+
+               btmf(i,j,k,1) = 0.5*(btc(i,j,k,1)+btc(i+1,j,k,1))
+               btmf(i,j,k,2) = 0.5*(btc(i,j,k,2)+btc(i,j+1,k,2))
+               btmf(i,j,k,3) = 0.5*(btc(i,j,k,3)+btc(i,j,k+1,3))
+      
+ 20         continue
+      
+      return
+      end SUBROUTINE edge_to_face
+c----------------------------------------------------------------------
+
+
+
+c----------------------------------------------------------------------
+      SUBROUTINE face_to_center(v,vc)
 c----------------------------------------------------------------------
       !!include 'incurv.h'
 
@@ -103,7 +173,47 @@ c               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
       call periodic(vc)
 
       return
-      end SUBROUTINE face_to_center2
+      end SUBROUTINE face_to_center
 c----------------------------------------------------------------------
+
+c----------------------------------------------------------------------
+      SUBROUTINE face_to_center_2(v,vc)
+c----------------------------------------------------------------------
+c      include 'incurv.h'
+
+      real v(nx,ny,nz,3)        !vector at contravarient position
+      real vc(nx,ny,nz,3)       !vector at cell center
+      real zfrc(nz)             !0.5*dz_grid(k)/dz_cell(k)
+
+      do 5 k=1,nz
+         zfrc(k) = 0.5*dz_grid(k)/dz_cell(k)
+ 5       continue
+
+      call periodic(v)
+
+      do 10 i=2,nx
+         do 10 j=2,ny
+            do 10 k=2,nz
+
+               im = i-1     
+               jm = j-1     
+               km = k-1
+
+c               if (im .lt. 2) then im = 2
+c               if (jm .lt. 2) then jm = 2
+c               if (km .lt. 2) then km = 2
+
+               vc(i,j,k,1) = 0.5*(v(i,j,k,1) + v(im,j,k,1))
+               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
+               vc(i,j,k,3) = zfrc(k)*(v(i,j,k,3) - v(i,j,km,3)) + 
+     x                                v(i,j,km,3)
+ 10            continue
+
+      call periodic(vc)
+
+      return
+      end SUBROUTINE face_to_center_2
+c----------------------------------------------------------------------
+
 
       end MODULE grid_interp
