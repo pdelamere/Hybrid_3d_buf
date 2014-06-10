@@ -22,13 +22,13 @@ c      include 'incurv.h'
       real vp1(Ni_max,3)
 
       do 5 m=1,3   !remove ion energy from total input energy
-         input_E = input_E-0.5*m_arr(l)*(vp(ion_l,m)*km_to_m)**2 /
+         input_E = input_E-0.5*(mion/mrat(l))*(vp(ion_l,m)*km_to_m)**2 /
      x             (beta*beta_p(l))
  5    continue
       write(*,*) 'removing ion...',ion_l
 
       do 10 l=ion_l,Ni_tot-1
-         m_arr(l) = m_arr(l+1)
+c         m_arr(l) = m_arr(l+1)
          mrat(l) = mrat(l+1)
          do 10 m=1,3 
             xp(l,m) = xp(l+1,m)
@@ -134,7 +134,7 @@ c     x                                  npart,ipart
 
 
                      mrat(l) = 1.0
-                     m_arr(l) = mproton
+c                     m_arr(l) = mproton
                      beta_p(l) = 1.0
                      Ni_tot = Ni_tot + 1
                   enddo
@@ -303,27 +303,27 @@ c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
-      out_mass(1:Ni_out) = 
-     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
+c      out_mass(1:Ni_out) = 
+c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
+c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      ! remove energy of outgoing particles
-      input_E = input_E - sum(0.5*out_mass(:)*vsqrd_out(:)/
-     x                       (beta*out_beta_p(:)))
-
-      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
+c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c     x     cartcomm, reqs(1), ierr)
+c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c     x     cartcomm, reqs(2), ierr)
       
-      call MPI_WAITALL(2, reqs, stats, ierr)
+c      call MPI_WAITALL(2, reqs, stats, ierr)
 
-      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
+c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
       out_mass(1:Ni_out) = 
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
       mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
+
+      ! remove energy of outgoing particles
+      input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
+     x                       (beta*out_beta_p(:)))
 
       call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -339,7 +339,7 @@ c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       ! add energy back in
       do m = 1,3
-         input_E = input_E + sum(0.5*m_arr(Ni_tot_in+1:Ni_tot)*
+         input_E = input_E + sum(0.5*(mion/mrat(Ni_tot_in+1:Ni_tot))*
      x               (vp(Ni_tot_in+1:Ni_tot,m)*km_to_m)**2 
      x                /(beta*beta_p(Ni_tot_in+1:Ni_tot)))
       enddo
@@ -700,7 +700,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
      x                      xp_out_buf,vp_out_buf,E_out_buf,
-     x                      B_out_buf,mrat_out_buf,m_arr_out_buf) 
+     x                      B_out_buf,mrat_out_buf) 
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -717,11 +717,11 @@ c      include 'incurv.h'
       real E_out_buf(Ni_max_buf,3)
       real B_out_buf(Ni_max_buf,3)
       real mrat_out_buf(Ni_max_buf)
-      real m_arr_out_buf(Ni_max_buf)
+c      real m_arr_out_buf(Ni_max_buf)
 
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
-      real, dimension(:), allocatable :: out_m_arr
+c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
       real, dimension(:,:), allocatable :: out_E
@@ -746,7 +746,7 @@ c     ijkp(:,1) = nint(xp(:,1)/dx)
       
       allocate(out_xp(Ni_out,3))
       allocate(out_vp(Ni_out,3))
-      allocate(out_m_arr(Ni_out))
+c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
       
@@ -774,15 +774,15 @@ c     x        in_bounds(1:Ni_tot))
       enddo
       
       
-      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
-     x     .not.in_bounds(1:Ni_tot))
+c      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
+c     x     .not.in_bounds(1:Ni_tot))
       out_mrat(1:Ni_out) = pack(mrat(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       
-      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), 
-     x     in_bounds(1:Ni_tot))
+c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), 
+c     x     in_bounds(1:Ni_tot))
       mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), 
      x     in_bounds(1:Ni_tot))
       beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), 
@@ -795,7 +795,7 @@ c     x        in_bounds(1:Ni_tot))
          vp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_vp(:,m)
       enddo
       
-      m_arr_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_m_arr(:)
+c      m_arr_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_m_arr(:)
       mrat_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_mrat(:)
       beta_p_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_beta_p(:)
       
@@ -804,9 +804,9 @@ c     remove energy
       do l = Ni_tot_in+1,Ni_tot  
          do m=1,3
             input_E = input_E - 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x               (beta*beta_p(l))
-            input_p(m) = input_p(m) - m_arr(l)*vp(l,m) / 
+            input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
      x                    (beta*beta_p(l))
          enddo         
       enddo
@@ -817,7 +817,7 @@ c     remove energy
       
       deallocate(out_xp)
       deallocate(out_vp)
-      deallocate(out_m_arr)
+c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
       
@@ -839,7 +839,7 @@ c      endwhere
       allocate(out_E(Ni_out,3))
       allocate(out_B(Ni_out,3))
       allocate(out_ijkp(Ni_out,3))
-      allocate(out_m_arr(Ni_out))
+c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
       
@@ -867,8 +867,8 @@ c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
          wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
       
-      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
-     x     .not.in_bounds(1:Ni_tot))
+c      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
+c     x     .not.in_bounds(1:Ni_tot))
       out_mrat(1:Ni_out) = pack(mrat(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
@@ -886,13 +886,13 @@ c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
          
       enddo
       
-      m_arr_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
-     x     out_m_arr(:)
+c      m_arr_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
+c     x     out_m_arr(:)
       
       mrat_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
      x     out_mrat(:)
       
-      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
+c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
       mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
       
@@ -903,9 +903,9 @@ c     remove energy
       do l = Ni_tot_in+1,Ni_tot  
          do m=1,3
             input_E = input_E - 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*beta_p(l))
-            input_p(m) = input_p(m) - m_arr(l)*vp(l,m) / 
+            input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
      x                   (beta*beta_p(l))
          enddo         
       enddo
@@ -922,7 +922,7 @@ c      endif
       deallocate(out_E)
       deallocate(out_B)
       deallocate(out_ijkp)
-      deallocate(out_m_arr)
+c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
       
@@ -1403,29 +1403,29 @@ c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
-      out_mass(1:Ni_out) = 
-     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
+c      out_mass(1:Ni_out) = 
+c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
+c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      ! remove energy of outgoing particles
-      input_E = input_E - sum(0.5*out_mass(:)*vsqrd_out(:)/
-     x                        (beta*out_beta_p(:)))
-
-
-      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
+c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c     x     cartcomm, reqs(1), ierr)
+c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c     x     cartcomm, reqs(2), ierr)
       
-      call MPI_WAITALL(2, reqs, stats, ierr)
+c      call MPI_WAITALL(2, reqs, stats, ierr)
 
       
-      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
+c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
       out_mass(1:Ni_out) = 
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
       mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
+
+
+      ! remove energy of outgoing particles
+      input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
+     x                        (beta*out_beta_p(:)))
 
 
       call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
@@ -1450,7 +1450,7 @@ c     x     cartcomm, stat, ierr)
 
       ! add energy back in
       do m = 1,3
-         input_E = input_E + sum(0.5*m_arr(Ni_tot_in+1:Ni_tot)*
+         input_E = input_E + sum(0.5*(mion/mrat(Ni_tot_in+1:Ni_tot))*
      x               (vp(Ni_tot_in+1:Ni_tot,m)*km_to_m)**2 /
      x                (beta*beta_p(Ni_tot_in+1:Ni_tot)))
       enddo
@@ -1647,27 +1647,31 @@ c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
-      out_mass(1:Ni_out) = 
-     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
+c      out_mass(1:Ni_out) = 
+c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
+c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      ! remove energy of outgoing particles
-      input_E = input_E - sum(0.5*out_mass(:)*vsqrd_out(:)/
-     x                        (beta*out_beta_p(:)))
+c      ! remove energy of outgoing particles
+c      input_E = input_E - sum(0.5*out_mass(:)*vsqrd_out(:)/
+c     x                        (beta*out_beta_p(:)))
 
-      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
+c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c     x     cartcomm, reqs(1), ierr)
+c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c     x     cartcomm, reqs(2), ierr)
       
-      call MPI_WAITALL(2, reqs, stats, ierr)
+c      call MPI_WAITALL(2, reqs, stats, ierr)
 
-      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
+c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
       out_mass(1:Ni_out) = 
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
       mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
+
+      ! remove energy of outgoing particles
+      input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
+     x                        (beta*out_beta_p(:)))
 
       call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1683,7 +1687,7 @@ c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       ! add energy back in
       do m = 1,3
-         input_E = input_E + sum(0.5*m_arr(Ni_tot_in+1:Ni_tot)*
+         input_E = input_E + sum(0.5*(mion/mrat(Ni_tot_in+1:Ni_tot))*
      x               (vp(Ni_tot_in+1:Ni_tot,m)*km_to_m)**2 /
      x                (beta*beta_p(Ni_tot_in+1:Ni_tot)))
       enddo

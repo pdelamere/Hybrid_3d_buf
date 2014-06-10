@@ -89,14 +89,14 @@ c         endif
          if (pad_ranf() .lt. chex_prob) then
             do m=1,3
                input_E = input_E - 
-     x              0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x              beta*beta_p(l) 
 c               input_p(m) = input_p(m) - m_arr(l)*vp(l,m)/beta
             enddo                     
             
             vp(l,:) = 0.0
             vp1(l,:) = 0.0
-            m_arr(l) = m_pu*mproton
+c            m_arr(l) = m_pu*mproton
             mrat(l) = 1./m_pu
 c            write(*,*) 'chex...',l,chex_prob
          endif
@@ -203,13 +203,13 @@ c                        ijkp(l,3) = kk+1
 c                     endif
                      
                      mrat(l) = 1.0/m_pu
-                     m_arr(l) = mproton*m_pu
+c                     m_arr(l) = mproton*m_pu
 c                     Ni_tot = l
                      cnt = cnt + 1
                      do m=1,3
                         vp1(l,m) = vp(l,m)
                         input_E = input_E + 
-     x                       0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
+     x                     0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /beta
 c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
 
                      enddo                     
@@ -250,13 +250,13 @@ c                     endif
                      endif
                      
                      mrat(l) = 1.0/m_pu
-                     m_arr(l) = mproton*m_pu
+c                     m_arr(l) = mproton*m_pu
                      Ni_tot = l
                      cnt = cnt + 1
                      do m=1,3
                         vp1(l,m) = vp(l,m)
                         input_E = input_E + 
-     x                       0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
+     x                    0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /beta
 c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
                      enddo                     
                   endif
@@ -739,16 +739,16 @@ c                           ijkp(l,3) = kk+1
 c                        endif
                         
                         mrat(l) = 1.0/m_pu
-                        m_arr(l) = mproton*m_pu
+c                        m_arr(l) = mproton*m_pu
                         beta_p(l) = bpu
                         Ni_tot = l
                         cnt = cnt + 1
                         do m=1,3
                            vp1(l,m) = vp(l,m)
                            input_E = input_E + 
-     x                      0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x                      0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x                          beta*beta_p(l)
-                    input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/
+                    input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m)/
      x                          beta*beta_p(l)
                         enddo                     
 
@@ -795,16 +795,16 @@ c                          ijkp(l,3) = kk+1
 c                        endif
                         
                         mrat(l) = 1.0/m_pu
-                        m_arr(l) = mproton*m_pu
+c                        m_arr(l) = mproton*m_pu
                         beta_p(l) = bpu
                         Ni_tot = l
                         cnt = cnt + 1
                         do m=1,3
                            vp1(l,m) = vp(l,m)
                            input_E = input_E + 
-     x                          0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x                          0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2/
      x                          beta*beta_p(l)
-                           input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/
+                           input_p(m)=input_p(m)+(mion/mrat(l))*vp(l,m)/
      x                          beta*beta_p(l)
                         enddo                     
                         

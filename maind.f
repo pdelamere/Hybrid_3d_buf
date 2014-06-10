@@ -89,7 +89,7 @@ c     x     pf1(nx,ny,nz)      !fluid pressure at n-1/2
       real E_out_buf(Ni_max_buf,3)
       real B_out_buf(Ni_max_buf,3)
       real mrat_out_buf(Ni_max_buf)
-      real m_arr_out_buf(Ni_max_buf)
+c      real m_arr_out_buf(Ni_max_buf)
 
       real temp_p(nx,ny,nz)
 c     x     temp_p_1(nx,ny,nz),
@@ -175,12 +175,8 @@ c create virtual topology (set dimensions in para.h)
       call MPI_CART_SHIFT(cartcomm, 1, 1, nbrs(n_left), nbrs(n_right), 
      &     ierr)
 
-
       call system_clock(t1,cnt_rt)
 c      seed = float(t1)
-
-
-
 
 c----------------------------------------------------------------------
 c Initialize all variables
@@ -192,7 +188,6 @@ c----------------------------------------------------------------------
 c      Ni_tot_sys = Ni_tot*procnum
       Ni_tot_sys = Ni_tot
       print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
-
 
       if (my_rank .eq. 0) then
          call check_inputs()
@@ -254,8 +249,8 @@ c      Ni_tot = 4000000
 
 
       if (.not.(restart)) then
-         m_arr(1:Ni_tot) = mproton
-         m_arr(Ni_tot+1:) = m_pu*mproton !mass N_2+ = 28.0
+c         m_arr(1:Ni_tot) = mproton
+c         m_arr(Ni_tot+1:) = m_pu*mproton !mass N_2+ = 28.0
          mrat(1:Ni_tot) = 1.0
          mrat(Ni_tot+1:) = 1.0/m_pu !mass N_2+ = 28.0
          beta_p(1:Ni_tot) = 1.0
@@ -289,7 +284,7 @@ c     x                         np_b_flg)
          call part_setup_buf(xp_buf,vp_buf)
          
          call part_setup_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,m_arr_out_buf,b0)
+     x        B_out_buf,mrat_out_buf,b0)
                   
          call get_ndot(ndot)
          
@@ -335,12 +330,12 @@ c         if (my_rank .ge. 0) then
           read(211) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
      x         Ni_tot_sys,ijkp,
-     x         mrat,m_arr,
+     x         mrat,
      x         xp_buf,vp_buf,Ep_buf,vplus_buf,
      x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x         B_out_buf,mrat_out_buf,m_arr_out_buf,
+     x         B_out_buf,mrat_out_buf,
      x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x         m_arr_buf,mrat_buf
+     x         mrat_buf
 
 
 
@@ -650,10 +645,10 @@ c         call check_min_den_boundary(np,xp,vp,up)
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 c         call part_setup_buf(xp_buf,vp_buf)
          call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,m_arr_out_buf)
+     x        B_out_buf,mrat_out_buf)
          call exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
      x                  xp_out_buf,vp_out_buf,E_out_buf,
-     x                  B_out_buf,mrat_out_buf,m_arr_out_buf)
+     x                  B_out_buf,mrat_out_buf)
          call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 c         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
 c     x        B_out_buf,mrat_out_buf,m_arr_out_buf,xp,vp,vp1)
@@ -780,18 +775,16 @@ c**********************************************************************
 c         call part_setup_buf(xp_buf,vp_buf)
 
          call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,m_arr_out_buf)
+     x        B_out_buf,mrat_out_buf)
 
          call exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
      x                      xp_out_buf,vp_out_buf,E_out_buf,
-     x                      B_out_buf,mrat_out_buf,m_arr_out_buf)
+     x                      B_out_buf,mrat_out_buf)
 
          call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 
-
 c         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
 c     x        B_out_buf,mrat_out_buf,m_arr_out_buf,xp,vp,vp1)
-
 
 c         call check_min_den_boundary(np,xp,vp,up)
 
@@ -947,12 +940,12 @@ c         endif
           write(221) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
      x         Ni_tot_sys,ijkp,
-     x         mrat,m_arr,
+     x         mrat,
      x         xp_buf,vp_buf,Ep_buf,vplus_buf,
      x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x         B_out_buf,mrat_out_buf,m_arr_out_buf,
+     x         B_out_buf,mrat_out_buf,
      x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x         m_arr_buf,mrat_buf
+     x         mrat_buf
             
 c       write(211) b0,b1,b12,b1p2,bt,btmf,btc,np,np3
 c     x         vp,vp1,vplus,vminus,xp,xp1,Ep,input_E,Ni_tot,

@@ -86,9 +86,8 @@ c variable for particle scale
 
 
 c mass array for multi-ion species
-      real mrat,m_arr,m_arr_buf,mrat_buf,beta_p_buf 
-      common /mass/ mrat(Ni_max),m_arr(Ni_max),
-     x     m_arr_buf(Ni_max_buf),
+      real mrat,mrat_buf,beta_p_buf 
+      common /mass/ mrat(Ni_max),
      x     mrat_buf(Ni_max_buf),beta_p_buf(Ni_max_buf)
 
 c mixing array

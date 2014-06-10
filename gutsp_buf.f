@@ -49,8 +49,8 @@ c initialize protons
  10   continue
          
       
-      m_arr_buf(1:Ni_tot_buf) = mproton
-      m_arr_buf(Ni_tot_buf+1:) = m_pu*mproton 
+c      m_arr_buf(1:Ni_tot_buf) = mproton
+c      m_arr_buf(Ni_tot_buf+1:) = m_pu*mproton 
       mrat_buf(1:Ni_tot_buf) = 1.0
       mrat_buf(Ni_tot_buf+1:) = 1.0/m_pu       
       beta_p_buf(1:Ni_tot_buf) = 1.0
@@ -77,7 +77,7 @@ c initialize He++ (m/q =2)
          vp_buf(l,2) = vy 
          vp_buf(l,3) = vz 
 
-         m_arr_buf(l) = 2*mproton
+c         m_arr_buf(l) = 2*mproton
          mrat_buf(l) = 1./2.
          beta_p_buf(l) = b_mq_2
 
@@ -95,7 +95,7 @@ c add shell distribution
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          
-         m_arr_buf(l) = mproton
+c         m_arr_buf(l) = mproton
          mrat_buf(l) = 1.0
          beta_p_buf(l) = b_shl
          
@@ -117,7 +117,7 @@ c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE part_setup_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x            B_out_buf,mrat_out_buf,m_arr_out_buf,b0)
+     x            B_out_buf,mrat_out_buf,b0)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -126,7 +126,7 @@ c      include 'incurv.h'
       real E_out_buf(Ni_max_buf,3)
       real B_out_buf(Ni_max_buf,3)
       real mrat_out_buf(Ni_max_buf)
-      real m_arr_out_buf(Ni_max_buf)
+c      real m_arr_out_buf(Ni_max_buf)
       real b0(nx,ny,nz,3)
       real rnd,f,v
       real vx,vy,vz
@@ -194,8 +194,8 @@ c      include 'incurv.h'
  10   continue
          
       
-      m_arr_out_buf(1:Ni_tot_out_buf) = mproton
-      m_arr_out_buf(Ni_tot_out_buf+1:) = m_pu*mproton 
+c      m_arr_out_buf(1:Ni_tot_out_buf) = mproton
+c      m_arr_out_buf(Ni_tot_out_buf+1:) = m_pu*mproton 
       mrat_out_buf(1:Ni_tot_out_buf) = 1.0
       mrat_out_buf(Ni_tot_out_buf+1:) = 1.0/m_pu       
 
@@ -368,7 +368,7 @@ c      include 'incurv.h'
      
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
-      real, dimension(:), allocatable :: out_m_arr
+c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
 
@@ -383,7 +383,7 @@ c      include 'incurv.h'
 
       allocate(out_xp(Ni_out,3))
       allocate(out_vp(Ni_out,3))
-      allocate(out_m_arr(Ni_out))
+c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
       
@@ -400,16 +400,16 @@ c      include 'incurv.h'
 
       enddo
 
-      out_m_arr(1:Ni_out) = pack(m_arr_buf(1:Ni_tot_buf), 
-     x                            .not.in_bounds_buf(1:Ni_tot_buf))
+c      out_m_arr(1:Ni_out) = pack(m_arr_buf(1:Ni_tot_buf), 
+c     x                            .not.in_bounds_buf(1:Ni_tot_buf))
       out_mrat(1:Ni_out) = pack(mrat_buf(1:Ni_tot_buf), 
      x                            .not.in_bounds_buf(1:Ni_tot_buf))
 
       out_beta_p(1:Ni_out) = pack(beta_p_buf(1:Ni_tot_buf), 
      x                            .not.in_bounds_buf(1:Ni_tot_buf))
 
-      m_arr_buf(1:Ni_tot_in) = pack(m_arr_buf(1:Ni_tot_buf), 
-     x                              in_bounds_buf(1:Ni_tot_buf))
+c      m_arr_buf(1:Ni_tot_in) = pack(m_arr_buf(1:Ni_tot_buf), 
+c     x                              in_bounds_buf(1:Ni_tot_buf))
       mrat_buf(1:Ni_tot_in) = pack(mrat_buf(1:Ni_tot_buf), 
      x                             in_bounds_buf(1:Ni_tot_buf))
       
@@ -456,14 +456,14 @@ c         beta_p(l) = 1.0    !add as solar wind ions
 
       enddo
 
-      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
+c      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
       mrat(Ni_tot+1:Ni_tot+Ni_out) = out_mrat(:)
       beta_p(Ni_tot+1:Ni_tot+Ni_out) = out_beta_p(:)
       
       do l = Ni_tot+1,Ni_tot+Ni_out 
          do m=1,3
             input_E = input_E + 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /(beta*beta_p(l))
+     x         0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /(beta*beta_p(l))
 c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
          enddo
       enddo
@@ -474,7 +474,7 @@ c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
 
       deallocate(out_xp)
       deallocate(out_vp)
-      deallocate(out_m_arr)
+c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
 
@@ -504,7 +504,7 @@ c      include 'incurv.h'
       
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
-      real, dimension(:), allocatable :: out_m_arr
+c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
 
       dth = dt/2
@@ -557,7 +557,7 @@ c add protons
             vp_buf(l,2) = vy
             vp_buf(l,3) = vz
             
-            m_arr_buf(l) = mproton
+c            m_arr_buf(l) = mproton
             mrat_buf(l) = 1.0
             beta_p_buf(l) = 1.0
       enddo
@@ -585,7 +585,7 @@ c add He ++
             vp_buf(l,2) = vy
             vp_buf(l,3) = vz
             
-            m_arr_buf(l) = 2.0*mproton
+c            m_arr_buf(l) = 2.0*mproton
             mrat_buf(l) = 1.0/2.0
             beta_p_buf(l) = b_mp_2
 
@@ -603,7 +603,7 @@ c add shell distribution
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          
-         m_arr_buf(l) = mproton
+c         m_arr_buf(l) = mproton
          mrat_buf(l) = 1.0
          beta_p_buf(l) = b_shl
          
@@ -625,7 +625,7 @@ c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,m_arr_out_buf,xp,vp,vp1)
+     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -634,7 +634,7 @@ c      include 'incurv.h'
      x     E_out_buf(Ni_max_buf,3),
      x     B_out_buf(Ni_max_buf,3),
      x     mrat_out_buf(Ni_max_buf),
-     x     m_arr_out_buf(Ni_max_buf),
+c     x     m_arr_out_buf(Ni_max_buf),
      x     xp(Ni_max,3),
      x     vp(Ni_max,3),
      x     vp1(Ni_max,3)
@@ -644,7 +644,7 @@ c      include 'incurv.h'
      
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
-      real, dimension(:), allocatable :: out_m_arr
+c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
 
 
@@ -661,7 +661,7 @@ c move back into main domain
 
       allocate(out_xp(Ni_out,3))
       allocate(out_vp(Ni_out,3))
-      allocate(out_m_arr(Ni_out))
+c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       
       do m = 1,3 
@@ -678,13 +678,13 @@ c move back into main domain
       enddo
 
 
-      out_m_arr(1:Ni_out) = pack(m_arr_out_buf(1:Ni_tot_out_buf), 
-     x                            .not.in_bounds_buf(1:Ni_tot_out_buf))
+c      out_m_arr(1:Ni_out) = pack(m_arr_out_buf(1:Ni_tot_out_buf), 
+c     x                            .not.in_bounds_buf(1:Ni_tot_out_buf))
       out_mrat(1:Ni_out) = pack(mrat_out_buf(1:Ni_tot_out_buf), 
      x                            .not.in_bounds_buf(1:Ni_tot_out_buf))
 
-      m_arr_out_buf(1:Ni_tot_in) = pack(m_arr_buf(1:Ni_tot_out_buf), 
-     x                              in_bounds_buf(1:Ni_tot_out_buf))
+c      m_arr_out_buf(1:Ni_tot_in) = pack(m_arr_buf(1:Ni_tot_out_buf), 
+c     x                              in_bounds_buf(1:Ni_tot_out_buf))
       mrat_out_buf(1:Ni_tot_in) = pack(mrat_out_buf(1:Ni_tot_out_buf), 
      x                             in_bounds_buf(1:Ni_tot_out_buf))
 
@@ -726,13 +726,13 @@ c         endif
 
 
 
-      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
+c      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
       mrat(Ni_tot+1:Ni_tot+Ni_out) = out_mrat(:)
 
       do l = Ni_tot+1,Ni_tot+Ni_out 
          do m=1,3
             input_E = input_E + 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /(beta*beta_p(l))
+     x         0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /(beta*beta_p(l))
 c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
          enddo
       enddo
@@ -744,7 +744,7 @@ c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
 
       deallocate(out_xp)
       deallocate(out_vp)
-      deallocate(out_m_arr)
+c      deallocate(out_m_arr)
       deallocate(out_mrat)
 
 
@@ -777,9 +777,9 @@ c      write(*,*) 'Ni out removed past 10 dx...',Ni_out
         mrat_out_buf(1:Ni_tot_in) = 
      x           pack(mrat_out_buf(1:Ni_tot_out_buf), 
      x           in_bounds_buf(1:Ni_tot_out_buf))
-        m_arr_out_buf(1:Ni_tot_in) = 
-     x           pack(m_arr_out_buf(1:Ni_tot_out_buf), 
-     x           in_bounds_buf(1:Ni_tot_out_buf))
+c        m_arr_out_buf(1:Ni_tot_in) = 
+c     x           pack(m_arr_out_buf(1:Ni_tot_out_buf), 
+c     x           in_bounds_buf(1:Ni_tot_out_buf))
 
 
 
@@ -794,7 +794,7 @@ c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,m_arr_out_buf)
+     x        B_out_buf,mrat_out_buf)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -802,8 +802,8 @@ c      include 'incurv.h'
      x     vp_out_buf(Ni_max_buf,3),
      x     E_out_buf(Ni_max_buf,3),
      x     B_out_buf(Ni_max_buf,3),
-     x     mrat_out_buf(Ni_max_buf),
-     x     m_arr_out_buf(Ni_max_buf)
+     x     mrat_out_buf(Ni_max_buf)
+c     x     m_arr_out_buf(Ni_max_buf)
 c     x     xp(Ni_max,3),
 c     x     vp(Ni_max,3),
 c     x     vp1(Ni_max,3)

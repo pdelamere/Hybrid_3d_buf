@@ -79,7 +79,7 @@ c      write(*,*) 'Energy diag...',Ni_tot,m_arr(2000000)
       Evp = 0.0
       do 15 l=1,Ni_tot
          do 15 m=1,3
-            Evp = Evp + 0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+            Evp = Evp + 0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*beta_p(l))
  15   continue
 
@@ -461,14 +461,14 @@ c         endif
          vp(l,2) = vy 
          vp(l,3) = vz 
 
-         m_arr(l) = mpart
+c         m_arr(l) = mpart
          mrat(l) = mproton/mpart
          beta_p(l) = bwght
 
          do 20 m=1,3
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*bwght)
             input_p(m) = input_p(m) + mpart*vp(l,m) / 
      x           (beta*bwght)
@@ -532,16 +532,16 @@ c         endif
          vp(l,2) = vy 
          vp(l,3) = vz 
 
-         m_arr(l) = 2*mproton
+c         m_arr(l) = 2*mproton
          mrat(l) = 1.0/2.0
          beta_p(l) = b_mq_2
 
          do 40 m=1,3
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*beta_p(l))
-            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / 
+            input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m) / 
      x           (beta*beta_p(l))
  40      continue
  30   continue
@@ -560,7 +560,7 @@ c add shell distribution
             xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
             xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
             
-            m_arr(l) = mproton
+c            m_arr(l) = mproton
             mrat(l) = 1.0
             beta_p(l) = b_shl
 
@@ -614,9 +614,9 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
             do  m=1,3
                vp1(l,m) = vp(l,m)
                input_E = input_E + 
-     x              0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /
+     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x              (beta*b_shl)
-               input_p(m) = input_p(m)+m_arr(l)*vp(l,m)/
+               input_p(m) = input_p(m)+(mion/mrat(l))*vp(l,m)/
      x              (beta*b_shl)
             enddo
             
@@ -812,7 +812,7 @@ c      np_b_flg(:) = 0
          xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx-1)-qx(1))
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz-1)-qz(1))
-         m_arr(l) = mion
+c         m_arr(l) = mion
          mrat(l) = 1.0
 
 c         ijkp(l,1) = floor(xp(l,1)/dx) 
@@ -853,8 +853,8 @@ c         if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
          do 45 m=1,3
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
-     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
-            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
+     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /beta
+            input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m) / beta
  45      continue
  10      continue
 
