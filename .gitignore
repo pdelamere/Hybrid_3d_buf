@@ -6,6 +6,4 @@ hybrid
 *.*~
 *.pro
 *.png
-#*#
-#grid_interp.f#
-#gutsf.f#
+\#*#
