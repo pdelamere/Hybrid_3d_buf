@@ -668,6 +668,8 @@ c get source density
 c               r = sqrt((xp(l,1)-cx)**2 + (xp(l,2)-cy)**2 + 
 c     x              (gz(ijkp(l,3))-cz)**2) !use global coords
 
+               !np = electron density, used for recombination
+
                npmax = (-k_rec*np(i,j,k) + sqrt((k_rec*np(i,j,k))**2 + 
      x              4*k_rec*neutral_density(r)/tau_photo))/(2*k_rec)
                
@@ -708,7 +710,15 @@ c                  write(*,*) 'npofr...',npofr
                         xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy
                         xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
-                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+
+                        ii=0
+ 26                     continue
+                        ii = ii + 1
+                        if (xp(l,1) .gt. qx(ii)) go to 26 !find i on non-uniform 
+                        ii = ii-1
+                        ijkp(l,1)= ii
+
+c                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
                         ijkp(l,2) = floor(xp(l,2)/dy)
 
                         kk=0
@@ -755,7 +765,15 @@ c                        endif
                         xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy
                         xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
-                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+
+                        ii=0
+ 27                     continue
+                        ii = ii + 1
+                        if (xp(l,1) .gt. qx(ii)) go to 27 !find i on non-uniform 
+                        ii = ii-1
+                        ijkp(l,1)= ii
+
+c                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
                         ijkp(l,2) = floor(xp(l,2)/dy)
                         
 

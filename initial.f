@@ -235,7 +235,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
-      parameter(nrgrd = 0)
+      integer nrgrd
+
       real zplus,zminus,xplus, xminus, yplus, yminus
       real zsf,xsf
 
@@ -255,7 +256,9 @@ c 10            continue
 
 c==============stretch x direction=====================================
                
-      xsf = 0.0
+      xsf = 1.0
+      ri = nx/2 + 20
+      nrgrd = 10
 c up from center
       do 12 i = ri,ri+nrgrd
          dx_grid(i) = dx
@@ -292,6 +295,7 @@ c      print*,'dx...',dx_grid
 c==============stretch z direction=====================================
 
       zsf = 0.0  !z stretch factor
+      nrgrd = 0
 c up from center
       do 32 k = rk,rk+nrgrd
          dz_grid(k) = delz
