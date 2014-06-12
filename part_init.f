@@ -106,7 +106,7 @@ c      write(*,*) 'recvbuf...',recvbuf,Evp
 
       total_E = S_Evp+EE+EB1
       aveEvp = S_Evp/S_input_E
-
+      
       if (my_rank .eq. 0) then
 
 c      write(*,*) 'Input energy (J).............',S_input_E
@@ -475,7 +475,6 @@ c         m_arr(l) = mpart
  20      continue
                  
  10      continue
-
 
 c initialize He++
 

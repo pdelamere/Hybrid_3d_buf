@@ -12,7 +12,7 @@ c----------------------------------------------------------------------
       real FUNCTION pad_ranf()
 c This is the random number generator that works on foo.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
 c      integer function irand
 c      integer iflag, irnum
@@ -198,7 +198,7 @@ c----------------------------------------------------------------------
       real FUNCTION ranf()
 c This is the random number generator that works on foo.
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
 c      integer function irand
 c      integer iflag, irnum
@@ -651,7 +651,7 @@ cc----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_bndry_Eflux(b1,E)
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
      
       real b1(nx,ny,nz,3),
      x     E(nx,ny,nz,3)
@@ -661,7 +661,7 @@ c----------------------------------------------------------------------
       real exb_flux
 
       real mO_q
-      parameter(mO_q = mO/q)
+      mO_q = mO/q
 
 
 c Energy flux through boundary faces
@@ -1107,7 +1107,7 @@ cc----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_beta()
 c----------------------------------------------------------------------
-      include 'incurv.h'
+c      include 'incurv.h'
 
 c      real Np_tot
       real src(200)
@@ -1139,7 +1139,6 @@ c      beta = (Ni_tot_sys/((nx*dx*ny*dy*nz*delz))/nf_init
       beta = (Ni_tot_sys/((qx(nx)-qx(1))*(qy(ny-1)-qy(1))*
      x                    (qz(nz-1)-qz(1))))/nf_init
 
-
 c      beta = (5e6/(nx*dx*ny*dy*nz*delz))/nf_init
 
 c      write(*,*) 'beta...',beta,Ni_tot,nx*dx*ny*dy*nz*delz,nf_init
@@ -1160,6 +1159,7 @@ c      dNi = Ni_max
 c      beta = (dNi/Np_tot)
 
       write(*,*) 'beta, dNi....',beta,dNi
+c      stop
 
       return
       end SUBROUTINE get_beta

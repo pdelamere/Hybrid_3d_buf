@@ -7,3 +7,7 @@ hybrid
 *.pro
 *.png
 \#*#
+*.pdf
+idl_routines/
+*.eps
+*.mp4

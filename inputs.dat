@@ -7,7 +7,7 @@
 50                     !diagnostic output interval
 340.0                   !flow speed (km/s) 
 19.3                  !thermal speed for Maxwellian (km/s)
-0.2                   !Ni_tot initial (fraction of Ni_max)
+0.4                   !Ni_tot initial (fraction of Ni_max)
 0.8                   !grid size as fraction of lambda_i
 0.002 		      !nu_init_frac, fraction of gyrofrequency for nu_init
-'./tmp3/'             !output directory 
+'/Volumes/Scratch/hybrid/Pluto/run_test/'             !output directory 
