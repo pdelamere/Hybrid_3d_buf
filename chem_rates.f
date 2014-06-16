@@ -674,11 +674,11 @@ c     x              (gz(ijkp(l,3))-cz)**2) !use global coords
      x              4*k_rec*neutral_density(r)/tau_photo))/(2*k_rec)
                
                 
-               if ((np_2(i,j,k) .gt. npmax) .and.
-     x            (np_2(i,j,k) .gt. 0.0)) then
-                  write(*,*) 'limit ion production...',np_2(i,j,k),
-     x               npmax
-               endif
+c               if ((np_2(i,j,k) .gt. npmax) .and.
+c     x            (np_2(i,j,k) .gt. 0.0)) then
+c                  write(*,*) 'limit ion production...',np_2(i,j,k),
+c     x               npmax
+c               endif
                if ((r .le. dx*S_radius) .and.
 c               if ((r .le. dx*4) .and.
      x              (np_2(i,j,k) .lt. npmax)) then

@@ -55,10 +55,10 @@ c     x     etemp(nx,ny,nz),
       EE = 0.0
       EeP = 0.0                
       do 10 i=1,nx-1
-         j = 2
-c         do 10 j=1,ny-1
+c         j = 2
+         do 10 j=1,ny-1
             do 10 k=1,nz-1
-               vol = dx*dy*dz_cell(k)*km_to_m**3
+               vol = dx_cell(i)*dy*dz_cell(k)*km_to_m**3
                EB1x = EB1x + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,1))**2 
                EB1y = EB1y + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,2))**2 
                EB1z = EB1z + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,3))**2 

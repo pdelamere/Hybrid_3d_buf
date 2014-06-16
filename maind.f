@@ -53,7 +53,7 @@ c     x     nnd(nx,ny,nz),     !neutral cloud density decrement
      x     np(nx,ny,nz),      !particle ion den at time level n, n+1/2
 c     x     np_1(nx,ny,nz),
      x     np_2(nx,ny,nz),
-     x     np3(nx,ny,nz,3),
+c     x     np3(nx,ny,nz,3),
      x     vp(Ni_max,3),      !particle velocity at t level n+1/2
      x     vp1(Ni_max,3),     !particle velocity at t level n
      x     vplus(Ni_max,3),   !v+ used in velocity update
@@ -803,7 +803,7 @@ c     x                        (pup(1)+puf(1)+peb(1))/input_p(1),
 c     x                        (pup(2)+puf(2)+peb(2))/input_p(2),
 c     x                        (pup(3)+puf(3)+peb(3))/input_p(3)
 
-         call get_np3(np,np3)
+c         call get_np3(np,np3)
 
 c         call update_mixed
 
