@@ -177,13 +177,27 @@ c                  write(*,*) 'ndot...',delta_N
                   do l = l1,Ni_tot
                      vp(l,:) = 0.0
                      
-                     xp(l,1) = qx(i) + (pad_ranf())*dx
-                     xp(l,2) = qy(j) + (pad_ranf())*dy
+                     xp(l,1) = qx(i) + (pad_ranf())*dx_grid(i)
+                     xp(l,2) = qy(j) + (pad_ranf())*dy_grid(j)
                      xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
                      
-                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-                     ijkp(l,2) = floor(xp(l,2)/dy)
+c                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+c                     ijkp(l,2) = floor(xp(l,2)/dy)
+
+
+                     ii=0
+ 17                  continue
+                     ii = ii + 1
+                     if (xp(l,1) .gt. qx(ii)) go to 17 !find i on non-uniform 
+                     ii = ii-1
+                     ijkp(l,1)= ii                     
                      
+                     jj=0
+ 18                  continue
+                     jj = jj + 1
+                     if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
+                     jj = jj-1
+                     ijkp(l,2)= jj
 
                      kk=0
  16                  continue
@@ -221,17 +235,32 @@ c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
                      l = Ni_tot + 1
                      vp(l,:) = 0.0
                      
-                     xp(l,1) = qx(i) + (pad_ranf())*dx
-                     xp(l,2) = qy(j) + (pad_ranf())*dy
+                     xp(l,1) = qx(i) + (pad_ranf())*dx_grid(i)
+                     xp(l,2) = qy(j) + (pad_ranf())*dy_grid(j)
                      xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
                      
-                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-                     ijkp(l,2) = floor(xp(l,2)/dy)
+c                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+c                     ijkp(l,2) = floor(xp(l,2)/dy)
+
+
+                     ii=0
+ 27                  continue
+                     ii = ii + 1
+                     if (xp(l,1) .gt. qx(ii)) go to 27 !find i on non-uniform 
+                     ii = ii-1
+                     ijkp(l,1)= ii                     
+                     
+                     jj=0
+ 28                  continue
+                     jj = jj + 1
+                     if (xp(l,2) .gt. qy(jj)) go to 28 !find j on non-uniform 
+                     jj = jj-1
+                     ijkp(l,2)= jj
 
                      kk=0
- 18                  continue
+ 29                  continue
                      kk = kk + 1
-                     if (xp(l,3) .gt. qz(kk)) go to 18 !find k on non-uniform 
+                     if (xp(l,3) .gt. qz(kk)) go to 29 !find k on non-uniform 
                      kk = kk-1
                      ijkp(l,3)= kk
                      
@@ -706,10 +735,9 @@ c                  write(*,*) 'npofr...',npofr
                         vp(l,2) = 0.0
                         vp(l,3) = 0.0                        
 
-                        xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx
-                        xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy
+                        xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
+                        xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
                         xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
-
 
                         ii=0
  26                     continue
@@ -719,7 +747,14 @@ c                  write(*,*) 'npofr...',npofr
                         ijkp(l,1)= ii
 
 c                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-                        ijkp(l,2) = floor(xp(l,2)/dy)
+c                        ijkp(l,2) = floor(xp(l,2)/dy)
+                    
+                        jj=0
+ 18                     continue
+                        jj = jj + 1
+                        if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
+                        jj = jj-1
+                        ijkp(l,2)= jj
 
                         kk=0
  15                     continue
@@ -761,8 +796,8 @@ c                        m_arr(l) = mproton*m_pu
                         vp(l,2) = 0.0
                         vp(l,3) = 0.0                        
                         
-                        xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx
-                        xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy
+                        xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
+                        xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
                         xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
 
@@ -774,8 +809,15 @@ c                        m_arr(l) = mproton*m_pu
                         ijkp(l,1)= ii
 
 c                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-                        ijkp(l,2) = floor(xp(l,2)/dy)
+c                        ijkp(l,2) = floor(xp(l,2)/dy)
                         
+
+                        jj=0
+ 17                     continue
+                        jj = jj + 1
+                        if (xp(l,2) .gt. qy(jj)) go to 17 !find i on non-uniform 
+                        jj = jj-1
+                        ijkp(l,2)= jj                     
 
                         kk=0
  16                     continue

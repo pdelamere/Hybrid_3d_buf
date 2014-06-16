@@ -58,7 +58,7 @@ c     x     etemp(nx,ny,nz),
 c         j = 2
          do 10 j=1,ny-1
             do 10 k=1,nz-1
-               vol = dx_cell(i)*dy*dz_cell(k)*km_to_m**3
+               vol = dx_cell(i)*dy_cell(j)*dz_cell(k)*km_to_m**3
                EB1x = EB1x + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,1))**2 
                EB1y = EB1y + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,2))**2 
                EB1z = EB1z + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,3))**2 
@@ -429,7 +429,15 @@ c initialize protons
          ijkp(l,1)= i
 
 
-         ijkp(l,2) = floor(xp(l,2)/dy) 
+c         ijkp(l,2) = floor(xp(l,2)/dy) 
+
+         j=0
+ 13      continue
+         j = j + 1
+         if (xp(l,2) .gt. qy(j)) go to 13 !find i on non-uniform 
+         j = j-1
+         ijkp(l,2)= j
+
          
          k=0
  12      continue
@@ -497,8 +505,16 @@ c initialize He++
          ijkp(l,1)= i
 
 
-         ijkp(l,2) = floor(xp(l,2)/dy) 
-         
+c         ijkp(l,2) = floor(xp(l,2)/dy) 
+
+         j=0
+ 33      continue
+         j = j + 1
+         if (xp(l,2) .gt. qy(j)) go to 33 !find i on non-uniform 
+         j = j-1
+         ijkp(l,2)= j
+
+
          k=0
  32      continue
          k = k + 1
@@ -524,8 +540,8 @@ c         endif
 
          call maxwl_init(vth,vx,vy,vz)
 
-         ii = ijkp(l,1)
-         kk = ijkp(l,3)
+c         ii = ijkp(l,1)
+c         kk = ijkp(l,3)
 
          vp(l,1) = -vsw + vx 
          vp(l,2) = vy 
@@ -572,7 +588,16 @@ c            m_arr(l) = mproton
             ijkp(l,1)= i
             
             
-            ijkp(l,2) = floor(xp(l,2)/dy) 
+c            ijkp(l,2) = floor(xp(l,2)/dy) 
+
+
+            j=0
+ 73         continue
+            j = j + 1
+            if (xp(l,2) .gt. qy(j)) go to 73 !find i on non-uniform 
+            j = j-1
+            ijkp(l,2)= j
+
             
             k=0
  72         continue
@@ -594,8 +619,8 @@ c            if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
 c               ijkp(l,3) = k+1
 c            endif
             
-            ii = ijkp(l,1)
-            kk = ijkp(l,3)
+c            ii = ijkp(l,1)
+c            kk = ijkp(l,3)
 
             theta = pad_ranf()*PI
             phi = pad_ranf()*2*PI
@@ -824,8 +849,16 @@ c         ijkp(l,1) = floor(xp(l,1)/dx)
          ijkp(l,1)= i
 
 
-         ijkp(l,2) = floor(xp(l,2)/dy) 
-         
+c         ijkp(l,2) = floor(xp(l,2)/dy) 
+
+
+         j=0
+ 33      continue
+         j = j + 1
+         if (xp(l,2) .gt. qy(j)) go to 33 !find i on non-uniform 
+         j = j-1
+         ijkp(l,2)= j
+        
          k=0
  30      continue
          k = k + 1

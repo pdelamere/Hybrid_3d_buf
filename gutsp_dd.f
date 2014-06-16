@@ -115,22 +115,49 @@ c     x                                  npart,ipart
                      vp(l,1) = up(i,j,k,1)
                      vp(l,2) = up(i,j,k,2)
                      vp(l,3) = up(i,j,k,3)
-                     xp(l,1) = qx(i) + (0.5-pad_ranf())*dx
-                     xp(l,2) = qy(j) + (0.5-pad_ranf())*dy
+                     xp(l,1) = qx(i) + (0.5-pad_ranf())*dx_grid(i)
+                     xp(l,2) = qy(j) + (0.5-pad_ranf())*dy_grid(j)
                      xp(l,3) = qz(k) + (0.5-pad_ranf())*dz_grid(k)
                      
-                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-                     ijkp(l,2) = floor(xp(l,2)/dy)
+                     ii=0
+ 16                  continue
+                     ii = ii + 1
+                     if (xp(l,1) .gt. qx(ii)) go to 16 !find i on non-uniform 
+                     ii = ii-1
+                     ijkp(l,1)= ii
                      
-                     kk=1
-                     do 100 while(xp(l,3) .gt. qz(kk)) !find k on non-uniform 
-                        ijkp(l,3) = kk !grid
-                        kk=kk+1
- 100                 continue
-                     kk=ijkp(l,3)
-                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-                        ijkp(l,3) = kk+1
-                     endif
+                     
+                     jj=0
+ 18                  continue
+                     jj = jj + 1
+                     if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
+                     jj = jj-1
+                     ijkp(l,2)= jj
+                     
+c     j = floor(xp(l,2)/dy) 
+c     ijkp(l,2) = j
+                     
+                     kk=0
+ 15                  continue
+                     kk = kk + 1
+                     if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
+                     kk = kk-1
+                     ijkp(l,3)= kk
+
+
+
+c                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
+c                     ijkp(l,2) = floor(xp(l,2)/dy)
+                     
+c                     kk=1
+c                     do 100 while(xp(l,3) .gt. qz(kk)) !find k on non-uniform 
+c                        ijkp(l,3) = kk !grid
+c                        kk=kk+1
+c 100                 continue
+c                     kk=ijkp(l,3)
+c                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
+c                        ijkp(l,3) = kk+1
+c                     endif
 
 
                      mrat(l) = 1.0
@@ -2032,8 +2059,15 @@ c         ijkp(l,1) = i
          ijkp(l,1)= i
 
 
-         j = floor(xp(l,2)/dy) 
-         ijkp(l,2) = j
+         j=0
+ 18      continue
+         j = j + 1
+         if (xp(l,2) .gt. qy(j)) go to 18 !find j on non-uniform 
+         j = j-1
+         ijkp(l,2)= j
+
+c         j = floor(xp(l,2)/dy) 
+c         ijkp(l,2) = j
 
          k=0
  15      continue

@@ -227,10 +227,32 @@ c      parameter (eoverm = q/mO)
 
       do 10 l=1,Ni_tot_buf
 
-c         i = floor(xp_buf(l,1)/dx)
-         j = floor(xp_buf(l,2)/dy)
-         k = floor(xp_buf(l,3)/delz)
+cc         i = floor(xp_buf(l,1)/dx)
+c         j = floor(xp_buf(l,2)/dy)
+c         k = floor(xp_buf(l,3)/delz)
          
+c         i=0
+c 31      continue
+c         i = i + 1
+c         if (xp(l,1) .gt. qx(i)) go to 31 !find i on non-uniform 
+c         i = i-1
+c         ijkp(l,1)= i
+
+         j=0
+ 33      continue
+         j = j + 1
+         if (xp_buf(l,2) .gt. qy(j)) go to 33 !find i on non-uniform 
+         j = j-1
+         ijkp(l,2)= j
+        
+         k=0
+ 31      continue
+         k = k + 1
+         if (xp_buf(l,3) .gt. qz(k)) go to 31 !find k on non-uniform 
+         k = k-1
+         ijkp(l,3)= k
+         
+
 c         up3(1) = -vsw
 c         up3(2) = 0.0
 c         up3(3) = 0.0
@@ -426,13 +448,27 @@ c     x                              in_bounds_buf(1:Ni_tot_buf))
       enddo
 
 
-      ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
-     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
-c      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
-      ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
-     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
+c      ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
+c     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
+cc      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
+c      ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
+c     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
 
       do l = Ni_tot+1,Ni_tot+Ni_out 
+
+         ii=0
+ 51      continue
+         ii = ii + 1
+         if (xp(l,1) .gt. qx(ii)) go to 51 !find i on non-uniform 
+         ii = ii-1
+         ijkp(l,1)= ii
+
+         jj=0
+ 53      continue
+         jj = jj + 1
+         if (xp(l,2) .gt. qy(jj)) go to 53 !find i on non-uniform 
+         jj = jj-1
+         ijkp(l,2)= jj
 
          kk=0
  50      continue
@@ -695,13 +731,28 @@ c     x                              in_bounds_buf(1:Ni_tot_out_buf))
          vp1(Ni_tot+1:Ni_tot+Ni_out,m) = out_vp(:,m)
       enddo
 
-      ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
-     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
-c      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
-      ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
-     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
+c      ijkp(Ni_tot+1:Ni_tot+Ni_out,1) = 
+c     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,1)/dx)
+cc      wquad(Ni_tot+1:Ni_tot+Ni_out,1) = -1.0
+c      ijkp(Ni_tot+1:Ni_tot+Ni_out,2) = 
+c     x          floor(xp(Ni_tot+1:Ni_tot+Ni_out,2)/dy)
 
       do l = Ni_tot+1,Ni_tot+Ni_out 
+
+         ii=0
+ 51      continue
+         ii = ii + 1
+         if (xp(l,1) .gt. qx(ii)) go to 51 !find i on non-uniform 
+         ii = ii-1
+         ijkp(l,1)= ii
+
+         jj=0
+ 53      continue
+         jj = jj + 1
+         if (xp(l,2) .gt. qy(jj)) go to 53 !find i on non-uniform 
+         jj = jj-1
+         ijkp(l,2)= jj
+
 
          kk=0
  50      continue

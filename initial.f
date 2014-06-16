@@ -238,16 +238,53 @@ c      include 'incurv.h'
       integer nrgrd
 
       real zplus,zminus,xplus, xminus, yplus, yminus
-      real zsf,xsf
+      real zsf,xsf,ysf
 
       rk=(nz/2)! - 35
       rj=ny/2
       ri=nx/2
 
-      do 20 j=1,ny
-         qy(j) = j*dy
+
+c==============stretch y direction=====================================
+               
+      ysf = 1.0
+      rj = ny/2
+      nrgrd = 10
+c up from center
+      do 42 j = rj,rj+nrgrd
          dy_grid(j) = dy
- 20            continue
+ 42   continue
+      do 44 j = rj+nrgrd+1,ny
+         dy_grid(j) = dy +
+     x     ysf*dy*(j-(rj+nrgrd+1))/(ny-(rj+nrgrd+1)) 
+ 44   continue
+
+c down from center
+      do 46 j = rj-nrgrd,rj-1
+         dy_grid(j) = dy
+ 46      continue
+      do 47 j = 1,rj-nrgrd-1
+         ind = rj-nrgrd-j
+         dy_grid(ind) = dy + 
+     x     ysf*dy*(rj-nrgrd-1-ind)/(rj-nrgrd-1)
+ 47   continue
+
+      qy(1) = dy
+      do 48 j=2,ny
+         qy(j) = qy(j-1)+dy_grid(j)
+ 48   continue
+
+      do 49 j = 1,ny-1
+         dy_grid(j) = qy(j+1)-qy(j)
+ 49   continue
+      dy_grid(ny) = dy_grid(ny-1)
+c======================================================================
+
+
+c      do 20 j=1,ny
+c         qy(j) = j*dy
+c         dy_grid(j) = dy
+c 20            continue
 
 c      do 10 i=1,nx
 c         qx(i) = i*dx
