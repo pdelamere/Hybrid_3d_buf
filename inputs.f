@@ -78,7 +78,7 @@ c electron ion collision frequency
 c density scaling parameter, alpha, and ion particle array dims
        
       real*8 alpha, beta_pu  
-      PARAMETER (beta_pu = 0.4)
+      PARAMETER (beta_pu = 1.0)
 
 
       real Qo, vrad, N_o, RIo, tau_photo, k_rec 
@@ -89,7 +89,7 @@ c      PARAMETER (N_o = 5e34)   !Steady state neutral particle constant
       PARAMETER (N_o = 1e33)   !Steady state neutral particle constant
       PARAMETER (RIo = 1200.0)  !Io radius
       PARAMETER (tau_photo = 1.2e9)
-      PARAMETER (k_rec = 1e-6/1e15) !km^3 s^-1
+      PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
       PARAMETER (S_radius = 50) !units of dx
 
@@ -115,11 +115,10 @@ c domain decompostion parameters
 
 c solar wind composition
       real f_mq_2,b_mq_2,f_shl,b_shl
-      PARAMETER (f_mq_2 = 0.1)
-      PARAMETER (b_mq_2 = 2.0) 
-      PARAMETER (f_shl = 0.1)
+      PARAMETER (b_mq_2 = 2.0)
+      PARAMETER (f_mq_2 = 0.1/b_mq_2) 
       PARAMETER (b_shl = 2.0)
-
+      PARAMETER (f_shl = 0.0/b_shl)
 
       CONTAINS
 

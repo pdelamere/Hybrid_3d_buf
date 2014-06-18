@@ -89,7 +89,7 @@ c      include 'incurv.h'
 
       den_part = 1/(beta*dx**3)
 
-      minden = nf_init/5.
+      minden = nf_init/10.
 c      minden = 2.0*den_part
       do i = 2,nx-1
          do j = 2,ny-1
@@ -105,10 +105,11 @@ c               deltat = 0.1*dx/phi
 c               if (deltat .le. dtsub) then
 c                  write(*,*) 'Time stepping error...'
 c               endif
-               if ((np(i,j,k)) .le. minden) then
+               if ((np(i,j,k) .le. minden) .or. 
+     x              (np(i,j,k) .le. 2.0*den_part)) then
                   npart = nint(minden/(np(i,j,k)))
                   do ipart = 1,npart 
-c                     write(*,*) 'np...',np(i,j,k),min_den,den_part,
+c                     write(*,*) 'min den...',np(i,j,k),min_den,den_part,
 c     x                                  npart,ipart
                      l=Ni_tot + 1 !beginning array element for new borns    
                   
@@ -2093,8 +2094,13 @@ c         vol = 1.0/(dx*dy*(qz(k+1)-qz(k)))
          wght(l,7) = x2*y1*z1*vol
          wght(l,8) = x1*y1*z1*vol
 
+         wght(l,:) = wght(l,:)/beta_p(l)  !scale for non equal particle weights
+c         if (beta_p(l) .ne. 1.0) then
+c            write(*,*) 'beta_p....',beta_p(l)
+c         endif
 
  10   continue
+
 
       return
       end SUBROUTINE get_interp_weights
