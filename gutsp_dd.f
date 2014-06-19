@@ -195,7 +195,7 @@ c         wquad(1:Ni_tot,3) = -1.0
       Ni_out = count(.not.in_bounds(1:Ni_tot))
       allocate(out_part(Ni_out,3))
       allocate(out_ijkp(Ni_out,3))
-      allocate(out_part_wght(Ni_out,9))
+      allocate(out_part_wght(Ni_out,8))
       allocate(out_mass(Ni_out))
       allocate(out_beta_p(Ni_out))
       allocate(vsqrd_out(Ni_out))
@@ -214,7 +214,7 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
 
       allocate(in_part(Ni_in,3))
       allocate(in_ijkp(Ni_in,3))
-      allocate(in_part_wght(Ni_in,9))
+      allocate(in_part_wght(Ni_in,8))
       allocate(in_mass(Ni_in))
 
       do m = 1,3
@@ -299,16 +299,16 @@ c      call MPI_WAITALL(2, reqs, stats, ierr)
       
 c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
-      do m = 1,9
+      do m = 1,8
          out_part_wght(1:Ni_out,m) = 
      x          pack(wght(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
          wght(1:Ni_tot_in,m) = 
      x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call MPI_ISEND(out_part_wght, 9*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part_wght, 9*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -796,7 +796,7 @@ c         wquad(1:Ni_tot_in,m) = pack(wquad(1:Ni_tot,m),
 c     x        in_bounds(1:Ni_tot))
       enddo
       
-      do m = 1,9
+      do m = 1,8
          wght(1:Ni_tot_in,m) = pack(wght(1:Ni_tot,m),
      x        in_bounds(1:Ni_tot))
       enddo
@@ -891,7 +891,7 @@ c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
          out_B(l,:) = Bt(out_ijkp(l,1),out_ijkp(l,2),out_ijkp(l,3),:)
       enddo
       
-      do m = 1,9
+      do m = 1,8
          wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
       
@@ -1152,7 +1152,7 @@ c        ijkp(1:Ni_tot_in,m)=pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
 c      enddo
 
-c      do m = 1,9
+c      do m = 1,8
 c        wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      enddo
 
@@ -1235,7 +1235,7 @@ c      write(*,*) 'Ni_out up...',Ni_out, my_rank
 
       allocate(out_part(Ni_out,3))
       allocate(out_ijkp(Ni_out,3))
-      allocate(out_part_wght(Ni_out,9))
+      allocate(out_part_wght(Ni_out,8))
       allocate(out_mass(Ni_out))
       allocate(vsqrd_out(Ni_out))
       allocate(out_beta_p(Ni_out))
@@ -1259,7 +1259,7 @@ c      call MPI_WAITALL(2, reqs, stats, ierr)
       
       allocate(in_part(Ni_in,3))
       allocate(in_ijkp(Ni_in,3))
-      allocate(in_part_wght(Ni_in,9))
+      allocate(in_part_wght(Ni_in,8))
       allocate(in_mass(Ni_in))
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -1387,7 +1387,7 @@ cc     x     cartcomm, stat, ierr)
       
 c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
-      do m = 1,9
+      do m = 1,8
          out_part_wght(1:Ni_out,m) = 
      x          pack(wght(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
          wght(1:Ni_tot_in,m) = 
@@ -1395,18 +1395,18 @@ c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
       enddo
 
 
-      call MPI_ISEND(out_part_wght, 9*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part_wght, 9*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      call MPI_SEND(out_part_wght, 9*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_SEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
 c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part_wght, 9*Ni_in, MPI_REAL, source, tag,
+c      call MPI_RECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
 c     x     cartcomm, stat, ierr)
       
       
@@ -1532,7 +1532,7 @@ c         wquad(1:Ni_tot,3) = -1.0
 
       allocate(out_part(Ni_out,3))
       allocate(out_ijkp(Ni_out,3))
-      allocate(out_part_wght(Ni_out,9))
+      allocate(out_part_wght(Ni_out,8))
       allocate(out_mass(Ni_out))
       allocate(vsqrd_out(Ni_out))
       allocate(out_beta_p(Ni_out))
@@ -1555,7 +1555,7 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
 
       allocate(in_part(Ni_in,3))
       allocate(in_ijkp(Ni_in,3))
-      allocate(in_part_wght(Ni_in,9))
+      allocate(in_part_wght(Ni_in,8))
       allocate(in_mass(Ni_in))
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -1642,16 +1642,16 @@ c      call MPI_WAITALL(2, reqs, stats, ierr)
       
 c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
-      do m = 1,9
+      do m = 1,8
          out_part_wght(1:Ni_out,m) = 
      x          pack(wght(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
          wght(1:Ni_tot_in,m) = 
      x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call MPI_ISEND(out_part_wght, 9*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part_wght, 9*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
