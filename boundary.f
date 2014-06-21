@@ -855,7 +855,7 @@ c      cz = qz(rk)                !by zero.  That is to avoid
       y0 = dy/2
       z0 = dz_grid(nz/2)/2
       
-      cx = qx(nx/2+20) + x0
+      cx = qx(nx/2+ri0) + x0
       cy = qy(ny/2) + y0
 c      cz = qz(rk/2) + io_proc*qz(nz) + z0 !defines second proc from bottom
       cz = qz(1) + io_proc*qz(nz-1) + z0 !defines second proc from bottom

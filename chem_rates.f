@@ -920,7 +920,7 @@ c                  endif
 
       
 c      write(*,*) 'total new ions....',my_rank,cnt,Ni_tot         
-      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+c      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
 c      stop
 

@@ -45,7 +45,7 @@ c     x     etemp(nx,ny,nz),
       integer count
       count = 1
 
-      mO_q = mO/q
+      mO_q = mion/q
 
       Euf = 0.0
       EB1 = 0.0
@@ -53,7 +53,10 @@ c     x     etemp(nx,ny,nz),
       EB1y = 0.0
       EB1z = 0.0
       EE = 0.0
-      EeP = 0.0                
+      EeP = 0.0
+
+      write(*,*) 'Max E Ediag...',maxval(E(:,:,:,:))
+
       do 10 i=1,nx-1
 c         j = 2
          do 10 j=1,ny-1
@@ -66,8 +69,10 @@ c               EeP = EeP + kboltz*etemp(i,j,k)
                do 10 m=1,3
                   denf = np(i,j,k)/(km_to_m**3)
                   Euf = Euf + 0.5*mO*denf*vol*(up(i,j,k,m)*km_to_m)**2
+c                  EB1 = EB1 + 
+c     x              (vol/(2.0*mu0))*(mO_q*(b1(i,j,k,m)-b0(i,j,k,m)))**2
                   EB1 = EB1 + 
-     x              (vol/(2.0*mu0))*(mO_q*(b1(i,j,k,m)-b0(i,j,k,m)))**2
+     x              (vol/(2.0*mu0))*(mO_q*b1(i,j,k,m))**2
                   EE = EE + (epsilon*vol/2.0)*
      x                      (mO_q*E(i,j,k,m)*km_to_m)**2
  10               continue
@@ -111,10 +116,10 @@ c      write(*,*) 'recvbuf...',recvbuf,Evp
 
 c      write(*,*) 'Input energy (J).............',S_input_E
 cc      write(*,*) 'Input EeP energy (J).........',input_EeP
-c      write(*,*) 'Total vp energy (J)..........',S_Evp
+      write(*,*) 'Total vp energy (J)..........',S_Evp
 c      write(*,*) 'Total up energy (J)..........',Euf
-c      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
-c      write(*,*) 'Total E energy (J)...........',EE/S_input_E
+      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
+      write(*,*) 'Total E energy (J)...........',EE/S_input_E
 cc      write(*,*) 'Total EeP energy (J).........',EeP
 c      write(*,*) 'Total energy (J).............',total_E
 cc      write(*,*) 'Total energy w/ eP (J).......',total_E+EeP

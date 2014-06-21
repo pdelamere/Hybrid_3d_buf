@@ -81,7 +81,7 @@ c density scaling parameter, alpha, and ion particle array dims
       PARAMETER (beta_pu = 1.0)
 
 
-      real Qo, vrad, N_o, RIo, tau_photo, k_rec 
+      real Qo, vrad, N_o, RIo, tau_photo, k_rec, ri0
       integer S_radius
 	   PARAMETER (Qo = 2e27)  !neutral source rate
       PARAMETER (vrad = 0.1)   !escape velocity
@@ -92,6 +92,7 @@ c      PARAMETER (N_o = 5e34)   !Steady state neutral particle constant
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
       PARAMETER (S_radius = 50) !units of dx
+      PARAMETER (ri0 = 10) !offset to neutral center
 
 c domain decompostion parameters
 

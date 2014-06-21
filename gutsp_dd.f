@@ -816,8 +816,7 @@ c     x     in_bounds(1:Ni_tot))
       beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), 
      x     in_bounds(1:Ni_tot))
       
-      
-      
+            
       do m = 1,3
          xp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_xp(:,m)
          vp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_vp(:,m)
@@ -849,6 +848,8 @@ c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
       
+
+
       
       in_bounds(1:Ni_tot) = .true.
       in_bounds(Ni_tot+1:) = .false.
@@ -871,6 +872,7 @@ c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
       
+
       do m = 1,3 
          out_xp(1:Ni_out,m) = pack(xp(1:Ni_tot,m), 
      x        .not.in_bounds(1:Ni_tot))
@@ -885,12 +887,14 @@ c      allocate(out_m_arr(Ni_out))
          ijkp(1:Ni_tot_in,m)=pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
       enddo
+
       
       do l = 1,Ni_out 
          out_E(l,:) = E(out_ijkp(l,1),out_ijkp(l,2),out_ijkp(l,3),:)
          out_B(l,:) = Bt(out_ijkp(l,1),out_ijkp(l,2),out_ijkp(l,3),:)
       enddo
-      
+
+
       do m = 1,8
          wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
@@ -902,6 +906,9 @@ c     x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       
+      write(*,*) 'Max E 3.2...',maxval(E(:,:,:,:)),Ni_out      
+      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
       do m = 1,3
          xp_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out,m) = 
      x        out_xp(1:Ni_out,m)
@@ -911,9 +918,10 @@ c     x     .not.in_bounds(1:Ni_tot))
      x        out_E(1:Ni_out,m)
          B_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out,m) = 
      x        out_B(1:Ni_out,m)
-         
       enddo
       
+      write(*,*) 'Max E 3.3..',maxval(E(:,:,:,:)),maxval(E_out_buf(:,:))      
+
 c      m_arr_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
 c     x     out_m_arr(:)
       
@@ -924,8 +932,7 @@ c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
       mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
       
-      
-      
+            
 c     remove energy
       
       do l = Ni_tot_in+1,Ni_tot  
@@ -945,6 +952,7 @@ c         write(*,*) 'Error....out buf too small...',Ni_tot_out_buf,
 c     x        Ni_max_buf
 c      endif
       
+
       deallocate(out_xp)
       deallocate(out_vp)
       deallocate(out_E)
@@ -955,6 +963,7 @@ c      deallocate(out_m_arr)
       deallocate(out_beta_p)
       
       Ni_tot = count(in_bounds)
+
          
       return
       end SUBROUTINE exchange_ion_half
