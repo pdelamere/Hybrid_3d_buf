@@ -2,11 +2,11 @@
 
 c simulation domain dimensions
 
-      PARAMETER (nx = 121/2, ny = 69/2, nz = 21/2)
+      PARAMETER (nx = 121, ny = 69, nz = 21)
 c particle array dimensions
 
       integer*4 Ni_max, Ni_max_buf
-      PARAMETER (Ni_max = 6000000)
-      PARAMETER (Ni_max_buf = Ni_max/6)
+      PARAMETER (Ni_max = 8000000)
+      PARAMETER (Ni_max_buf = Ni_max/10)
 
       END MODULE DIMENSIONS

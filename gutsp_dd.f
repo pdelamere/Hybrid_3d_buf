@@ -848,8 +848,6 @@ c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
       
-
-
       
       in_bounds(1:Ni_tot) = .true.
       in_bounds(Ni_tot+1:) = .false.
@@ -906,7 +904,6 @@ c     x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       
-      write(*,*) 'Max E 3.2...',maxval(E(:,:,:,:)),Ni_out      
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
       do m = 1,3
@@ -920,7 +917,6 @@ c     x     .not.in_bounds(1:Ni_tot))
      x        out_B(1:Ni_out,m)
       enddo
       
-      write(*,*) 'Max E 3.3..',maxval(E(:,:,:,:)),maxval(E_out_buf(:,:))      
 
 c      m_arr_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
 c     x     out_m_arr(:)

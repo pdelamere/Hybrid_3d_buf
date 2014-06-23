@@ -55,7 +55,6 @@ c     x     etemp(nx,ny,nz),
       EE = 0.0
       EeP = 0.0
 
-      write(*,*) 'Max E Ediag...',maxval(E(:,:,:,:))
 
       do 10 i=1,nx-1
 c         j = 2
@@ -109,17 +108,18 @@ c      write(*,*) 'recvbuf...',recvbuf,Evp
 
       S_bndry_Eflux = recvbuf
 
-      total_E = S_Evp+EE+EB1
+c      total_E = S_Evp+EE+EB1
+      total_E = S_Evp+EB1
       aveEvp = S_Evp/S_input_E
       
       if (my_rank .eq. 0) then
 
 c      write(*,*) 'Input energy (J).............',S_input_E
 cc      write(*,*) 'Input EeP energy (J).........',input_EeP
-      write(*,*) 'Total vp energy (J)..........',S_Evp
+c      write(*,*) 'Total vp energy (J)..........',S_Evp
 c      write(*,*) 'Total up energy (J)..........',Euf
-      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
-      write(*,*) 'Total E energy (J)...........',EE/S_input_E
+c      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
+c      write(*,*) 'Total E energy (J)...........',EE/S_input_E
 cc      write(*,*) 'Total EeP energy (J).........',EeP
 c      write(*,*) 'Total energy (J).............',total_E
 cc      write(*,*) 'Total energy w/ eP (J).......',total_E+EeP

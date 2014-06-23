@@ -70,7 +70,7 @@ c     x     ui(nx,ny,nz,3),    !total ion flow velocity
      x     nu(nx,ny,nz),      !collision frequency
 c     x     nuin(nx,ny,nz),    !ion-neutral collision frequency
      x     Ep(Ni_max,3),      !Ion particle electric field
-     x     Efld(nx,ny,nz,3),    !fluid electric field
+c     x     Ef(nx,ny,nz,3),    !fluid electric field
      x     E(nx,ny,nz,3)     !electric field from electron mom eqn
 c     x     uplus(nx,ny,nz,3), !u plus used in velocity update
 c     x     uminus(nx,ny,nz,3),!u minus used in velocity update
@@ -597,14 +597,11 @@ c======================================================================
 
          !Calculate neutral density
 
-         write(*,*) 'Max E 1...',maxval(E(:,:,:,:))
-                
-
 
          !Ionize cloud and calculate ion density
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
          call separate_np(np_2,mr)
-         if (Ni_tot .lt. 0.5*Ni_max) then
+         if (Ni_tot .lt. 0.9*Ni_max) then
 c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
             mr = 1.0/m_pu
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
@@ -775,7 +772,6 @@ c         write(192) surf_tot, graduu_tot, ugradu_tot
  2     continue
 c**********************************************************************
 
-         write(*,*) 'Max E 2...',maxval(E(:,:,:,:))
 
          call move_ion_half(xp,vp,vp1,input_p,Ep)
 
@@ -785,22 +781,10 @@ c         call part_setup_buf(xp_buf,vp_buf)
          call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf)
          
-         do i = 1,nx
-            do j = 1,ny
-               do k = 1,nz
-                  do mm = 1,3
-                     
-                     Efld(i,j,k,mm) = E(i,j,k,mm)
-                  enddo
-               enddo
-            enddo
-         enddo
 
-         call exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,Efld,Bt,
+         call exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
      x                      xp_out_buf,vp_out_buf,E_out_buf,
      x                      B_out_buf,mrat_out_buf)
-
-         write(*,*) 'Max E 5...',maxval(E(:,:,:,:))
 
          call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 
