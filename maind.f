@@ -287,7 +287,9 @@ c     x                         np_b_flg)
      x        B_out_buf,mrat_out_buf,b0)
                   
          call get_ndot(ndot)
-         
+         call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
+         call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
+
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
 

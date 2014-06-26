@@ -207,9 +207,9 @@ c----------------------------------------------------------------
       f_proton_top = 0.5       !fraction relative to top
       b0_top = 1.0*b0_init
       b0_bottom = b0_init
-      vth_top = 30.00
-      vth_bottom = 30.00
-      vth_max = 3*30.0
+      vth_top = vth
+      vth_bottom = vth
+      vth_max = 3*vth
       m_top = mion
       m_bottom = mion
       Lo = 4.0*dx             !gradient scale length of boundary

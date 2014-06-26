@@ -827,16 +827,26 @@ c      m_arr_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_m_arr(:)
       beta_p_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_beta_p(:)
       
 c     remove energy
-      
-      do l = Ni_tot_in+1,Ni_tot  
+
+      do l = 1,Ni_out  
          do m=1,3
             input_E = input_E - 
-     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x               (beta*beta_p(l))
-            input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
-     x                    (beta*beta_p(l))
+     x           0.5*(mion/out_mrat(l))*(out_vp(l,m)*km_to_m)**2 /
+     x           (beta*out_beta_p(l))
+c     input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
+c     x                    (beta*beta_p(l))
          enddo         
       enddo
+
+c      do l = Ni_tot_in+1,Ni_tot  
+c         do m=1,3
+c            input_E = input_E - 
+c     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+c     x               (beta*beta_p(l))
+c            input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
+c     x                    (beta*beta_p(l))
+c         enddo         
+c      enddo
       
       Ni_tot_buf = Ni_tot_buf + Ni_out
       Ni_tot = count(in_bounds)
@@ -930,16 +940,26 @@ c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
       
             
 c     remove energy
-      
-      do l = Ni_tot_in+1,Ni_tot  
+
+      do l = 1,Ni_out  
          do m=1,3
             input_E = input_E - 
-     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x           (beta*beta_p(l))
-            input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
-     x                   (beta*beta_p(l))
+     x           0.5*(mion/out_mrat(l))*(out_vp(l,m)*km_to_m)**2 /
+     x           (beta*out_beta_p(l))
+c     input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
+c     x                    (beta*beta_p(l))
          enddo         
       enddo
+      
+c      do l = Ni_tot_in+1,Ni_tot  
+c         do m=1,3
+c            input_E = input_E - 
+c     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+c     x           (beta*beta_p(l))
+c            input_p(m) = input_p(m) - (mion/mrat(l))*vp(l,m) / 
+c     x                   (beta*beta_p(l))
+c         enddo         
+c      enddo
       
       Ni_tot_out_buf = Ni_tot_out_buf + Ni_out
 
@@ -2099,7 +2119,7 @@ c         vol = 1.0/(dx*dy*(qz(k+1)-qz(k)))
          wght(l,7) = x2*y1*z1*vol
          wght(l,8) = x1*y1*z1*vol
 
-         wght(l,:) = wght(l,:)/beta_p(l)  !scale for non equal particle weights
+c         wght(l,:) = wght(l,:)/beta_p(l)  !scale for non equal particle weights
 c         if (beta_p(l) .ne. 1.0) then
 c            write(*,*) 'beta_p....',beta_p(l)
 c         endif
@@ -2164,7 +2184,7 @@ c      real sumnp,vol
 
 c         volb = dx*dy*(qz(k+1)-qz(k))*beta
 c         volb = dx*dy*dz_cell(k)*beta
-         volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta)
+         volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta*beta_p(l))
 
          np(i,j,k) = np(i,j,k) + wght(l,1)*volb
          np(ip,j,k) = np(ip,j,k) + wght(l,2)*volb
@@ -2259,7 +2279,7 @@ c      include 'incurv.h'
             jp = j+1
             kp = k+1
             
-            volb = dx*dy*dz_cell(k)*beta
+            volb = dx*dy*dz_cell(k)*beta*beta_p(l)
             
             np(i,j,k) = np(i,j,k) + wght(l,1)/volb
             np(ip,j,k) = np(ip,j,k) + wght(l,2)/volb
@@ -2361,67 +2381,67 @@ c         endif
 c         nvolb = 1.0
 c         if (np(i,j,k) .gt. 0.0) then
 c         nvolb = np(i,j,k)*volb
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)
-         ct(i,j,k,1) = ct(i,j,k,1) + vp(l,1)*wght(l,1) 
-         ct(i,j,k,2) = ct(i,j,k,2) + vp(l,2)*wght(l,1) 
-         ct(i,j,k,3) = ct(i,j,k,3) + vp(l,3)*wght(l,1) 
+         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
+         ct(i,j,k,1) = ct(i,j,k,1) + vp(l,1)*wght(l,1)/beta_p(l) 
+         ct(i,j,k,2) = ct(i,j,k,2) + vp(l,2)*wght(l,1)/beta_p(l) 
+         ct(i,j,k,3) = ct(i,j,k,3) + vp(l,3)*wght(l,1)/beta_p(l) 
          
 c         endif
 
 c         if (np(ip,j,k) .gt. 0.0) then
 c         nvolb = np(ip,j,k)*volb
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)
-         ct(ip,j,k,1) = ct(ip,j,k,1) + vp(l,1)*wght(l,2) 
-         ct(ip,j,k,2) = ct(ip,j,k,2) + vp(l,2)*wght(l,2) 
-         ct(ip,j,k,3) = ct(ip,j,k,3) + vp(l,3)*wght(l,2) 
+         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)
+         ct(ip,j,k,1) = ct(ip,j,k,1) + vp(l,1)*wght(l,2)/beta_p(l) 
+         ct(ip,j,k,2) = ct(ip,j,k,2) + vp(l,2)*wght(l,2)/beta_p(l)
+         ct(ip,j,k,3) = ct(ip,j,k,3) + vp(l,3)*wght(l,2)/beta_p(l) 
 c         endif
 
 c         if (np(i,j,kp) .gt. 0.0) then
 c         nvolb = np(i,j,kp)*volb
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + vp(l,1)*wght(l,3) 
-         ct(i,j,kp,2) = ct(i,j,kp,2) + vp(l,2)*wght(l,3) 
-         ct(i,j,kp,3) = ct(i,j,kp,3) + vp(l,3)*wght(l,3) 
+         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
+         ct(i,j,kp,1) = ct(i,j,kp,1) + vp(l,1)*wght(l,3)/beta_p(l) 
+         ct(i,j,kp,2) = ct(i,j,kp,2) + vp(l,2)*wght(l,3)/beta_p(l) 
+         ct(i,j,kp,3) = ct(i,j,kp,3) + vp(l,3)*wght(l,3)/beta_p(l) 
 c         endif
 
 c         if (np(ip,j,kp) .gt. 0.0) then
 c         nvolb = np(ip,j,kp)*volb
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4) 
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + vp(l,1)*wght(l,4) 
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + vp(l,2)*wght(l,4) 
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + vp(l,3)*wght(l,4) 
+         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l) 
+         ct(ip,j,kp,1) = ct(ip,j,kp,1) + vp(l,1)*wght(l,4)/beta_p(l) 
+         ct(ip,j,kp,2) = ct(ip,j,kp,2) + vp(l,2)*wght(l,4)/beta_p(l) 
+         ct(ip,j,kp,3) = ct(ip,j,kp,3) + vp(l,3)*wght(l,4)/beta_p(l) 
 c         endif
 
 c         if (np(i,jp,k) .gt. 0.0) then
 c         nvolb = np(i,jp,k)*volb
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + vp(l,1)*wght(l,5) 
-         ct(i,jp,k,2) = ct(i,jp,k,2) + vp(l,2)*wght(l,5) 
-         ct(i,jp,k,3) = ct(i,jp,k,3) + vp(l,3)*wght(l,5) 
+         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
+         ct(i,jp,k,1) = ct(i,jp,k,1) + vp(l,1)*wght(l,5)/beta_p(l) 
+         ct(i,jp,k,2) = ct(i,jp,k,2) + vp(l,2)*wght(l,5)/beta_p(l) 
+         ct(i,jp,k,3) = ct(i,jp,k,3) + vp(l,3)*wght(l,5)/beta_p(l) 
 c         endif
 
 c         if (np(ip,jp,k) .gt. 0.0) then
 c         nvolb = np(ip,jp,k)*volb
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + vp(l,1)*wght(l,6) 
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + vp(l,2)*wght(l,6) 
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + vp(l,3)*wght(l,6) 
+         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
+         ct(ip,jp,k,1) = ct(ip,jp,k,1) + vp(l,1)*wght(l,6)/beta_p(l) 
+         ct(ip,jp,k,2) = ct(ip,jp,k,2) + vp(l,2)*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,3) = ct(ip,jp,k,3) + vp(l,3)*wght(l,6)/beta_p(l) 
 c         endif
 
 c         if (np(i,jp,kp) .gt. 0.0) then
 c         nvolb = np(i,jp,kp)*volb
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + vp(l,1)*wght(l,7) 
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + vp(l,2)*wght(l,7) 
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + vp(l,3)*wght(l,7) 
+         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
+         ct(i,jp,kp,1) = ct(i,jp,kp,1) + vp(l,1)*wght(l,7)/beta_p(l) 
+         ct(i,jp,kp,2) = ct(i,jp,kp,2) + vp(l,2)*wght(l,7)/beta_p(l) 
+         ct(i,jp,kp,3) = ct(i,jp,kp,3) + vp(l,3)*wght(l,7)/beta_p(l) 
 c         endif
 
 c         if (np(ip,jp,kp) .gt. 0.0) then
 c         nvolb = np(ip,jp,kp)*volb
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + vp(l,1)*wght(l,8) 
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + vp(l,2)*wght(l,8) 
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + vp(l,3)*wght(l,8) 
+         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + vp(l,1)*wght(l,8)/beta_p(l) 
+         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + vp(l,2)*wght(l,8)/beta_p(l) 
+         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + vp(l,3)*wght(l,8)/beta_p(l) 
 c         endif
 
  20   continue
@@ -2651,66 +2671,66 @@ c         volb = dx*dy*dz_cell(k)*beta
       
 c         if (np(i,j,k) .gt. 1e15) then
 c         nvolb = np(i,j,k)*volb
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)
-         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)**2*wght(l,1)
-         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)**2*wght(l,1)
-         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)**2*wght(l,1)
+         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
+         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)**2*wght(l,1)/beta_p(l)
+         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)**2*wght(l,1)/beta_p(l)
+         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)**2*wght(l,1)/beta_p(l)
 c         endif
 
 c         if (np(ip,j,k) .gt. 1e15) then
 c         nvolb = np(ip,j,k)*volb
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)         
-         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)**2*wght(l,2)
-         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)**2*wght(l,2)
-         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)**2*wght(l,2)
+         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)         
+         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)**2*wght(l,2)/beta_p(l)
+         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)**2*wght(l,2)/beta_p(l)
+         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)**2*wght(l,2)/beta_p(l)
 c         endif
 
 c         if (np(i,j,kp) .gt. 1e15) then
 c         nvolb = np(i,j,kp)*volb
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)**2*wght(l,3)
-         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)**2*wght(l,3)
-         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)**2*wght(l,3)
+         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
+         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)**2*wght(l,3)/beta_p(l)
+         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)**2*wght(l,3)/beta_p(l)
+         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)**2*wght(l,3)/beta_p(l)
 c         endif
 
 c        if (np(ip,j,kp) .gt. 1e15) then
 c         nvolb = np(ip,j,kp)*volb
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)**2*wght(l,4)
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)**2*wght(l,4)
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)**2*wght(l,4)
+         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l)
+         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)**2*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)**2*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)**2*wght(l,4)/beta_p(l)
 c         endif
 
 c         if (np(i,jp,k) .gt. 1e15) then
 c         nvolb = np(i,jp,k)*volb
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)**2*wght(l,5)
-         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)**2*wght(l,5)
-         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)**2*wght(l,5)
+         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
+         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)**2*wght(l,5)/beta_p(l)
+         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)**2*wght(l,5)/beta_p(l)
+         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)**2*wght(l,5)/beta_p(l)
 c         endif
 
 c         if (np(ip,jp,k) .gt. 1e15) then
 c         nvolb = np(ip,jp,k)*volb
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)**2*wght(l,6)
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)**2*wght(l,6)
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)**2*wght(l,6)
+         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
+         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)**2*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)**2*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)**2*wght(l,6)/beta_p(l)
 c        endif
 
 c         if (np(i,jp,kp) .gt. 1e15) then
 c         nvolb = np(i,jp,kp)*volb
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)**2*wght(l,7)
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)**2*wght(l,7)
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)**2*wght(l,7)
+         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
+         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)**2*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)**2*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)**2*wght(l,7)/beta_p(l)
 c         endif
 
 c         if (np(ip,jp,kp) .gt. 1e15) then
 c         nvolb = np(ip,jp,kp)*volb
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)**2*wght(l,8)
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)**2*wght(l,8)
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)**2*wght(l,8)
+         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,1) = ct(ip,jp,kp,1)+mvp(l,1)**2*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,2) = ct(ip,jp,kp,2)+mvp(l,2)**2*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,3) = ct(ip,jp,kp,3)+mvp(l,3)**2*wght(l,8)/beta_p(l)
 c         endif
 
 
@@ -2795,66 +2815,66 @@ c         volb = dx*dy*dz_cell(k)*beta
       
 c         if (np(i,j,k) .gt. 1e15) then
 c         nvolb = np(i,j,k)*volb
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)
-         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)*wght(l,1)
-         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)*wght(l,1)
-         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)*wght(l,1)
+         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
+         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)*wght(l,1)/beta_p(l)
+         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)*wght(l,1)/beta_p(l)
+         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)*wght(l,1)/beta_p(l)
 c         endif
 
 c         if (np(ip,j,k) .gt. 1e15) then
 c         nvolb = np(ip,j,k)*volb
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)
-         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)*wght(l,2)
-         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)*wght(l,2)
-         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)*wght(l,2)
+         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)
+         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)*wght(l,2)/beta_p(l)
+         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)*wght(l,2)/beta_p(l)
+         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)*wght(l,2)/beta_p(l)
 c         endif
 
 c         if (np(i,j,kp) .gt. 1e15) then
 c         nvolb = np(i,j,kp)*volb
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)*wght(l,3)
-         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)*wght(l,3)
-         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)*wght(l,3)
+         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
+         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)*wght(l,3)/beta_p(l)
+         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)*wght(l,3)/beta_p(l)
+         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)*wght(l,3)/beta_p(l)
 c         endif
 
 c         if (np(ip,j,kp) .gt. 1e15) then
 c         nvolb = np(ip,j,kp)*volb
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)*wght(l,4)
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)*wght(l,4)
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)*wght(l,4)
+         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l)
+         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)*wght(l,4)/beta_p(l)
 c         endif
 
 c         if (np(i,jp,k) .gt. 1e15) then
 c         nvolb = np(i,jp,k)*volb
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)*wght(l,5)
-         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)*wght(l,5)
-         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)*wght(l,5)
+         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
+         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)*wght(l,5)/beta_p(l)
+         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)*wght(l,5)/beta_p(l)
+         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)*wght(l,5)/beta_p(l)
 c         endif
 
 c         if (np(ip,jp,k) .gt. 1e15) then
 c         nvolb = np(ip,jp,k)*volb
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)*wght(l,6)
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)*wght(l,6)
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)*wght(l,6)
+         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
+         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)*wght(l,6)/beta_p(l)
 c         endif
 
 c         if (np(i,jp,kp) .gt. 1e15) then
 c         nvolb = np(i,jp,kp)*volb
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)*wght(l,7)
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)*wght(l,7)
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)*wght(l,7)
+         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
+         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)*wght(l,7)/beta_p(l)
 c         endif
 
 c         if (np(ip,jp,kp) .gt. 1e15) then
 c         nvolb = np(ip,jp,kp)*volb
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)*wght(l,8)
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)*wght(l,8)
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)*wght(l,8)
+         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)*wght(l,8)/beta_p(l)
 c         endif
 
 
