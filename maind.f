@@ -614,8 +614,9 @@ c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
 
          call get_interp_weights(xp)
          call update_np(np)             !np at n+1/2
-         call update_up(vp,np,up)       !up at n+1/2
          call update_np_boundary(np)
+         call update_up(vp,np,up)       !up at n+1/2
+
 
          !energy diagnostics
          
@@ -664,6 +665,7 @@ c         call part_setup_buf(xp_buf,vp_buf)
 
          call get_interp_weights(xp)
          call update_np(np)             !np at n+1/2
+         call update_np_boundary(np)
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
          if (ndiag .eq. nout) then         
@@ -677,7 +679,7 @@ c            call separate_temp(vp,temp_p_1,mr)
 c            mr = 1.0/m_pu
 c            call separate_temp(vp,temp_p_2,mr)
          endif
-         call update_np_boundary(np)
+
 
          
 c**********************************************************************

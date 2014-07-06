@@ -47,12 +47,12 @@ c     y direction
             
 c     z direction
             
-      do 30 i=1,nx
-         do 30 j=1,ny
-            do 30 m=1,3
-               b(i,j,1,m) = b(i,j,nz-1,m)
-               b(i,j,nz,m) = b(i,j,2,m)
- 30   continue
+c      do 30 i=1,nx
+c         do 30 j=1,ny
+c            do 30 m=1,3
+c               b(i,j,1,m) = b(i,j,nz-1,m)
+c               b(i,j,nz,m) = b(i,j,2,m)
+c 30   continue
             
                         
       out_buf_z(:,:,:) = b(:,:,nz-1,:)         
@@ -628,12 +628,12 @@ c             do 20 m=1,3
  20          continue
 
 c z surfaces
-       do 30 i=1,nx
-          do 30 j=1,ny
-c             do 30 m=1,3
-                b(i,j,1) = b(i,j,nz-1)      !tangential
-                b(i,j,nz) = b(i,j,2)
- 30          continue
+c       do 30 i=1,nx
+c          do 30 j=1,ny
+cc             do 30 m=1,3
+c                b(i,j,1) = b(i,j,nz-1)      !tangential
+c                b(i,j,nz) = b(i,j,2)
+c 30          continue
 
       out_buf_z(:,:) = b(:,:,nz-1)         
 
