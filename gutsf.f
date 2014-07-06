@@ -1400,7 +1400,7 @@ c     x                 2.0*dtsub*curl_E(i,j,k,m)
 c      call boundaries(b1p2)
 c      call damp(b1p2)
       call periodic(b1p2)
-      call obstacle_boundary_B(b0,b1p2)
+c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
 
       return
@@ -1598,7 +1598,7 @@ c     x                 dtsub*curl_E(i,j,k,m)
 c      call boundaries(b1p2)
 c      call damp(b1p2)
       call periodic(b1p2)
-      call obstacle_boundary_B(b0,b1p2)
+c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
 
       return
@@ -2165,6 +2165,61 @@ c      write(*,*) 'Normalized z momentum...',(pup(3)+puf(3))/input_p(3)
 c----------------------------------------------------------------------
 
 
+c----------------------------------------------------------------      
+      SUBROUTINE check_time_step(bt,np)
+c----------------------------------------------------------------      
+      
+      real bt(nx,ny,nz,3)
+      real np(nx,ny,nz)
+
+      do i = 1,nx
+         do j = 1,ny
+            do k = 1,nz
+               ak = 2./dx
+               btot = sqrt(bt(i,j,k,1)**2 + bt(i,j,k,2)**2 + 
+     x              bt(i,j,k,3)**2)
+               a1 = ak**2*Btot/(alpha*(np(i,j,k)))
+               a2 = (ak*Btot)**2/(alpha*(np(i,j,k)))
+               womega = 0.5*(a1 + sqrt(a1**2 + 4*a2))
+               phi = womega/ak
+               deltat = dx/phi
+               if(deltat .le. 2.0*dtsub) then 
+                  write(*,*) 'time stepping error...',i,j,k
+                  dtsub = dtsub/2.0
+                  ntf = ntf*2.0
+c     if (mindt .gt. deltat) then
+c     deltat = mindt
+c     write(*,*) 'mindt...',mindt
+c     endif
+c     do while (2.0*dtsub .gt. deltat)
+c     dtsub = dtsub/2.0
+c     ntf = ntf*2.0
+c     write(*,*) 'Changing subcycle time step...',dtsub,deltat,ntf
+c     enddo
+               endif
+               
+c     if(deltat .gt. 2.0*dtsub) then 
+c     write(*,*) 'time stepping error...'
+c     dtsub = 2.0*dtsub
+c     ntf = ntf/2.0
+c     write(*,*) 'subcycle time steps...',ntf,dtsub/dt
+c     endif
+            enddo
+         enddo
+      enddo
+
+      if (ntf .gt. 100) then 
+         ntf = 100
+      endif
+      
+      write(*,*) 'subcycle time steps...',ntf,dtsub
+      
+
+      return
+      end subroutine check_time_step
+c----------------------------------------------------------------      
+
+      
 
 
       end MODULE gutsf

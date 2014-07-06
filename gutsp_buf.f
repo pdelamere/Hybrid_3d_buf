@@ -779,6 +779,7 @@ c         endif
 
 c      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
       mrat(Ni_tot+1:Ni_tot+Ni_out) = out_mrat(:)
+      beta_p(Ni_tot+1:Ni_tot+Ni_out) = 1.0 !need particle history still
 
       do l = Ni_tot+1,Ni_tot+Ni_out 
          do m=1,3

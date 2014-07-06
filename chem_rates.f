@@ -98,6 +98,7 @@ c               input_p(m) = input_p(m) - m_arr(l)*vp(l,m)/beta
             vp1(l,:) = 0.0
 c            m_arr(l) = m_pu*mproton
             mrat(l) = 1./m_pu
+            beta_p(l) = beta_pu
 c            write(*,*) 'chex...',l,chex_prob
          endif
 

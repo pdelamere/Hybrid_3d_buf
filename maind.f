@@ -133,6 +133,9 @@ c      real divu(nx,ny,nz)
       
       integer seedsize
       integer, dimension(:), allocatable :: seeder
+
+      real recvbuf
+      integer count
       
       character(3) filenum(129) !max 16 processors                                                                      
 
@@ -603,7 +606,7 @@ c======================================================================
          !Ionize cloud and calculate ion density
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
          call separate_np(np_2,mr)
-         if (Ni_tot .lt. 0.9*Ni_max) then
+         if (Ni_tot .lt. 0.8*Ni_max) then
 c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
             mr = 1.0/m_pu
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
@@ -654,8 +657,8 @@ c         call part_setup_buf(xp_buf,vp_buf)
      x                  xp_out_buf,vp_out_buf,E_out_buf,
      x                  B_out_buf,mrat_out_buf)
          call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
-c         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-c     x        B_out_buf,mrat_out_buf,m_arr_out_buf,xp,vp,vp1)
+         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
+     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 
          call part_setup_buf(xp_buf,vp_buf)
 
@@ -683,36 +686,20 @@ c**********************************************************************
 
          dtsub = dtsub_init
          ntf = ntsub
-         mindt = dtsub_init/50.
-c check time step
-c         write(*,*) 'checking time step...',ntf
-c         do i = 1,nx
-c            do j = 1,ny
-c               do k = 1,nz
-c                  ak = 2./dx
-c                  btot = sqrt(bt(i,j,k,1)**2 + bt(i,j,k,2)**2 + 
-c     x                 bt(i,j,k,3)**2)
-c                  a1 = ak**2*Btot/(alpha*(np(i,j,k)))
-c                  a2 = (ak*Btot)**2/(alpha*(np(i,j,k)))
-c                  womega = 0.5*(a1 + sqrt(a1**2 + 4*a2))
-c                  phi = womega/ak
-c                  deltat = dx/phi
-c                  if(deltat .le. 2.0*dtsub) then 
-c           write(*,*) 'time stepping error...',deltat,np(i,j,k),btot
-cc                     if (mindt .gt. deltat) then
-cc                        deltat = mindt
-cc                        write(*,*) 'mindt...',mindt
-cc                     endif
-cc                     do while (2.0*dtsub .gt. deltat)
-cc                        dtsub = dtsub/2.0
-cc                        ntf = ntf*2.0
-cc      write(*,*) 'Changing subcycle time step...',dtsub,deltat,ntf
-cc                     enddo
-c                  endif
-c               enddo
-c            enddo
-c         enddo
+call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
          
+         call check_time_step(bt,np)
+
+         count = 1
+
+         call MPI_ALLREDUCE(ntf,recvbuf,count,
+     x        MPI_REAL,MPI_MAX,MPI_COMM_WORLD,ierr)
+
+         write(*,*) 'nft max...',recvbuf
+         ntf = recvbuf
+
+         call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       do 2 n = 1, ntf
 
@@ -790,15 +777,17 @@ c         call part_setup_buf(xp_buf,vp_buf)
 
          call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 
-c         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-c     x        B_out_buf,mrat_out_buf,m_arr_out_buf,xp,vp,vp1)
+         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
+     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 
 c         call check_min_den_boundary(np,xp,vp,up)
 
          call check_min_den(np,xp,vp,vp1,up,bt)
 
-c         if (m .lt. 10) then
+         if (Ni_tot .lt. 0.8*Ni_max) then
             call res_chex(xp,vp,vp1)
+         endif
+
 c         endif
 
 c         write(*,*) 'Momentum conservation...'

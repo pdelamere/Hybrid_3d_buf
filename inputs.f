@@ -78,7 +78,7 @@ c electron ion collision frequency
 c density scaling parameter, alpha, and ion particle array dims
        
       real*8 alpha, beta_pu  
-      PARAMETER (beta_pu = 1.0)
+      PARAMETER (beta_pu = 0.5)
 
 
       real Qo, vrad, N_o, RIo, tau_photo, k_rec, ri0
