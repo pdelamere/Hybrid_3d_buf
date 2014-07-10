@@ -606,7 +606,7 @@ c======================================================================
          !Ionize cloud and calculate ion density
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
          call separate_np(np_2,mr)
-         if (Ni_tot .lt. 0.8*Ni_max) then
+         if (Ni_tot .lt. 0.9*Ni_max) then
 c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
             mr = 1.0/m_pu
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
@@ -614,9 +614,8 @@ c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
 
          call get_interp_weights(xp)
          call update_np(np)             !np at n+1/2
-         call update_np_boundary(np)
          call update_up(vp,np,up)       !up at n+1/2
-
+         call update_np_boundary(np)
 
          !energy diagnostics
          
@@ -665,7 +664,6 @@ c         call part_setup_buf(xp_buf,vp_buf)
 
          call get_interp_weights(xp)
          call update_np(np)             !np at n+1/2
-         call update_np_boundary(np)
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
          if (ndiag .eq. nout) then         
@@ -679,6 +677,7 @@ c            call separate_temp(vp,temp_p_1,mr)
 c            mr = 1.0/m_pu
 c            call separate_temp(vp,temp_p_2,mr)
          endif
+         call update_np_boundary(np)
 
 
          
@@ -782,11 +781,12 @@ c         call part_setup_buf(xp_buf,vp_buf)
          call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 
+         call part_setup_buf(xp_buf,vp_buf)
 c         call check_min_den_boundary(np,xp,vp,up)
 
          call check_min_den(np,xp,vp,vp1,up,bt)
 
-         if (Ni_tot .lt. 0.8*Ni_max) then
+         if (Ni_tot .lt. 0.9*Ni_max) then
             call res_chex(xp,vp,vp1)
          endif
 

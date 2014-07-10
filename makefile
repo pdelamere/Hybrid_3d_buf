@@ -9,7 +9,7 @@ hybrid:	$(OBJECTS)
 	$(F77) -o hybrid $(OBJECTS) 
 
 clean:
-	rm *.o hybrid 
+	rm *.o *.mod hybrid 
 
 maind.o:maind.f $(INCLUDE);$(F77) -c maind.f
 gutsf.o:gutsf.f $(INCLUDE);$(F77) -c gutsf.f

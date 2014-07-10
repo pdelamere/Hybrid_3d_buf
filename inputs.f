@@ -92,7 +92,7 @@ c      PARAMETER (N_o = 5e34)   !Steady state neutral particle constant
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
       PARAMETER (S_radius = 50) !units of dx
-      PARAMETER (ri0 = 10) !offset to neutral center
+      PARAMETER (ri0 = 20) !offset to neutral center
 
 c domain decompostion parameters
 
@@ -180,7 +180,7 @@ c----------------------------------------------------------------
 
       print*, 'dx....',dx
 
-      dx_buf = 15*dx
+      dx_buf = 11*dx
 
 
       dt = dt_frac*mion/(q*b0_init)     !main time step

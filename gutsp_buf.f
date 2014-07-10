@@ -578,79 +578,79 @@ c      stop
 
 c add protons
 
-      do l = Ni_tot_buf+1,Ni_tot_buf+dNi_sw
+c      do l = Ni_tot_buf+1,Ni_tot_buf+dNi_sw
 
-            xp_buf(l,1) = (qx(nx)+dx_buf) - 10*pad_ranf()*vsw*dt/2 
-            xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-            xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+c            xp_buf(l,1) = (qx(nx)+dx_buf) - 10*pad_ranf()*vsw*dt/2 
+c            xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+c            xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
 
-            vth = 0.5*(vth_top + vth_bottom) + 
-     x      0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
+c            vth = 0.5*(vth_top + vth_bottom) + 
+c     x      0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
 
-            call maxwl_init(vth,vx,vy,vz)
+c            call maxwl_init(vth,vx,vy,vz)
             
-            vp_buf(l,1) = -vsw + vx
-            vp_buf(l,2) = vy
-            vp_buf(l,3) = vz
+c            vp_buf(l,1) = -vsw + vx
+c            vp_buf(l,2) = vy
+c            vp_buf(l,3) = vz
             
-c            m_arr_buf(l) = mproton
-            mrat_buf(l) = 1.0
-            beta_p_buf(l) = 1.0
-      enddo
+cc            m_arr_buf(l) = mproton
+c            mrat_buf(l) = 1.0
+c            beta_p_buf(l) = 1.0
+c      enddo
 
-      Ni_tot_buf = Ni_tot_buf + dNi_sw
+c      Ni_tot_buf = Ni_tot_buf + dNi_sw
 
 
-c add He ++
+cc add He ++
 
-      Ni_tot_buf_1 = Ni_tot_buf
-      Ni_tot_buf = Ni_tot_buf_1 + f_mq_2*dNi_sw
+c      Ni_tot_buf_1 = Ni_tot_buf
+c      Ni_tot_buf = Ni_tot_buf_1 + f_mq_2*dNi_sw
+c      
+c      do l = Ni_tot_buf_1+1,Ni_tot_buf
+
+c            xp_buf(l,1) = (qx(nx)+dx_buf) - 10*pad_ranf()*vsw*dt/2 
+c            xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+c            xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+
+c            vth = 0.5*(vth_top + vth_bottom) + 
+c     x      0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
+            
+c            call maxwl_init(vth,vx,vy,vz)
+
+c            vp_buf(l,1) = -vsw + vx
+c            vp_buf(l,2) = vy
+c            vp_buf(l,3) = vz
+c            
+cc            m_arr_buf(l) = 2.0*mproton
+c            mrat_buf(l) = 1.0/2.0
+c            beta_p_buf(l) = b_mp_2
+
+c      enddo
+
+cc add shell distribution
+
+c      Ni_tot_buf_1 = Ni_tot_buf 
       
-      do l = Ni_tot_buf_1+1,Ni_tot_buf
-
-            xp_buf(l,1) = (qx(nx)+dx_buf) - 10*pad_ranf()*vsw*dt/2 
-            xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-            xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-
-            vth = 0.5*(vth_top + vth_bottom) + 
-     x      0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
-            
-            call maxwl_init(vth,vx,vy,vz)
-
-            vp_buf(l,1) = -vsw + vx
-            vp_buf(l,2) = vy
-            vp_buf(l,3) = vz
-            
-c            m_arr_buf(l) = 2.0*mproton
-            mrat_buf(l) = 1.0/2.0
-            beta_p_buf(l) = b_mp_2
-
-      enddo
-
-c add shell distribution
-
-      Ni_tot_buf_1 = Ni_tot_buf 
+c      Ni_tot_buf = Ni_tot_buf_1 + f_shl*dNi_sw
       
-      Ni_tot_buf = Ni_tot_buf_1 + f_shl*dNi_sw
-      
-      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
+c      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
          
-         xp_buf(l,1) = (qx(nx)+dx_buf) - 10*pad_ranf()*vsw*dt/2 
-         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-         xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+c         xp_buf(l,1) = (qx(nx)+dx_buf) - 10*pad_ranf()*vsw*dt/2 
+c         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+c         xp_buf(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          
-c         m_arr_buf(l) = mproton
-         mrat_buf(l) = 1.0
-         beta_p_buf(l) = b_shl
+cc         m_arr_buf(l) = mproton
+c         mrat_buf(l) = 1.0
+c         beta_p_buf(l) = b_shl
          
-         theta = pad_ranf()*PI
-         phi = pad_ranf()*2*PI
+c         theta = pad_ranf()*PI
+c         phi = pad_ranf()*2*PI
          
-         vp_buf(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
-         vp_buf(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
-         vp_buf(l,3) = vsw*cos(theta)
+c         vp_buf(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
+c         vp_buf(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
+c         vp_buf(l,3) = vsw*cos(theta)
          
- 69   enddo
+c 69   enddo
 
 
 

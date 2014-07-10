@@ -3225,34 +3225,34 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 c----------------------------------------------------------------------
       
 
-c----------------------------------------------------------------------
-      SUBROUTINE get_np3(np,np3)
-c----------------------------------------------------------------------
+cc----------------------------------------------------------------------
+c      SUBROUTINE get_np3(np,np3)
+cc----------------------------------------------------------------------
 
-      include 'incurv.h'
-      real np(nx,ny,nz)
-c      real nf(nx,ny,nz)
-      real np3(nx,ny,nz,3)
+c      include 'incurv.h'
+c      real np(nx,ny,nz)
+cc      real nf(nx,ny,nz)
+c      real np3(nx,ny,nz,3)
 
-      real nfp(nx,ny,nz)
+c      real nfp(nx,ny,nz)
 
-      nfp = np
+c      nfp = np
 
-      do i = 2,nx-1
-         do j = 2,ny-1
-            do k = 2,nz-1
-               np3(i,j,k,1) = 0.5*(nfp(i,j,k)+nfp(i+1,j,k))
-               np3(i,j,k,2) = 0.5*(nfp(i,j,k)+nfp(i,j+1,k))
-               np3(i,j,k,3) = 0.5*(nfp(i,j,k)+nfp(i,j,k+1))
-            enddo
-         enddo
-      enddo
+c      do i = 2,nx-1
+c         do j = 2,ny-1
+c            do k = 2,nz-1
+c               np3(i,j,k,1) = 0.5*(nfp(i,j,k)+nfp(i+1,j,k))
+c               np3(i,j,k,2) = 0.5*(nfp(i,j,k)+nfp(i,j+1,k))
+c               np3(i,j,k,3) = 0.5*(nfp(i,j,k)+nfp(i,j,k+1))
+c            enddo
+c         enddo
+c      enddo
 
-      call periodic(np3)
+c      call periodic(np3)
 
-      return
-      end SUBROUTINE get_np3
-c----------------------------------------------------------------------
+c      return
+c      end SUBROUTINE get_np3
+cc----------------------------------------------------------------------
 
 
       end MODULE gutsp_dd
