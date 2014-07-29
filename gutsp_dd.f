@@ -1224,7 +1224,7 @@ c         xp(:,2) = qy(ny) - (qy(1) - xp(:,2))
 c      endwhere
 
 
-      where (xp(:,2) .ge. qy(ny-1))
+      where (xp(:,2) .gt. qy(ny-1))
 c         ijkp(:,2) = 1
 c         wquad(:,2) = 0
          xp(:,2) = qy(1) + ( xp(:,2) - qy(ny-1) )
@@ -2095,7 +2095,7 @@ c         ijkp(l,1) = i
 c         j = floor(xp(l,2)/dy) 
 c         ijkp(l,2) = j
 
-         k=0
+         k=2
  15      continue
          k = k + 1
          if (xp(l,3) .gt. qz(k)) go to 15  !find k on non-uniform 

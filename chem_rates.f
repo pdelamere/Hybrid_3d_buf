@@ -757,7 +757,7 @@ c                        ijkp(l,2) = floor(xp(l,2)/dy)
                         jj = jj-1
                         ijkp(l,2)= jj
 
-                        kk=0
+                        kk=2
  15                     continue
                         kk = kk + 1
                         if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
@@ -820,7 +820,7 @@ c                        ijkp(l,2) = floor(xp(l,2)/dy)
                         jj = jj-1
                         ijkp(l,2)= jj                     
 
-                        kk=0
+                        kk=2
  16                     continue
                         kk = kk + 1
                         if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 

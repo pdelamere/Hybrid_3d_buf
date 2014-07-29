@@ -1,4 +1,4 @@
-0.2e-9               !magnetic field (Tesla)
+0.1e-9               !magnetic field (Tesla)
 1                    !atomic mass for reference species
 28                    !mass of pickup ion species
 0.01e15               !density (km^-3)
@@ -8,6 +8,6 @@
 340.0                   !flow speed (km/s) 
 19.3                  !thermal speed for Maxwellian (km/s)
 0.4                   !Ni_tot initial (fraction of Ni_max)
-0.8                   !grid size as fraction of lambda_i
+2.0                   !grid size as fraction of lambda_i
 0.02 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 '/Volumes/Scratch/hybrid/Pluto/run_test/'             !output directory 
