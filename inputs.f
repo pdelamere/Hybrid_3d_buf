@@ -78,7 +78,7 @@ c electron ion collision frequency
 c density scaling parameter, alpha, and ion particle array dims
        
       real*8 alpha, beta_pu  
-      PARAMETER (beta_pu = 0.5)
+      PARAMETER (beta_pu = 0.05)
 
 
       real Qo, vrad, N_o, RIo, tau_photo, k_rec, ri0
@@ -119,7 +119,7 @@ c solar wind composition
       PARAMETER (b_mq_2 = 2.0)
       PARAMETER (f_mq_2 = 0.1/b_mq_2) 
       PARAMETER (b_shl = 2.0)
-      PARAMETER (f_shl = 0.0/b_shl)
+      PARAMETER (f_shl = 0.1/b_shl)
 
       CONTAINS
 

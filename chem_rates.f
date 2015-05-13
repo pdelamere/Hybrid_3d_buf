@@ -42,9 +42,9 @@ c     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
       neutral_density = neutral_density*1e9 !km^-3
 
 
-      if (neutral_density .ge. 1e22) then 
-         neutral_density = 1e22
-      endif
+c      if (neutral_density .ge. 1e22) then 
+c         neutral_density = 1e22
+c      endif
 
 c      write(*,*) 'nden...',neutral_density
 
@@ -98,7 +98,8 @@ c               input_p(m) = input_p(m) - m_arr(l)*vp(l,m)/beta
             vp1(l,:) = 0.0
 c            m_arr(l) = m_pu*mproton
             mrat(l) = 1./m_pu
-            beta_p(l) = beta_pu
+c            beta_p(l) = beta_pu
+            beta_p(l) = 1.0
 c            write(*,*) 'chex...',l,chex_prob
          endif
 
@@ -700,10 +701,12 @@ c     x              (gz(ijkp(l,3))-cz)**2) !use global coords
 
                !np = electron density, used for recombination
 
-               npmax = (-k_rec*np(i,j,k) + sqrt((k_rec*np(i,j,k))**2 + 
-     x              4*k_rec*neutral_density(r)/tau_photo))/(2*k_rec)
+c               npmax = (-k_rec*np(i,j,k) + sqrt((k_rec*np(i,j,k))**2 + 
+c     x              4*k_rec*neutral_density(r)/tau_photo))/(2*k_rec)
                
-                
+             
+               npmax = sqrt(neutral_density(r)/(tau_photo*k_rec))
+
 c               if ((np_2(i,j,k) .gt. npmax) .and.
 c     x            (np_2(i,j,k) .gt. 0.0)) then
 c                  write(*,*) 'limit ion production...',np_2(i,j,k),
