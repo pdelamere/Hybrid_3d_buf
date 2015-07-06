@@ -99,7 +99,7 @@ c domain decompostion parameters
       integer n_up,n_down,n_left,n_right, cart_dims,comm_sz
       integer io_proc
 
-      parameter(comm_sz = 12)
+      parameter(comm_sz = 24)
       parameter(io_proc = nint(comm_sz/2.))
       parameter(cart_dims = 2) !dimensions for virtual topology
       parameter(n_up=1)
