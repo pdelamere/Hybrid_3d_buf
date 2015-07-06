@@ -289,7 +289,7 @@ c     x                         np_b_flg)
          call part_setup_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf,b0)
                   
-         call get_ndot(ndot)
+c         call get_ndot(ndot)
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
          call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
 
@@ -622,7 +622,6 @@ c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
          call get_bndry_Eflux(b1,E)
          call Energy_diag(vp,b0,b1,E,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,
      x                    EeP,nu,up,np)
-         
 
          call curlB(b1,np,aj)
 c         call obstacle_boundary_B(b0,b1)
@@ -631,6 +630,7 @@ c         call cov_to_contra(bt,btmf)
 c         call face_to_center(btmf,btc)       !interp bt to cell center
          
          call edge_to_center(bt,btc)
+
 
          call extrapol_up(up,vp,vp1,np)
          call get_Ep(Ep,aj,np,up,btc,nu)
@@ -662,6 +662,7 @@ c     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 
          call part_setup_buf(xp_buf,vp_buf)
 
+
          call get_interp_weights(xp)
          call update_np(np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
@@ -678,7 +679,6 @@ c            mr = 1.0/m_pu
 c            call separate_temp(vp,temp_p_2,mr)
          endif
          call update_np_boundary(np)
-
 
          
 c**********************************************************************
@@ -697,7 +697,7 @@ call MPI_Barrier(MPI_COMM_WORLD,ierr)
          call MPI_ALLREDUCE(ntf,recvbuf,count,
      x        MPI_REAL,MPI_MAX,MPI_COMM_WORLD,ierr)
 
-         write(*,*) 'nft max...',recvbuf
+c         write(*,*) 'nft max...',recvbuf
          ntf = recvbuf
 
          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -786,9 +786,9 @@ c         call check_min_den_boundary(np,xp,vp,up)
 
          call check_min_den(np,xp,vp,vp1,up,bt)
 
-         if (Ni_tot .lt. 0.9*Ni_max) then
-            call res_chex(xp,vp,vp1)
-         endif
+c         if (Ni_tot .lt. 0.9*Ni_max) then
+c            call res_chex(xp,vp,vp1)
+c         endif
 
 c         endif
 

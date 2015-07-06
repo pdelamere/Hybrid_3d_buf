@@ -78,28 +78,28 @@ c electron ion collision frequency
 c density scaling parameter, alpha, and ion particle array dims
        
       real*8 alpha, beta_pu  
-      PARAMETER (beta_pu = 0.05)
+      PARAMETER (beta_pu = 0.1)
 
 
       real Qo, vrad, N_o, RIo, tau_photo, k_rec, ri0
       integer S_radius
-	   PARAMETER (Qo = 2e27)  !neutral source rate
-      PARAMETER (vrad = 0.1)   !escape velocity
+      PARAMETER (Qo = 3e27)     !neutral source rate
+      PARAMETER (vrad = 0.010)   !escape velocity
 c      PARAMETER (N_o = 5e34)   !Steady state neutral particle constant
       PARAMETER (N_o = 1e33)   !Steady state neutral particle constant
       PARAMETER (RIo = 1200.0)  !Io radius
-      PARAMETER (tau_photo = 1.2e9)
+      PARAMETER (tau_photo = 1.5e9)
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
-      PARAMETER (S_radius = 50) !units of dx
-      PARAMETER (ri0 = 20) !offset to neutral center
+      PARAMETER (S_radius = 200) !units of dx
+      PARAMETER (ri0 = -20) !offset to neutral center
 
 c domain decompostion parameters
 
       integer n_up,n_down,n_left,n_right, cart_dims,comm_sz
       integer io_proc
 
-      parameter(comm_sz = 10)
+      parameter(comm_sz = 12)
       parameter(io_proc = nint(comm_sz/2.))
       parameter(cart_dims = 2) !dimensions for virtual topology
       parameter(n_up=1)

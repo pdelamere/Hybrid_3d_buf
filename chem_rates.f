@@ -33,13 +33,13 @@ c      endif
 
 c Pluto isotropic escape
 
-c      neutral_density = Qo/(4*PI*r**2*vrad)
+      neutral_density = Qo/(4*PI*r**2*vrad)
 
 c Pluto Strobel Atm
 
-      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
-c     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
-      neutral_density = neutral_density*1e9 !km^-3
+c      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
+cc     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
+c      neutral_density = neutral_density*1e9 !km^-3
 
 
 c      if (neutral_density .ge. 1e22) then 
@@ -786,9 +786,9 @@ c                        m_arr(l) = mproton*m_pu
                            vp1(l,m) = vp(l,m)
                            input_E = input_E + 
      x                      0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x                          beta*beta_p(l)
+     x                          (beta*beta_p(l))
                     input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m)/
-     x                          beta*beta_p(l)
+     x                          (beta*beta_p(l))
                         enddo                     
 
                      enddo
@@ -849,9 +849,9 @@ c                        m_arr(l) = mproton*m_pu
                            vp1(l,m) = vp(l,m)
                            input_E = input_E + 
      x                          0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2/
-     x                          beta*beta_p(l)
+     x                          (beta*beta_p(l))
                            input_p(m)=input_p(m)+(mion/mrat(l))*vp(l,m)/
-     x                          beta*beta_p(l)
+     x                          (beta*beta_p(l))
                         enddo                     
                         
                         
