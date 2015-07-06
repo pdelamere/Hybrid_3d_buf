@@ -240,7 +240,7 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(vp, in_bounds)
+      call pack_pd(vp, in_bounds, 3)
 
       vsqrd_out(:) = out_part(:,1)**2 + 
      x               out_part(:,2)**2 + out_part(:,3)**2
@@ -261,7 +261,7 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(vp1, in_bounds)
+      call pack_pd(vp1, in_bounds, 3)
 
       call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -323,7 +323,7 @@ c         wght(1:Ni_tot_in,m) =
 c    x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_8(wght, in_bounds)
+      call pack_pd(wght, in_bounds, 8)
 
       call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -339,7 +339,7 @@ c    x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
      x     pack(beta_p(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      call pack_pd_1(beta_p, in_bounds)
+      call pack_pd(beta_p, in_bounds, 1)
       
       call MPI_ISEND(out_beta_p, Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -369,7 +369,7 @@ c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      call pack_pd_1(mrat, in_bounds)
+      call pack_pd(mrat, in_bounds, 1)
 
       ! remove energy of outgoing particles
       input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
@@ -818,9 +818,9 @@ cc         wquad(1:Ni_tot_in,m) = pack(wquad(1:Ni_tot,m),
 cc     x        in_bounds(1:Ni_tot))
       enddo
  
-      call pack_pd_3(xp, in_bounds)
-      call pack_pd_3(vp, in_bounds)
-      call pack_pd_3(vp1, in_bounds)      
+      call pack_pd(xp, in_bounds, 3)
+      call pack_pd(vp, in_bounds, 3)
+      call pack_pd(vp1, in_bounds, 3)      
 c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
@@ -837,7 +837,7 @@ c         wght(1:Ni_tot_in,m) = pack(wght(1:Ni_tot,m),
 c     x        in_bounds(1:Ni_tot))
 c      enddo
  
-      call pack_pd_8(wght, in_bounds)
+      call pack_pd(wght, in_bounds, 8)
       
 c      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
 c     x     .not.in_bounds(1:Ni_tot))
@@ -853,8 +853,8 @@ c     x     in_bounds(1:Ni_tot))
 c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), 
 c     x     in_bounds(1:Ni_tot))
       
-      call pack_pd_1(mrat, in_bounds)
-      call pack_pd_1(beta_p, in_bounds)
+      call pack_pd(mrat, in_bounds, 1)
+      call pack_pd(beta_p, in_bounds, 1)
             
       do m = 1,3
          xp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_xp(:,m)
@@ -935,9 +935,9 @@ c         ijkp(1:Ni_tot_in,m)=pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 cc        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(xp, in_bounds)
-      call pack_pd_3(vp, in_bounds)
-      call pack_pd_3(vp1, in_bounds)
+      call pack_pd(xp, in_bounds, 3)
+      call pack_pd(vp, in_bounds, 3)
+      call pack_pd(vp1, in_bounds, 3)
 c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
@@ -960,7 +960,7 @@ c      do m = 1,8
 c         wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      enddo
  
-      call pack_pd_8(wght, in_bounds)
+      call pack_pd(wght, in_bounds, 8)
      
 c      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
 c     x     .not.in_bounds(1:Ni_tot))
@@ -993,8 +993,8 @@ cc      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
 c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
 c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      call pack_pd_1(mrat, in_bounds)
-      call pack_pd_1(beta_p, in_bounds)
+      call pack_pd(mrat, in_bounds, 1)
+      call pack_pd(beta_p, in_bounds, 1)
             
 c     remove energy
 
@@ -1357,7 +1357,7 @@ c         write(*,*) 'finished out_part...',Ni_out,Ni_tot_in,Ni_tot
 c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(xp, in_bounds)
+      call pack_pd(xp, in_bounds, 3)
 c      write(*,*) 'finished xp pack...'
                 
 
@@ -1386,7 +1386,7 @@ c     x     cartcomm, stat, ierr)
 c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(vp, in_bounds)
+      call pack_pd(vp, in_bounds, 3)
 
       vsqrd_out(:) = out_part(:,1)**2 + 
      x               out_part(:,2)**2 + out_part(:,3)**2
@@ -1415,7 +1415,7 @@ c     x     cartcomm, stat, ierr)
 c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(vp1, in_bounds)
+      call pack_pd(vp1, in_bounds, 3)
 
       call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1502,7 +1502,7 @@ c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
 
-      call pack_pd_8(wght, in_bounds)
+      call pack_pd(wght, in_bounds, 8)
 
       call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1528,7 +1528,7 @@ c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
      x     pack(beta_p(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      call pack_pd_1(beta_p, in_bounds)
+      call pack_pd(beta_p, in_bounds, 1)
 
       call MPI_ISEND(out_beta_p, Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1560,7 +1560,7 @@ c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      call pack_pd_1(mrat, in_bounds)
+      call pack_pd(mrat, in_bounds, 1)
 
       ! remove energy of outgoing particles
       input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
@@ -1677,7 +1677,7 @@ c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(xp, in_bounds)
+      call pack_pd(xp, in_bounds, 3)
 
       call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1694,7 +1694,7 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(vp, in_bounds)
+      call pack_pd(vp, in_bounds, 3)
 
       vsqrd_out(:) = out_part(:,1)**2 + 
      x               out_part(:,2)**2 + out_part(:,3)**2
@@ -1715,7 +1715,7 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_3(vp1, in_bounds)
+      call pack_pd(vp1, in_bounds, 3)
 
       call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1777,7 +1777,7 @@ c         wght(1:Ni_tot_in,m) =
 c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-      call pack_pd_8(wght, in_bounds)
+      call pack_pd(wght, in_bounds, 8)
 
       call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1795,7 +1795,7 @@ c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
 
-      call pack_pd_1(beta_p, in_bounds)
+      call pack_pd(beta_p, in_bounds, 1)
 
       call MPI_ISEND(out_beta_p, Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1829,7 +1829,7 @@ c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
 
-      call pack_pd_1(mrat, in_bounds)
+      call pack_pd(mrat, in_bounds, 1)
 
       ! remove energy of outgoing particles
       input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
@@ -3356,71 +3356,6 @@ c----------------------------------------------------------------------
       end SUBROUTINE pack_pd
 c----------------------------------------------------------------------
 
-
-c----------------------------------------------------------------------
-      SUBROUTINE pack_pd_3(arr,larr)
-c replaces the f90 pack function
-c----------------------------------------------------------------------
-      
-      real arr(Ni_max,3)
-      logical larr(Ni_max)
-      integer*4 cnt
-
-      cnt = 1
-      do l = 1,Ni_tot
-        if (larr(l) .eq. .true.) then
-           arr(cnt,:) = arr(l,:)
-           cnt = cnt+1
-        endif
-      enddo
-
-      return
-      end SUBROUTINE pack_pd_3
-c----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE pack_pd_1(arr,larr)
-c replaces the f90 pack function
-c----------------------------------------------------------------------
-      
-      real arr(Ni_max)
-      logical larr(Ni_max)
-      integer*4 cnt
-
-      cnt = 1
-      do l = 1,Ni_tot
-        if (larr(l) .eq. .true.) then
-           arr(cnt) = arr(l)
-           cnt = cnt+1
-        endif
-      enddo
-
-      return
-      end SUBROUTINE pack_pd_1
-c----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE pack_pd_8(arr,larr)
-c replaces the f90 pack function
-c----------------------------------------------------------------------
-      
-      real arr(Ni_max,8)
-      logical larr(Ni_max)
-      integer*4 cnt
-
-      cnt = 1
-      do l = 1,Ni_tot
-        if (larr(l) .eq. .true.) then
-           arr(cnt,:) = arr(l,:)
-           cnt = cnt+1
-        endif
-      enddo
-
-      return
-      end SUBROUTINE pack_pd_8
-c----------------------------------------------------------------------
 
 cc----------------------------------------------------------------------
 c      SUBROUTINE get_np3(np,np3)
