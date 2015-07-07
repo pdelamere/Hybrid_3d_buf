@@ -211,7 +211,7 @@ c         endif
 c      enddo
 
       seed = t1 +my_rank*100
-      call random_initialize(seed)
+      call random_initialize()
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
 
       if (.not.(restart)) then
