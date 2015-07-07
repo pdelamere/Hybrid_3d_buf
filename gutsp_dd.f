@@ -283,7 +283,7 @@ c     call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
-        if (in_bounds(l) .eq. .true.) then
+        if (in_bounds(l)) then
            ijkp(cnt,:) = ijkp(l,:)
            cnt = cnt+1
         endif
@@ -825,7 +825,7 @@ c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
-        if (in_bounds(l) .eq. .true.) then
+        if (in_bounds(l)) then
            ijkp(cnt,:) = ijkp(l,:)
            cnt = cnt+1
         endif
@@ -942,7 +942,7 @@ c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
-        if (in_bounds(l) .eq. .true.) then
+        if (in_bounds(l)) then
            ijkp(cnt,:) = ijkp(l,:)
            cnt = cnt+1
         endif
@@ -1444,7 +1444,7 @@ c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
-        if (in_bounds(l) .eq. .true.) then
+        if (in_bounds(l)) then
            ijkp(cnt,:) = ijkp(l,:)
            cnt = cnt+1
         endif
@@ -1737,7 +1737,7 @@ c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
-        if (in_bounds(l) .eq. .true.) then
+        if (in_bounds(l)) then
            ijkp(cnt,:) = ijkp(l,:)
            cnt = cnt+1
         endif
@@ -3346,7 +3346,7 @@ c----------------------------------------------------------------------
 
       cnt = 1
       do l = 1,Ni_tot
-        if (larr(l) .eq. .true.) then
+        if (larr(l)) then
            arr(cnt,:) = arr(l,:)
            cnt = cnt+1
         endif
