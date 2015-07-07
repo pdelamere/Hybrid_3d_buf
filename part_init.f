@@ -335,9 +335,9 @@ c      include 'incurv.h'
       real rnd,f
 
 
-      vx = vthm*sqrt(-alog(pad_ranf()))*cos(PI*pad_ranf())
-      vy = vthm*sqrt(-alog(pad_ranf()))*cos(PI*pad_ranf())
-      vz = vthm*sqrt(-alog(pad_ranf()))*cos(PI*pad_ranf())
+      vx = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
+      vy = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
+      vz = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
 
 
 c      flg = 0
@@ -873,9 +873,9 @@ c         ijkp(l,2) = floor(xp(l,2)/dy)
          
 c         vth = vth_bottom
 
-         vx = vsw+vth*sqrt(-alog(pad_ranf()))*cos(PI*pad_ranf())
-         vy = vth*sqrt(-alog(pad_ranf()))*cos(PI*pad_ranf())
-         vz = vth*sqrt(-alog(pad_ranf()))*cos(PI*pad_ranf())
+         vx = vsw+vth*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
+         vy = vth*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
+         vz = vth*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
 
          ii = ijkp(l,1)
          kk = ijkp(l,3)
