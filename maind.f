@@ -137,21 +137,9 @@ c      real divu(nx,ny,nz)
       real recvbuf
       integer count
       
-      character(3) filenum(129) !max 16 processors                                                                      
+      character(3) filenum
 
-      filenum = (/'1 ','2 ','3 ','4 ','5 ','6 ','7 ','8 ','9 ',
-     x     '10','11','12','13','14','15','16','17','18','19',
-     x     '20','21','22','23','24','25','26','27','28','29',
-     x     '30','31','32','33','34','35','36','37','38','39',
-     x     '40','41','42','43','44','45','46','47','48','49',
-     x     '50','51','52','53','54','55','56','57','58','59',
-     x     '60','61','62','63','64','65','66','67','68','69',
-     x     '70','71','72','73','74','75','76','77','78','79',
-     x     '80','81','82','83','84','85','86','87','88','89',
-     x     '90','91','92','93','94','95','96','97','98','99',
-     x     '100','101','102','103','104','105','106','107','108','109',
-     x     '110','111','112','113','114','115','116','117','118','119',
-     x     '120','121','122','123','124','125','126','127','128','129'/)
+
 
 c----------------------------------------------------------------------
 
@@ -162,6 +150,10 @@ c      stop
 
       call MPI_INIT(ierr)
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
+
+      write(filenum,"(I3)") my_rank
+      filenum = adjustl(filenum)
+
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
 
 c create virtual topology (set dimensions in para.h)
@@ -219,7 +211,7 @@ c         endif
 c      enddo
 
       seed = t1 +my_rank*100
-      call random_initialize(seed)
+      call random_initialize()
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
 
       if (.not.(restart)) then
@@ -307,7 +299,7 @@ c----------------------------------------------------------------------
       write(*,*) 'restart status....',restart
       if (restart) then 
          write(*,*) 'opening restart.vars......'
-         open(210,file='restart.vars'//trim(filenum(my_rank)),
+         open(210,file='restart.vars'//filenum,
      x        status='unknown',
      x        form='unformatted')
          
@@ -330,7 +322,7 @@ c     x        m_arr_buf,mrat_buf
 c         write(*,*) 'restarting hybrid.....'
 
 c         if (my_rank .ge. 0) then 
-          open(211,file='restart.part'//trim(filenum(my_rank)),
+          open(211,file='restart.part'//filenum,
      x           status='unknown',form='unformatted')
           read(211) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
@@ -344,7 +336,7 @@ c         if (my_rank .ge. 0) then
 
 
 
-c          open(211,file='restart.part'//trim(filenum(my_rank)),
+c          open(211,file='restart.part'//filenum,
 c     x            status='unknown',form='unformatted')
 c          read(211)  b0,b1,b12,b1p2,bt,btmf,btc,np,np3,
 c     x         vp,vp1,vplus,vminus,
@@ -381,7 +373,7 @@ c     x            input_chex,input_bill,pf,pf1,mrat,m_arr
 c         write(*,*) 'restarting hybrid.....'
 
 c         if (my_rank .gt. 0) then 
-c          open(211,file='restart.part'//trim(filenum(my_rank)),
+c          open(211,file='restart.part'//filenum,
 c     x            status='unknown',form='unformatted')
 c          read(211) vp,vp1,vplus,vminus,xp,Ep,input_E,Ni_tot,
 c     x              ijkp,input_p,mrat,m_arr
@@ -432,138 +424,138 @@ c----------------------------------------------------------------------
 
 
       open(110,file=trim(out_dir)//
-     x     'c.np_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.np_'//filenum//'.dat',
      x     status='unknown',form='unformatted')
       open(111,file=trim(out_dir)//
-     x     'c.np_3d_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.np_3d_'//filenum//'.dat',
      x     status='unknown',form='unformatted')
 
       open(115,file=trim(out_dir)//
-     x     'c.np_3d_1_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.np_3d_1_'//filenum//'.dat',
      x     status='unknown',form='unformatted')
       open(116,file=trim(out_dir)//
-     x     'c.np_3d_2_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.np_3d_2_'//filenum//'.dat',
      x     status='unknown',form='unformatted')
 
 
 c      open(115,file=trim(out_dir)//
-c     x     'c.nf_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.nf_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 c      open(116,file=trim(out_dir)//
-c     x     'c.nf_3d_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.nf_3d_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
 c      open(120,file=trim(out_dir)//
-c     x     'c.uf_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.uf_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 c      open(121,file=trim(out_dir)//
-c     x     'c.uf_3d_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.uf_3d_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
       open(130,file=trim(out_dir)//
-     x     'c.b1_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.b1_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
       open(131,file=trim(out_dir)//
-     x     'c.b1_3d_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.b1_3d_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(140,file=trim(out_dir)//
-     x     'c.aj_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.aj_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(150,file=trim(out_dir)//
-     x     'c.E_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.E_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
 c      open(160,file=trim(out_dir)//
-c     x     'c.energy_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.energy_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
 c      open(170,file=trim(out_dir)//
-c     x     'c.chex_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.chex_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
 c      open(172,file=trim(out_dir)//
-c     x     'c.bill_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.bill_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
 c      open(175,file=trim(out_dir)//
-c     x     'c.satnp_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.satnp_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
       open(180,file=trim(out_dir)//
-     x     'c.up_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.up_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
       open(181,file=trim(out_dir)//
-     x     'c.up_3d_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.up_3d_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
 c      open(190,file=trim(out_dir)//
-c     x     'c.momentum_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.momentum_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
 c      open(192,file=trim(out_dir)//
-c     x     'c.p_conserve_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.p_conserve_'//filenum//'.dat',
 c     x     status='unknown',               
 c     x     form='unformatted')                 
 
       open(300,file=trim(out_dir)//
-     x     'c.temp_p_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.temp_p_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
       open(301,file=trim(out_dir)//
-     x     'c.temp_p_3d_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.temp_p_3d_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(305,file=trim(out_dir)//
-     x     'c.xp_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.xp_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(310,file=trim(out_dir)//
-     x     'c.vp_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.vp_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(315,file=trim(out_dir)//
-     x     'c.beta_p_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.beta_p_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(320,file=trim(out_dir)//
-     x     'c.mrat_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.mrat_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(320,file=trim(out_dir)//
-     x     'c.mrat_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.mrat_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
 
       open(330,file=trim(out_dir)//
-     x     'c.temp_p_3d_1_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.temp_p_3d_1_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
       open(331,file=trim(out_dir)//
-     x     'c.temp_p_3d_2_'//trim(filenum(my_rank+1))//'.dat',
+     x     'c.temp_p_3d_2_'//filenum//'.dat',
      x     status='unknown',
      x     form='unformatted')
 
@@ -579,11 +571,11 @@ c      open(340,file='c.eta.dat',status='unknown',
 c     x         form='unformatted')
 
 c      open(350,file=trim(out_dir)//
-c     x     'c.pf_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.pf_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 c      open(351,file=trim(out_dir)//
-c     x     'c.pf_3d_'//trim(filenum(my_rank+1))//'.dat',
+c     x     'c.pf_3d_'//filenum//'.dat',
 c     x     status='unknown',
 c     x     form='unformatted')
 
@@ -923,9 +915,9 @@ c         endif
          if (my_rank .ge. 0) then
          if (m .eq. mrestart) then
             write(*,*) 'writing restart file....',
-     x  'restart.part'//trim(filenum(my_rank))//'.new'
+     x  'restart.part'//filenum//'.new'
 
-          open(220,file='restart.vars'//trim(filenum(my_rank))//'.new',
+          open(220,file='restart.vars'//filenum//'.new',
      x           status='unknown',
      x           form='unformatted')
 
@@ -933,7 +925,7 @@ c         endif
      x         up,aj,nu,E,input_E,input_p,mrestart,input_EeP,prev_Etot,
      x         Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP
 
-          open(221,file='restart.part'//trim(filenum(my_rank))//'.new',
+          open(221,file='restart.part'//filenum//'.new',
      x           status='unknown',form='unformatted')
           write(221) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
