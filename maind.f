@@ -137,7 +137,8 @@ c      real divu(nx,ny,nz)
       real recvbuf
       integer count
       
-      character(3) filenum
+c      character filenum
+      character(len=:), allocatable::filenum(:)
 
 
 
@@ -151,8 +152,25 @@ c      stop
       call MPI_INIT(ierr)
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
 
-      write(filenum,"(I3)") my_rank
-      filenum = adjustl(filenum)
+      if ((my_rank + 1) .le. 9) then
+         allocate(character(1) :: filenum(1))
+         write(filenum, "(i1)") my_rank+1
+      endif
+      
+
+      if ((my_rank + 1) .gt. 9) then
+         allocate(character(2) :: filenum(1))
+         write(filenum, "(i2)") my_rank+1
+      endif
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+
+c      write(filenum,"(I2)") my_rank + 1
+c      filenum = adjustl(filenum)
+c      filenum = adjustr(adjustl(filenum))
+
+      write(*,*) 'filenum...',filenum,my_rank+1
 
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
 
@@ -282,8 +300,8 @@ c     x                         np_b_flg)
      x        B_out_buf,mrat_out_buf,b0)
                   
 c         call get_ndot(ndot)
-         call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
-         call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
+c         call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
+c         call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
 
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
@@ -622,7 +640,6 @@ c         call cov_to_contra(bt,btmf)
 c         call face_to_center(btmf,btc)       !interp bt to cell center
          
          call edge_to_center(bt,btc)
-
 
          call extrapol_up(up,vp,vp1,np)
          call get_Ep(Ep,aj,np,up,btc,nu)
@@ -990,6 +1007,8 @@ c     close(340)
 
 c       endif
 
+          deallocate(filenum)
+
        call system_clock(t2,cnt_rt)
        time = (real(t2) - real(t1))/real(cnt_rt)
        if (my_rank .eq. 0) then
@@ -999,6 +1018,7 @@ c       endif
        endif
 
          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
 
        call MPI_FINALIZE(ierr)
 
