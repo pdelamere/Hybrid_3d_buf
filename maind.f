@@ -138,7 +138,7 @@ c      real divu(nx,ny,nz)
       integer count
       
 c      character filenum
-      character(len=:), allocatable::filenum(:)
+      character(len=:), allocatable::filenum
 
 
 
@@ -153,13 +153,13 @@ c      stop
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
 
       if ((my_rank + 1) .le. 9) then
-         allocate(character(1) :: filenum(1))
+         allocate(character(1) :: filenum)
          write(filenum, "(i1)") my_rank+1
       endif
       
 
       if ((my_rank + 1) .gt. 9) then
-         allocate(character(2) :: filenum(1))
+         allocate(character(2) :: filenum)
          write(filenum, "(i2)") my_rank+1
       endif
 
