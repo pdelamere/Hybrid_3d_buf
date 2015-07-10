@@ -115,7 +115,7 @@ c 50         continue
        do 60 j=1,ny
           do 60 k=1,nz
              nu(i,j,k) = (q*b0_init/mproton)*
-     x            exp(-(qx(nx)-qx(i))**2/(20.0*dx)**2) + nu_init
+     x            exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
 c             nu(i,j,k) = (q*b0_init/mproton)*
 c     x            exp(-(qx(1)-qx(i))**2/(20.0*dx)**2) + nu_init
  60   continue
@@ -249,7 +249,7 @@ c      include 'incurv.h'
 
 c==============stretch y direction=====================================
                
-      ysf = 1.0
+      ysf = 0.0
       rj = ny/2
       nrgrd = 10
 c up from center
@@ -295,7 +295,7 @@ c 10            continue
 
 c==============stretch x direction=====================================
                
-      xsf = 1.0
+      xsf = 0.0
       ri = nx/2 + ri0
       nrgrd = 10
 c up from center

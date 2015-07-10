@@ -2212,7 +2212,7 @@ c     endif
          ntf = 100
       endif
       
-      write(*,*) 'subcycle time steps...',ntf,dtsub
+c      write(*,*) 'subcycle time steps...',ntf,dtsub
       
 
       return
