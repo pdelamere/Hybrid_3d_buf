@@ -50,7 +50,6 @@ c----------------------------------------------------------------------
       stop
       endif
 
-      write(*,*) "seed:", seed
       call random_seed(put=seed)
 
       end SUBROUTINE random_initialize
