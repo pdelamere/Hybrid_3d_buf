@@ -2,6 +2,7 @@
 
       USE dimensions
       USE mpi
+      save
 
       real b0_init
       integer ion_amu
