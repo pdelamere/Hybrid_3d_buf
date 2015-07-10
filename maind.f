@@ -35,6 +35,7 @@ c of the magnetic field.
 c----------------------------------------------------------------------
 c      integer time, t1, t2    !keep track of run time
 c      external time
+      save
 
       real b0(nx,ny,nz,3),            !ambient magnetic field
      x     b1(nx,ny,nz,3),    !1st order magnetic field
