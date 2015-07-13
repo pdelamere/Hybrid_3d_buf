@@ -69,6 +69,7 @@ c      include 'incurv.h'
       integer reqs(2)
       integer stats(MPI_STATUS_SIZE,2)
       integer npart,ipart
+      integer cnt
 
       real, dimension(:,:), allocatable :: in_part
       real, dimension(:,:), allocatable :: out_part
@@ -778,6 +779,7 @@ c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:,:), allocatable :: out_B
       integer, dimension(:,:), allocatable :: out_ijkp
       integer Ni_tot_in, Ni_out
+      integer :: cnt
 
 
       in_bounds(1:Ni_tot) = .true.
@@ -1075,6 +1077,7 @@ c      include 'incurv.h'
       real, dimension(:), allocatable :: out_mass
       real, dimension(:), allocatable :: out_beta_p
       real, dimension(:), allocatable :: vsqrd_out
+      integer :: cnt
 
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
