@@ -204,7 +204,7 @@ c      Ni_tot_sys = Ni_tot*procnum
       print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
 
       if (my_rank .eq. 0) then
-         call check_inputs()
+         call check_inputs(my_rank)
          write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*ny*nz)
          write(*,*) ' '
       endif
