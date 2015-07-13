@@ -712,7 +712,7 @@ c         write(*,*) 'nft max...',recvbuf
 
          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      do 2 n = 1, ntf
+      do 2 n = 1, int(ntf)
 
 c         write(*,*) 'subcycle step...',n,ntf
 
