@@ -116,9 +116,9 @@ c     x              bt(im,jm,k,3) + bt(i,jm,k,3))
 
       call periodic(btc)
 
-      do 20 k=2,nz
-         do 20 j=2,ny
-            do 20 i=2,nx
+      do 20 k=2,nz-1
+         do 20 j=2,ny-1
+            do 20 i=2,nx-1
 
                btmf(i,j,k,1) = 0.5*(btc(i,j,k,1)+btc(i+1,j,k,1))
                btmf(i,j,k,2) = 0.5*(btc(i,j,k,2)+btc(i,j+1,k,2))
