@@ -333,7 +333,7 @@ c    x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       
       call MPI_WAITALL(2, reqs, stats, ierr)
       
-      wght(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
+      wght(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part_wght(:,:)
 
 
       out_beta_p(1:Ni_out) = 
