@@ -153,16 +153,7 @@ c      stop
       call MPI_INIT(ierr)
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
 
-      if ((my_rank + 1) .le. 9) then
-         allocate(character(1) :: filenum)
-         write(filenum, "(i1)") my_rank+1
-      endif
-      
-
-      if ((my_rank + 1) .gt. 9) then
-         allocate(character(2) :: filenum)
-         write(filenum, "(i2)") my_rank+1
-      endif
+      filenum = int_to_str(my_rank+1)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 

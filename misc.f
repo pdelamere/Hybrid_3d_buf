@@ -55,6 +55,32 @@ c----------------------------------------------------------------------
       end SUBROUTINE random_initialize
 c----------------------------------------------------------------------
 
+      pure function int_to_str(num)
+      integer,intent(in) :: num
+      character(len=12) :: temp
+      character(len=:), allocatable :: int_to_str
+
+      if(num .eq. 0) then
+
+      allocate(character(len=1) :: int_to_str)
+      int_to_str = "0"
+
+      else if(num .lt. 0) then
+
+      allocate(character(len=int(log10(float(-num)))+2) :: int_to_str)
+      write(temp,*) num
+      temp = adjustl(temp)
+      int_to_str = trim(temp)
+
+      else
+
+      allocate(character(len=int(log10(float(num)))+1) :: int_to_str)
+      write(temp,*) num
+      temp = adjustl(temp)
+      int_to_str = trim(temp)
+
+      endif
+      end function int_to_str
 
 c----------------------------------------------------------------------
       real FUNCTION ranf()
