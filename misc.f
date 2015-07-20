@@ -50,11 +50,74 @@ c----------------------------------------------------------------------
       stop
       endif
 
+
       call random_seed(put=seed)
 
       end SUBROUTINE random_initialize
 c----------------------------------------------------------------------
 
+!----------------------------------------------------------------------
+      SUBROUTINE debug_random_initialize ( )
+!----------------------------------------------------------------------
+      integer, allocatable :: seed(:)
+      integer :: n,istat
+      logical :: ex
+
+      call random_seed(size = n)
+      allocate(seed(n))
+
+      inquire(file="./seeds/"//int_to_str(my_rank)//"_seed",
+     x exist=ex)
+
+
+      if(ex) then
+      open(unit=999,file="./seeds/"//int_to_str(my_rank)//"_seed",
+     x access="stream", form="unformatted", action="read",
+     x status="old", iostat=istat)
+      read(999) seed
+      close(999)
+      call random_seed(put=seed)
+
+      else
+
+      call random_initialize()
+      call random_seed(get=seed)
+      open(unit=998,file="./seeds/"//int_to_str(my_rank)//"_seed",
+     x form="unformatted")
+      write(998) seed
+      close(998)
+
+      endif
+
+
+      end SUBROUTINE debug_random_initialize
+!----------------------------------------------------------------------
+      pure function int_to_str(num)
+      integer,intent(in) :: num
+      character(len=12) :: temp
+      character(len=:), allocatable :: int_to_str
+
+      if(num .eq. 0) then
+
+      allocate(character(len=1) :: int_to_str)
+      int_to_str = "0"
+
+      else if(num .lt. 0) then
+
+      allocate(character(len=int(log10(float(-num)))+2) :: int_to_str)
+      write(temp,*) num
+      temp = adjustl(temp)
+      int_to_str = trim(temp)
+
+      else
+
+      allocate(character(len=int(log10(float(num)))+1) :: int_to_str)
+      write(temp,*) num
+      temp = adjustl(temp)
+      int_to_str = trim(temp)
+
+      endif
+      end function int_to_str
 
 c----------------------------------------------------------------------
       real FUNCTION ranf()
