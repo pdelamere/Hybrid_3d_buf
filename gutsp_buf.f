@@ -377,7 +377,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
+      SUBROUTINE exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -516,7 +516,7 @@ c      deallocate(out_m_arr)
 
 
       return
-      end SUBROUTINE exchange_ion_half_buf
+      end SUBROUTINE exchange_ion_in_buf
 c----------------------------------------------------------------------
 
 
@@ -832,7 +832,6 @@ c      write(*,*) 'Ni out removed past 10 dx...',Ni_out
 c        m_arr_out_buf(1:Ni_tot_in) = 
 c     x           pack(m_arr_out_buf(1:Ni_tot_out_buf), 
 c     x           in_bounds_buf(1:Ni_tot_out_buf))
-
 
 
       Ni_tot_out_buf = count(in_bounds_buf)

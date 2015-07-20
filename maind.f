@@ -661,12 +661,14 @@ c         call check_min_den_boundary(np,xp,vp,up)
          call get_vp_buf_final(Ep_buf,vp_buf,vplus_buf)
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 c         call part_setup_buf(xp_buf,vp_buf)
-         call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
+c         call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
+c     x        B_out_buf,mrat_out_buf)
+         call exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf)
+         call exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
+     x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf)
-         call exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
-     x                  xp_out_buf,vp_out_buf,E_out_buf,
-     x                  B_out_buf,mrat_out_buf)
-         call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
+
+         call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 c         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
 c     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 
@@ -778,16 +780,15 @@ c**********************************************************************
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
 c         call part_setup_buf(xp_buf,vp_buf)
 
-         call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf)
+c         call move_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
+c     x        B_out_buf,mrat_out_buf)
          
+         call exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf)
+         call exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
+     x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
+     x        B_out_buf,mrat_out_buf)
 
-         call exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
-     x                      xp_out_buf,vp_out_buf,E_out_buf,
-     x                      B_out_buf,mrat_out_buf)
-
-         call exchange_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
-
+         call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 c         call exchange_ion_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
 c     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
 

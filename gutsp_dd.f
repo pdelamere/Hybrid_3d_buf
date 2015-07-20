@@ -748,10 +748,9 @@ c      include 'incurv.h'
 c----------------------------------------------------------------------
 
 
+
 c----------------------------------------------------------------------
-      SUBROUTINE exchange_ion_half(xp,vp,vp1,input_p,xp_buf,vp_buf,E,Bt,
-     x                      xp_out_buf,vp_out_buf,E_out_buf,
-     x                      B_out_buf,mrat_out_buf) 
+      SUBROUTINE exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf) 
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -787,10 +786,6 @@ c      real, dimension(:), allocatable :: out_m_arr
       
       where (xp(1:Ni_tot,1) .gt. qx(nx))
          in_bounds(1:Ni_tot) = .false.
-c     ijkp(:,1) = 1
-c     wquad(:,1) = 0
-c     xp(:,1) = qx(1) + ( xp(:,1) - qx(nx-1) )
-c     ijkp(:,1) = nint(xp(:,1)/dx)
       endwhere
       
       Ni_tot_in = count(in_bounds)
@@ -895,11 +890,50 @@ c      enddo
       
       deallocate(out_xp)
       deallocate(out_vp)
-c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
       
-      
+
+      return
+      end SUBROUTINE exchange_ion_in
+c----------------------------------------------------------------------
+
+
+
+c----------------------------------------------------------------------
+      SUBROUTINE exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
+     x     E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
+     x     B_out_buf,mrat_out_buf) 
+c----------------------------------------------------------------------
+c      include 'incurv.h'
+
+      real xp(Ni_max,3),
+     x     vp(Ni_max,3),
+     x     vp1(Ni_max,3),
+     x     input_p(3)
+      real xp_buf(Ni_max_buf,3)
+      real vp_buf(Ni_max_buf,3)
+      real E(nx,ny,nz,3)
+      real Bt(nx,ny,nz,3)
+      real xp_out_buf(Ni_max_buf,3)
+      real vp_out_buf(Ni_max_buf,3)
+      real E_out_buf(Ni_max_buf,3)
+      real B_out_buf(Ni_max_buf,3)
+      real mrat_out_buf(Ni_max_buf)
+c      real m_arr_out_buf(Ni_max_buf)
+
+      real, dimension(:,:), allocatable :: out_xp
+      real, dimension(:,:), allocatable :: out_vp
+c      real, dimension(:), allocatable :: out_m_arr
+      real, dimension(:), allocatable :: out_mrat
+      real, dimension(:), allocatable :: out_beta_p
+      real, dimension(:,:), allocatable :: out_E
+      real, dimension(:,:), allocatable :: out_B
+      integer, dimension(:,:), allocatable :: out_ijkp
+      integer Ni_tot_in, Ni_out
+      integer :: cnt
+
+
       in_bounds(1:Ni_tot) = .true.
       in_bounds(Ni_tot+1:) = .false.
       
@@ -949,8 +983,6 @@ c      call pack_pd_3(ijkp, in_bounds)
            cnt = cnt+1
         endif
       enddo
-
-
       
       do l = 1,Ni_out 
          out_E(l,:) = E(out_ijkp(l,1),out_ijkp(l,2),out_ijkp(l,3),:)
@@ -1020,7 +1052,7 @@ c     x                   (beta*beta_p(l))
 c         enddo         
 c      enddo
       
-      Ni_tot_out_buf = Ni_tot_out_buf + Ni_out
+c      Ni_tot_out_buf = Ni_tot_out_buf + Ni_out
 
 c      if (Ni_tot_out_buf .ge. Ni_max_buf) then 
 c         write(*,*) 'Error....out buf too small...',Ni_tot_out_buf,
@@ -1041,9 +1073,8 @@ c      deallocate(out_m_arr)
 
          
       return
-      end SUBROUTINE exchange_ion_half
+      end SUBROUTINE exchange_ion_out
 c----------------------------------------------------------------------
-
 
 
 
