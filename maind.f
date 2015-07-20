@@ -140,6 +140,7 @@ c      real divu(nx,ny,nz)
       
 c      character filenum
       character(len=:), allocatable::filenum
+      character(len=10) :: arg
 
 
 
@@ -221,8 +222,19 @@ c         endif
 c      enddo
 
       seed = t1 +my_rank*100
-      call random_initialize()
+
+      ! Make sure all ranks are initialized and sychronized before attempting
+      ! to make a system call
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
+      
+      call get_command_argument(number=1,value=arg,status=ierr)
+      if(ierr .eq. 0 .and. trim(arg) .eq. "debug") then
+            call debug_random_initialize()
+      else 
+            call random_initialize()
+      endif
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
+
 
       if (.not.(restart)) then
          do 66 i=1,nx
