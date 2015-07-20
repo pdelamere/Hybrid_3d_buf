@@ -1020,7 +1020,7 @@ c     x                   (beta*beta_p(l))
 c         enddo         
 c      enddo
       
-      Ni_tot_out_buf = Ni_tot_out_buf + Ni_out
+      !Ni_tot_out_buf = Ni_tot_out_buf + Ni_out
 
 c      if (Ni_tot_out_buf .ge. Ni_max_buf) then 
 c         write(*,*) 'Error....out buf too small...',Ni_tot_out_buf,
