@@ -25,7 +25,7 @@ c grid parameters
       real dx,dy, delz, dx_buf, dt, dtsub_init
 
 c time stepping parameters
-      PARAMETER (ntsub = 10.0)        !number of subcycle time steps
+      PARAMETER (ntsub = 1.0)        !number of subcycle time steps
 
 c output directory
       character(50) out_dir
@@ -33,8 +33,9 @@ c      PARAMETER (out_dir='./tmp3/')
 
 c logical variable for restart
       logical restart
+      integer mbegin,mrestart
       PARAMETER (restart = .false.)
-      PARAMETER (mrestart = 6000)      ! use -1 for no save
+      PARAMETER (mrestart = 100000)      ! use -1 for no save
       PARAMETER (mbegin = 0)      !mstart
 
 c neutral cloud expansion characteristics

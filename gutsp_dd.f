@@ -760,22 +760,21 @@ c      include 'incurv.h'
      x     input_p(3)
       real xp_buf(Ni_max_buf,3)
       real vp_buf(Ni_max_buf,3)
-      real E(nx,ny,nz,3)
-      real Bt(nx,ny,nz,3)
-      real xp_out_buf(Ni_max_buf,3)
-      real vp_out_buf(Ni_max_buf,3)
-      real E_out_buf(Ni_max_buf,3)
-      real B_out_buf(Ni_max_buf,3)
-      real mrat_out_buf(Ni_max_buf)
-c      real m_arr_out_buf(Ni_max_buf)
+c      real E(nx,ny,nz,3)
+c      real Bt(nx,ny,nz,3)
+c      real xp_out_buf(Ni_max_buf,3)
+c      real vp_out_buf(Ni_max_buf,3)
+c      real E_out_buf(Ni_max_buf,3)
+c      real B_out_buf(Ni_max_buf,3)
+c      real mrat_out_buf(Ni_max_buf)
+cc      real m_arr_out_buf(Ni_max_buf)
 
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
-c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
-      real, dimension(:,:), allocatable :: out_E
-      real, dimension(:,:), allocatable :: out_B
+c      real, dimension(:,:), allocatable :: out_E
+c      real, dimension(:,:), allocatable :: out_B
       integer, dimension(:,:), allocatable :: out_ijkp
       integer Ni_tot_in, Ni_out
       integer :: cnt
@@ -793,7 +792,6 @@ c      real, dimension(:), allocatable :: out_m_arr
       
       allocate(out_xp(Ni_out,3))
       allocate(out_vp(Ni_out,3))
-c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
       

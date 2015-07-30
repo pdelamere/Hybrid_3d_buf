@@ -16,30 +16,24 @@ c      include 'incurv.h'
       real r
       real nn0
 
-c      nn0 = nf_init*2e6
-c      nn0 = Ncol*(pwl+1)/RIo
-      nn0 = 2e8*1e15
-c gaussian 
-c      neutral_density = nn0*exp(-(r)**2/(RIo)**2)                  
-
-c power law profile
-c      if (r .le. RIo) then
-c         neutral_density = nn0*10
-c      endif
-c      if (r .gt. RIo) then 
-cc         neutral_density =  nn0*(RIo/r)**(pwl)
-c         neutral_density =  nn0*exp(-(r-RIo)/20.0)
-c      endif
 
 c Pluto isotropic escape
 
-      neutral_density = Qo/(4*PI*r**2*vrad)
+c      neutral_density = Qo/(4*PI*r**2*vrad)
 
 c Pluto Strobel Atm
 
-c      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
-cc     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
-c      neutral_density = neutral_density*1e9 !km^-3
+      neutral_density = 4e9*(Rpluto/r)**(4.5) + 1.4e6*(Rpluto/r)**2.1
+     
+      if (r .lt. 8*Rpluto) then
+         neutral_density = 4e9*(1./8.)**(4.5) + 1.4e6*(1./8.)**2.1
+      endif
+
+      neutral_density = neutral_density*1e15
+
+cc      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
+ccc     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
+cc      neutral_density = neutral_density*1e9 !km^-3
 
 
 c      if (neutral_density .ge. 1e22) then 

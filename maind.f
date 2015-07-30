@@ -52,7 +52,7 @@ c     x     nfp1(nx,ny,nz),    !nf at n+1/2
 c     x     nn(nx,ny,nz),      !neutral cloud density
 c     x     nnd(nx,ny,nz),     !neutral cloud density decrement
      x     np(nx,ny,nz),      !particle ion den at time level n, n+1/2
-c     x     np_1(nx,ny,nz),
+     x     np_1(nx,ny,nz),
      x     np_2(nx,ny,nz),
 c     x     np3(nx,ny,nz,3),
      x     vp(Ni_max,3),      !particle velocity at t level n+1/2
@@ -137,8 +137,11 @@ c      real divu(nx,ny,nz)
 
       real recvbuf
       integer count
+
+      integer i,j,k,l,m,mstart
       
 c      character filenum
+      character flnm
       character(len=:), allocatable::filenum
       character(len=10) :: arg
 
@@ -189,22 +192,24 @@ c Initialize all variables
 c----------------------------------------------------------------------
       write(*,*) 'initializing variables...'
 
-      Ni_tot = Ni_tot_0
-      Ni_tot_sw = Ni_tot
-c      Ni_tot_sys = Ni_tot*procnum
-      Ni_tot_sys = Ni_tot
-      print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
-
+      if (.not. restart) then
+         Ni_tot = Ni_tot_0
+         Ni_tot_sw = Ni_tot
+c     Ni_tot_sys = Ni_tot*procnum
+         Ni_tot_sys = Ni_tot
+         print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
+      endif
+      
       if (my_rank .eq. 0) then
          call check_inputs(my_rank)
          write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*ny*nz)
          write(*,*) ' '
       endif
+         
 
 c      stop
 
 c      Ni_tot = 6
-      mstart = 0
       ndiag = 0
       prev_Etot = 1.0
       nuei = 0.0
@@ -321,61 +326,47 @@ c----------------------------------------------------------------------
       write(*,*) 'restart status....',restart
       if (restart) then 
          write(*,*) 'opening restart.vars......'
-         open(210,file='restart.vars'//filenum,
-     x        status='unknown',
-     x        form='unformatted')
+
+         do i = 1,comm_sz 
+            
+            if (my_rank .eq. i-1) then
+
+               write(*,*) 'reading restart.vars......',i
+
+               open(210,file='restart.vars'//filenum,
+     x              status='unknown',
+     x              form='unformatted')
          
-         read(210)  b0,b1,b12,b1p2,bt,btc,np,np3,
-     x        up,aj,nu,E,input_E,input_p,mstart,input_EeP,prev_Etot
-     x        Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP
+               read(210)  b0,b1,b12,b1p2,bt,btc,np,
+     x              up,aj,nu,E,input_E,input_p,mstart,input_EeP,
+     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x              beta_p,beta_p_buf,wght
 
-c         open(210,file='restart.vars',status='unknown',
-c     x            form='unformatted')
-         write(*,*) 'reading restart.vars......'
-c         read(210) b0,b1,b12,b1p2,bt,btmf,btc,np,np3,vp,vp1,vplus,
-c     x        vminus,up,xp,xp1,aj,nu,Ep,E,Evp,Euf,
-c     x        EB1,EB1x,EB1y,EB1z,EE,EeP,input_E,Ni_tot,Ni_tot_sys,
-c     x        ijkp,mstart,input_p,input_EeP,prev_Etot,
-c     x        mrat,m_arr,xp_buf,vp_buf,Ep_buf,vplus_buf,
-c     x        vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-c     x        B_out_buf,mrat_out_buf,m_arr_out_buf,
-c     x        in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-c     x        m_arr_buf,mrat_buf
-c         write(*,*) 'restarting hybrid.....'
+               open(211,file='restart.part'//filenum,
+     x              status='unknown',form='unformatted')
+               read(211) vp,vp1,vplus,vminus,
+     x              xp,Ep,Ni_tot,
+     x              Ni_tot_sys,ijkp,
+     x              mrat,
+     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
+     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
+     x              B_out_buf,mrat_out_buf,
+     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
+     x              mrat_buf
 
-c         if (my_rank .ge. 0) then 
-          open(211,file='restart.part'//filenum,
-     x           status='unknown',form='unformatted')
-          read(211) vp,vp1,vplus,vminus,
-     x         xp,Ep,Ni_tot,
-     x         Ni_tot_sys,ijkp,
-     x         mrat,
-     x         xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x         B_out_buf,mrat_out_buf,
-     x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x         mrat_buf
+c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
 
+               close(210)
+               close(211)
 
-
-c          open(211,file='restart.part'//filenum,
-c     x            status='unknown',form='unformatted')
-c          read(211)  b0,b1,b12,b1p2,bt,btmf,btc,np,np3,
-c     x         vp,vp1,vplus,vminus,
-c     x         up,xp,xp1,aj,nu,Ep,E,input_E,Ni_tot,
-c     x         Ni_tot_sys,ijkp,mstart,input_p,input_EeP,prev_Etot,
-c     x         mrat,m_arr,
-c     x         xp_buf,vp_buf,Ep_buf,vplus_buf,
-c     x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-c     x         B_out_buf,mrat_out_buf,m_arr_out_buf,
-c     x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-c     x         m_arr_buf,mrat_buf
-cc         endif
+            endif
+            call MPI_Barrier(MPI_COMM_WORLD,ierr)
+         enddo
+            
       endif
 
-      close(210)
-      close(211)
-
+c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+c      stop
 
 
 c      write(*,*) 'mstart...',mstart
@@ -611,18 +602,20 @@ c======================================================================
       do 1 m = mstart+1, nt
 
          if (my_rank .eq. 0) then
-            write(*,*) 'time...', m, m*dt
+            write(*,*) 'time...', m, dt
          endif
 
+      
          !Calculate neutral density
 
 
          !Ionize cloud and calculate ion density
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
+
+         mr = 1.0/m_pu
          call separate_np(np_2,mr)
          if (Ni_tot .lt. 0.9*Ni_max) then
 c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
-            mr = 1.0/m_pu
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
          endif
 
@@ -684,10 +677,10 @@ c     x        B_out_buf,mrat_out_buf,xp,vp,vp1)
          ndiag = ndiag + 1
          if (ndiag .eq. nout) then         
             call get_temperature(xp,vp,np,temp_p)
-c            mr = 1.0
-c            call separate_np(np_1,mr)
-c            mr = 1.0/m_pu
-c            call separate_np(np_2,mr)
+            mr = 1.0
+            call separate_np(np_1,mr)
+            mr = 1.0/m_pu
+            call separate_np(np_2,mr)
 c            mr = 1.0
 c            call separate_temp(vp,temp_p_1,mr)
 c            mr = 1.0/m_pu
@@ -888,6 +881,10 @@ c               write(331) temp_p_2/1.6e-19
 c save 2d arrays----------------------
                write(110) m
                write(110) np(:,ny/2,:),np(:,:,2)
+               write(115) m
+               write(115) np_1(:,ny/2,:),np_1(:,:,2)
+               write(116) m
+               write(116) np_2(:,ny/2,:),np_2(:,:,2)
                write(130) m
                write(130) bt(:,ny/2,:,:),bt(:,:,2,:)
 c               write(140) m
@@ -910,65 +907,43 @@ c----------------------------------------------------------------------
 c Write restart file
 c----------------------------------------------------------------------
 
-c         if (my_rank .eq. 0) then
-c            if (m .eq. mrestart) then
-c               open(220,file='restart.vars.new',status='unknown',
-c     x              form='unformatted')
-c               write(220) b0,b1,b12,b1p2,bt,btmf,btc,np,np3,vp,vp1,
-c     x              vplus,vminus,
-c     x              up,xp,xp1,aj,nu,Ep,E,Evp,Euf,
-c     x              EB1,EB1x,EB1y,EB1z,EE,EeP,input_E,Ni_tot,
-c     x              Ni_tot_sys,
-c     x              ijkp,mrestart,input_p,input_EeP,prev_Etot,
-c     x              mrat,m_arr,xp_buf,vp_buf,Ep_buf,vplus_buf,
-c     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-c     x              B_out_buf,mrat_out_buf,m_arr_out_buf,
-c     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-c     x              m_arr_buf,mrat_buf
-cc                    write(220) b1,b12,b1p2,bt,btmf,nn,np,nf,vp,vp1,
-cc     x           vplus,vminus,
-cc     x          up,xp,uf,uf2,ufp2,aj,Ep,Ef,E,uplus,uminus,Evp,Euf,
-cc     x          EB1,EB1x,EB1y,EB1z,EE,EeP,input_E,Ni_tot,
-cc     x          ijkp,mrestart,input_p,input_EeP,prev_Etot,nf1,nf3,nfp1,
-cc     x          input_chex,input_bill,pf,pf1,mrat,m_arr  
-c            endif
-c         endif
-         
-         if (my_rank .ge. 0) then
          if (m .eq. mrestart) then
-            write(*,*) 'writing restart file....',
-     x  'restart.part'//filenum//'.new'
 
-          open(220,file='restart.vars'//filenum//'.new',
-     x           status='unknown',
-     x           form='unformatted')
+            do i = 1,comm_sz 
+               
+               if (my_rank .eq. i-1) then
 
-          write(220)  b0,b1,b12,b1p2,bt,btc,np,np3,
-     x         up,aj,nu,E,input_E,input_p,mrestart,input_EeP,prev_Etot,
-     x         Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP
+                  write(*,*) 'writing restart file....',
+     x                 'restart.part'//filenum//'.new',my_rank,cart_rank
+                  
+                  open(220,file='restart.vars'//filenum//'.new',
+     x                 status='unknown',
+     x                 form='unformatted')
+                  
+                  write(220) b0,b1,b12,b1p2,bt,btc,np,
+     x              up,aj,nu,E,input_E,input_p,mstart,input_EeP,
+     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x              beta_p,beta_p_buf,wght
 
-          open(221,file='restart.part'//filenum//'.new',
-     x           status='unknown',form='unformatted')
-          write(221) vp,vp1,vplus,vminus,
-     x         xp,Ep,Ni_tot,
-     x         Ni_tot_sys,ijkp,
-     x         mrat,
-     x         xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x         B_out_buf,mrat_out_buf,
-     x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x         mrat_buf
-            
-c       write(211) b0,b1,b12,b1p2,bt,btmf,btc,np,np3
-c     x         vp,vp1,vplus,vminus,xp,xp1,Ep,input_E,Ni_tot,
-c     x         ijkp,input_p,mrat,m_arr,
-c     x         xp_buf,vp_buf,Ep_buf,vplus_buf,
-c     x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-c     x         B_out_buf,mrat_out_buf,m_arr_out_buf,
-c     x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-c     x         m_arr_buf,mrat_buf
-            
-         endif
+                  open(221,file='restart.part'//filenum//'.new',
+     x                 status='unknown',form='unformatted')
+                  write(221)  vp,vp1,vplus,vminus,
+     x              xp,Ep,Ni_tot,
+     x              Ni_tot_sys,ijkp,
+     x              mrat,
+     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
+     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
+     x              B_out_buf,mrat_out_buf,
+     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
+     x              mrat_buf
+
+                  close(220)
+                  close(221)
+
+               endif
+               call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+            enddo
+
          endif
 
 c----------------------------------------------------------------------

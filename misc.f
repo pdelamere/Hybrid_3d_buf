@@ -599,7 +599,7 @@ cc i = 2 face
             i=2
 c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
 c            uf_flux = 0.5*nf(i,j,k)*vol*mO*(uf(i,j,k,m)*km_to_m)**2
-            exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dy*dz_cell(k)*
+           exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dy_cell(j)*dz_cell(k)*
      x           (E(i,j,k,2)*b1(i,j,k,3) - E(i,j,k,3)*b1(i,j,k,2))*
      x            km_to_m**2
             bndry_Eflux = bndry_Eflux - exb_flux 
@@ -614,7 +614,7 @@ cc i = nx face
             i=nx
 c            vol = uf(i,j,k,m)*dtsub*dy*dz_cell(k)
 c            uf_flux = 0.5*nf(i,j,k)*vol*mO*(uf(i,j,k,m)*km_to_m)**2
-            exb_flux = (mO_q)**2*(1.0/mu0)*dt*dy*dz_cell(k)*
+            exb_flux = (mO_q)**2*(1.0/mu0)*dt*dy_cell(j)*dz_cell(k)*
      x           (E(i,j,k,2)*b1(i,j,k,3) - E(i,j,k,3)*b1(i,j,k,2))*
      x           km_to_m**2
             bndry_Eflux = bndry_Eflux - exb_flux 
@@ -629,7 +629,7 @@ cc j = 2 face
             j=2
 c            vol = uf(i,j,k,m)*dtsub*dx*dz_cell(k)
 c            uf_flux = 0.5*nf(i,j,k)*vol*mO*(uf(i,j,k,m)*km_to_m)**2
-            exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dx*dz_cell(k)*
+           exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dx_cell(i)*dz_cell(k)*
      x            (-E(i,j,k,1)*b1(i,j,k,3)+E(i,j,k,3)*b1(i,j,k,1))*
      x            km_to_m**2
             bndry_Eflux = bndry_Eflux - exb_flux 
@@ -644,7 +644,7 @@ cc j = ny face
             j=ny
 c            vol = uf(i,j,k,m)*dtsub*dx*dz_cell(k)
 c            uf_flux = 0.5*nf(i,j,k)*vol*mO*(uf(i,j,k,m)*km_to_m)**2
-            exb_flux = (mO_q)**2*(1.0/mu0)*dt*dx*dz_cell(k)*
+            exb_flux = (mO_q)**2*(1.0/mu0)*dt*dx_cell(i)*dz_cell(k)*
      x            (-E(i,j,k,1)*b1(i,j,k,3)+E(i,j,k,3)*b1(i,j,k,1))*
      x            km_to_m**2
             bndry_Eflux = bndry_Eflux - exb_flux 
@@ -660,7 +660,7 @@ c            k=rk-20
             k=2
 c            vol = uf(i,j,k,m)*dtsub*dx*dy
 c            uf_flux = 0.5*nf(i,j,k)*vol*mO*(uf(i,j,k,m)*km_to_m)**2
-            exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dx*dy*
+           exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dx_cell(i)*dy_cell(j)*
      x             (E(i,j,k,1)*b1(i,j,k,2) - E(i,j,k,2)*b1(i,j,k,1))*
      x             km_to_m**3
             bndry_Eflux = bndry_Eflux - exb_flux 
@@ -676,7 +676,7 @@ c            k=rk+20
             k=nz-1
 c            vol = uf(i,j,k,m)*dtsub*dx*dy
 c            uf_flux = 0.5*nf(i,j,k)*vol*mO*(uf(i,j,k,m)*km_to_m)**2
-            exb_flux = (mO_q)**2*(1.0/mu0)*dt*dx*dy*
+            exb_flux = (mO_q)**2*(1.0/mu0)*dt*dx_cell(i)*dy_cell(j)*
      x             (E(i,j,k,1)*b1(i,j,k,2) - E(i,j,k,2)*b1(i,j,k,1))*
      x             km_to_m**3
             bndry_Eflux = bndry_Eflux - exb_flux 
