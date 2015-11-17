@@ -240,7 +240,6 @@ c      enddo
       endif
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
 
-
       if (.not.(restart)) then
          do 66 i=1,nx
             do 66 j=1,ny
@@ -284,7 +283,9 @@ c         m_arr(Ni_tot+1:) = m_pu*mproton !mass N_2+ = 28.0
 
 c      call obstacle_boundary_nu(nu)
 
-      call get_beta()
+      if (.not.(restart)) then
+         call get_beta()
+      endif
 
 c         input_E = 0.0
 c      do i = 1,nx
@@ -323,6 +324,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c check for restart flag
 c----------------------------------------------------------------------
+      mstart = 0
       write(*,*) 'restart status....',restart
       if (restart) then 
          write(*,*) 'opening restart.vars......'
@@ -340,7 +342,7 @@ c----------------------------------------------------------------------
                read(210)  b0,b1,b12,b1p2,bt,btc,np,
      x              up,aj,nu,E,input_E,input_p,mstart,input_EeP,
      x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x              beta_p,beta_p_buf,wght
+     x              beta_p,beta_p_buf,wght,beta
 
                open(211,file='restart.part'//filenum,
      x              status='unknown',form='unformatted')
@@ -364,6 +366,7 @@ c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
          enddo
             
       endif
+
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 c      stop
@@ -602,7 +605,7 @@ c======================================================================
       do 1 m = mstart+1, nt
 
          if (my_rank .eq. 0) then
-            write(*,*) 'time...', m, dt
+            write(*,*) 'time...', m, dt,mstart
          endif
 
       
@@ -613,8 +616,8 @@ c======================================================================
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
 
          mr = 1.0/m_pu
-         call separate_np(np_2,mr)
-         if (Ni_tot .lt. 0.9*Ni_max) then
+c         call separate_np(np_2,mr)
+         if (Ni_tot .lt. 0.95*Ni_max) then
 c          call Ionize_Io(np,vp,vp1,xp,xp1,up,ndot)
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
          endif
@@ -696,7 +699,6 @@ c**********************************************************************
          dtsub = dtsub_init
          ntf = ntsub
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
          
          call check_time_step(bt,np)
 
@@ -793,9 +795,9 @@ c         call check_min_den_boundary(np,xp,vp,up)
 
          call check_min_den(np,xp,vp,vp1,up,bt)
 
-c         if (Ni_tot .lt. 0.9*Ni_max) then
-c            call res_chex(xp,vp,vp1)
-c         endif
+         if (Ni_tot .lt. 0.9*Ni_max) then
+            call res_chex(xp,vp,vp1)
+         endif
 
 c         endif
 
@@ -921,9 +923,9 @@ c----------------------------------------------------------------------
      x                 form='unformatted')
                   
                   write(220) b0,b1,b12,b1p2,bt,btc,np,
-     x              up,aj,nu,E,input_E,input_p,mstart,input_EeP,
+     x              up,aj,nu,E,input_E,input_p,m,input_EeP,
      x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x              beta_p,beta_p_buf,wght
+     x              beta_p,beta_p_buf,wght,beta
 
                   open(221,file='restart.part'//filenum//'.new',
      x                 status='unknown',form='unformatted')

@@ -21,15 +21,24 @@ c Pluto isotropic escape
 
 c      neutral_density = Qo/(4*PI*r**2*vrad)
 
-c Pluto Strobel Atm
+c Pluto Strobel Atm post NH
 
-      neutral_density = 4e9*(Rpluto/r)**(4.5) + 1.4e6*(Rpluto/r)**2.1
-     
-      if (r .lt. 8*Rpluto) then
-         neutral_density = 4e9*(1./8.)**(4.5) + 1.4e6*(1./8.)**2.1
+      neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
+      if (r .lt. 2.5*Rpluto) then
+          neutral_density =  1e15*(1/2.5)**25.0 + 5e9*(1/2.5)**8.0
       endif
-
+      
       neutral_density = neutral_density*1e15
+
+c Pluto Strobel Atm (July 12, 2015 for exobase upward)
+
+c      neutral_density = 4e9*(Rpluto/r)**(4.5) + 1.4e6*(Rpluto/r)**2.1
+     
+c      if (r .lt. 8*Rpluto) then
+c         neutral_density = 4e9*(1./8.)**(4.5) + 1.4e6*(1./8.)**2.1
+c      endif
+
+c      neutral_density = neutral_density*1e15
 
 cc      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
 ccc     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
@@ -690,42 +699,22 @@ c get source density
          do j = 2,ny-1
             do k = 2,nz-1
                r = sqrt((qx(i)-cx)**2 + (qy(j)-cy)**2 + (gz(k)-cz)**2)
-c               r = sqrt((xp(l,1)-cx)**2 + (xp(l,2)-cy)**2 + 
-c     x              (gz(ijkp(l,3))-cz)**2) !use global coords
-
-               !np = electron density, used for recombination
-
-c               npmax = (-k_rec*np(i,j,k) + sqrt((k_rec*np(i,j,k))**2 + 
-c     x              4*k_rec*neutral_density(r)/tau_photo))/(2*k_rec)
-               
              
                npmax = sqrt(neutral_density(r)/(tau_photo*k_rec))
 
-c               if ((np_2(i,j,k) .gt. npmax) .and.
-c     x            (np_2(i,j,k) .gt. 0.0)) then
-c                  write(*,*) 'limit ion production...',np_2(i,j,k),
-c     x               npmax
-c               endif
-               if ((r .le. dx*S_radius) .and.
-c               if ((r .le. dx*4) .and.
-     x              (np_2(i,j,k) .lt. npmax)) then
+c               if ((r .le. dx*S_radius) .and.
+c     x              (np_2(i,j,k) .lt. npmax)) then
 
-c                   write(*,*) 'npmax..',npmax,np_2(i,j,k)
-
-c                  write(*,*) 'r...',r/(dx*S_radius)
-c                  write(*,*) 'npofr...',r
-c                  nnofr = Qo/(4*pi*r**2*vrad)
-c                  npofr = vol*beta*nnofr*dt/tau_photo
-               if (r .le. dx*4) then
-                  bpu = beta_pu
-                  npofr = vol*beta*bpu*
-     x                 neutral_density(r)*dt/tau_photo
-               else 
-                  bpu = 1.0
-                  npofr = vol*beta*
+                  if (r .le. 2*Rpluto) then
+                     bpu = 0.1
+                     npofr = vol*beta*bpu*
      x                    neutral_density(r)*dt/tau_photo
-               endif
-c                  write(*,*) 'npofr...',npofr
+                  else 
+                     bpu = 2.0
+                     npofr = vol*beta*bpu*
+     x                    neutral_density(r)*dt/tau_photo
+                  endif
+
                   if ((npofr .ge. 1) .and. (npofr+l1 .lt. Ni_max)) then
                      do ll = 1,nint(npofr)
                         l = Ni_tot + 1
@@ -744,9 +733,6 @@ c                  write(*,*) 'npofr...',npofr
                         ii = ii-1
                         ijkp(l,1)= ii
 
-c                        ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-c                        ijkp(l,2) = floor(xp(l,2)/dy)
-                    
                         jj=0
  18                     continue
                         jj = jj + 1
@@ -761,16 +747,6 @@ c                        ijkp(l,2) = floor(xp(l,2)/dy)
                         kk = kk-1
                         ijkp(l,3)= kk
 
-c                        kk=1
-c                       do 15 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find ck
-c                           ijkp(l,3) = kk !grid
-c                           kk=kk+1
-c 15                     continue
-c                        kk=ijkp(l,3)
-c                        if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-c                           ijkp(l,3) = kk+1
-c                        endif
-                        
                         mrat(l) = 1.0/m_pu
 c                        m_arr(l) = mproton*m_pu
                         beta_p(l) = bpu
@@ -850,68 +826,11 @@ c                        m_arr(l) = mproton*m_pu
                         
                         
                      endif
-
+                     
                   endif
 
-c                  vol_shell = (4./3.)*pi*((r+dx/2)**3 - (r-dx/2)**3)
-c                  vol_shell_min = (4./3.)*pi*(2.0*Rp)**3
-c                  if (vol_shell .lt. vol_shell_min) then 
-c                     vol_shell = vol_shell_min
-c                  endif
-c                  vol = dx**3
-cc                  dNi_shell = (Qo*beta)*dx*dt/(vrad*tau_photo)
-cc                  dNi_cell = dNi_shell*vol/vol_shell
-cc                  write(*,*) 'dNi_shell...',cart_rank,
-cc     x                  dNi_shell*vol/vol_shell
-c                  rnd = pad_ranf()
-c                  if (dNi_shell*vol/vol_shell .gt. rnd) then
-c                     l = Ni_tot + 1
-c                     vp(l,1) = 0.0
-c                     vp(l,2) = 0.0
-c                     vp(l,3) = 0.0
-cc                     xp(l,1) = qx(i) + (0.5-pad_ranf())*dx
-cc                     xp(l,2) = qy(j) + (0.5-pad_ranf())*dy
-cc                     xp(l,3) = qz(k) + (0.5-pad_ranf())*dz_grid(k)
-
-c                     xp(l,1) = qx(i) + (pad_ranf())*dx
-c                     xp(l,2) = qy(j) + (pad_ranf())*dy
-c                     xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
-
-c                     ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c                     ijkp(l,2) = nint(xp(l,2)/dy)
-
-cc                     kk=1
-cc                     do 50 while(xp(l,3) .gt. qz(kk)) !find k on non-uniform 
-cc                        ijkp(l,3) = kk !grid
-cc                        kk=kk+1
-cc 50                  continue
-cc                     kk=ijkp(l,3)
-cc                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-cc                        ijkp(l,3) = kk+1
-cc                     endif
-
-c                     kk=1
-c                     do 15 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-c                        ijkp(l,3) = kk !grid
-c                        kk=kk+1
-c 15                  continue
-c                     kk=ijkp(l,3)
-c                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-c                        ijkp(l,3) = kk+1
-c                     endif
-
-c                     mrat(l) = 1.0/m_pu
-c                     m_arr(l) = mproton*m_pu
-c                     Ni_tot = l
-c                     cnt = cnt + 1
-c                     do 45 m=1,3
-c                        vp1(l,m) = vp(l,m)
-c                        input_E = input_E + 
-c     x                       0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
-c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
-c 45                  continue                     
-c                  endif                     
-               endif
+                  
+c               endif
             enddo
          enddo
       enddo

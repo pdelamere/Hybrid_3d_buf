@@ -25,7 +25,7 @@ c grid parameters
       real dx,dy, delz, dx_buf, dt, dtsub_init
 
 c time stepping parameters
-      PARAMETER (ntsub = 1.0)        !number of subcycle time steps
+      PARAMETER (ntsub = 10.0)        !number of subcycle time steps
 
 c output directory
       character(50) out_dir
@@ -35,7 +35,7 @@ c logical variable for restart
       logical restart
       integer mbegin,mrestart
       PARAMETER (restart = .false.)
-      PARAMETER (mrestart = 100000)      ! use -1 for no save
+      PARAMETER (mrestart = 1000)      ! use -1 for no save
       PARAMETER (mbegin = 0)      !mstart
 
 c neutral cloud expansion characteristics
@@ -95,7 +95,7 @@ c      PARAMETER (N_o = 5e34)     !Steady state neutral particle constant
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
       PARAMETER (S_radius = 200)    !units of dx
-      PARAMETER (ri0 = 20)           !offset to neutral center
+      PARAMETER (ri0 = 25)           !offset to neutral center
 
 c domain decompostion parameters
 
