@@ -904,46 +904,46 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c Write restart file
 c----------------------------------------------------------------------
-
-         if (m .eq. mrestart) then
-
-            do i = 1,comm_sz 
-               
-               if (my_rank .eq. i-1) then
-
-                  write(*,*) 'writing restart file....',
-     x                 'restart.part'//filenum//'.new',my_rank,cart_rank
-                  
-                  open(220,file='restart.vars'//filenum//'.new',
-     x                 status='unknown',
-     x                 form='unformatted')
-                  
-                  write(220) b0,b1,b12,b1p2,bt,btc,np,
-     x              up,aj,nu,E,input_E,input_p,m,input_EeP,
-     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x              beta_p,beta_p_buf,wght,beta
-
-                  open(221,file='restart.part'//filenum//'.new',
-     x                 status='unknown',form='unformatted')
-                  write(221)  vp,vp1,vplus,vminus,
-     x              xp,Ep,Ni_tot,
-     x              Ni_tot_sys,ijkp,
-     x              mrat,
-     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x              B_out_buf,mrat_out_buf,
-     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x              mrat_buf
-
-                  close(220)
-                  close(221)
-
-               endif
-               call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-            enddo
-
-         endif
-
+c
+c         if (m .eq. mrestart) then
+c
+c            do i = 1,comm_sz 
+c               
+c               if (my_rank .eq. i-1) then
+c
+c                  write(*,*) 'writing restart file....',
+c     x                 'restart.part'//filenum//'.new',my_rank,cart_rank
+c                  
+c                  open(220,file='restart.vars'//filenum//'.new',
+c     x                 status='unknown',
+c     x                 form='unformatted')
+c                  
+c                  write(220) b0,b1,b12,b1p2,bt,btc,np,
+c     x              up,aj,nu,E,input_E,input_p,m,input_EeP,
+c     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+c     x              beta_p,beta_p_buf,wght,beta
+c
+c                  open(221,file='restart.part'//filenum//'.new',
+c     x                 status='unknown',form='unformatted')
+c                  write(221)  vp,vp1,vplus,vminus,
+c     x              xp,Ep,Ni_tot,
+c     x              Ni_tot_sys,ijkp,
+c     x              mrat,
+c     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
+c     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
+c     x              B_out_buf,mrat_out_buf,
+c     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
+c     x              mrat_buf
+c
+c                  close(220)
+c                  close(221)
+c
+c               endif
+c               call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+c            enddo
+c
+c         endif
+c
 c----------------------------------------------------------------------
 
 
