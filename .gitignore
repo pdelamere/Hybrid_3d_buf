@@ -1,6 +1,7 @@
 *.o
 *.mod
-tmp3
+tmp*
+data*
 b0.dat
 hybrid
 *.*~
@@ -12,3 +13,7 @@ idl_routines/
 *.eps
 *.mp4
 hybrid_d
+*.swp
+*.py
+tags
+*.pyc
