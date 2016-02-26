@@ -846,8 +846,6 @@ c     x           (comm_sz/2)-nproc_2rio
 
             call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 c save 3d arrays------------------------
-            if ((my_rank .ge. comm_sz/2-nproc_2rio) .and. 
-     x           (my_rank .lt. comm_sz/2+nproc_2rio)) then
                write(111) m
                write(111) np
 c               write(115) m
@@ -864,40 +862,38 @@ c               write(150) E
                write(181) up
                write(301) m
                write(301) temp_p/1.6e-19
-               write(305) m
-               write(305) xp
-               write(310) m
-               write(310) vp
-               write(315) m
-               write(315) beta_p
-               write(320) m
-               write(320) mrat
+c               write(305) m
+c               write(305) xp
+c               write(310) m
+c               write(310) vp
+c               write(315) m
+c               write(315) beta_p
+c               write(320) m
+c               write(320) mrat
 c               write(330) m 
 c               write(330) temp_p_1/1.6e-19
 c               write(331) m 
 c               write(331) temp_p_2/1.6e-19
 
-           endif
-
 
 c save 2d arrays----------------------
-               write(110) m
-               write(110) np(:,ny/2,:),np(:,:,2)
-               write(115) m
-               write(115) np_1(:,ny/2,:),np_1(:,:,2)
-               write(116) m
-               write(116) np_2(:,ny/2,:),np_2(:,:,2)
-               write(130) m
-               write(130) bt(:,ny/2,:,:),bt(:,:,2,:)
+c               write(110) m
+c               write(110) np(:,ny/2,:),np(:,:,2)
+c               write(115) m
+c               write(115) np_1(:,ny/2,:),np_1(:,:,2)
+c               write(116) m
+c               write(116) np_2(:,ny/2,:),np_2(:,:,2)
+c               write(130) m
+c               write(130) bt(:,ny/2,:,:),bt(:,:,2,:)
 c               write(140) m
 c               write(140) aj
 c               write(150) m
 c               write(150) E
-               write(180) m
-               write(180) up(:,ny/2,:,:),up(:,:,2,:)
-               write(300) m
-               write(300) temp_p(:,ny/2,:)/1.6e-19,
-     x                    temp_p(:,:,2)/1.6e-19
+c               write(180) m
+c               write(180) up(:,ny/2,:,:),up(:,:,2,:)
+c               write(300) m
+c               write(300) temp_p(:,ny/2,:)/1.6e-19,
+c     x                    temp_p(:,:,2)/1.6e-19
                ndiag = 0
 
          endif
