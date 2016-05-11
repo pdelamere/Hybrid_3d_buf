@@ -1,4 +1,4 @@
-0.15e-9               !magnetic field (Tesla)
+0.3e-9               !magnetic field (Tesla)
 1                    !atomic mass for reference species
 16                    !mass of pickup ion species
 0.025e15               !density (km^-3)
@@ -7,7 +7,7 @@
 100                     !diagnostic output interval
 403.0                   !flow speed (km/s) 
 14.0                  !thermal speed for Maxwellian (km/s)
-0.6                   !Ni_tot initial (fraction of Ni_max)
+0.75                   !Ni_tot initial (fraction of Ni_max)
 1                   !grid size as fraction of lambda_i
 0.05 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './databig/'             !output directory 
