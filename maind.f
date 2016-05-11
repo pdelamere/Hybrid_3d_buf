@@ -549,6 +549,11 @@ c     x     form='unformatted')
      x     status='unknown',
      x     form='unformatted')
 
+      open(311,file=trim(out_dir)//
+     x     'c.tags_'//filenum//'.dat',
+     x     status='unknown',
+     x     form='unformatted')
+
       open(315,file=trim(out_dir)//
      x     'c.beta_p_'//filenum//'.dat',
      x     status='unknown',

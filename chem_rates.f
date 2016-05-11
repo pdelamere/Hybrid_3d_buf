@@ -750,6 +750,7 @@ c     x              (np_2(i,j,k) .lt. npmax)) then
                         mrat(l) = 1.0/m_pu
 c                        m_arr(l) = mproton*m_pu
                         beta_p(l) = bpu
+                        tags(l) = 1
                         Ni_tot = l
                         cnt = cnt + 1
                         do m=1,3
@@ -813,6 +814,7 @@ c                        endif
                         mrat(l) = 1.0/m_pu
 c                        m_arr(l) = mproton*m_pu
                         beta_p(l) = bpu
+                        tags(l) = 1
                         Ni_tot = l
                         cnt = cnt + 1
                         do m=1,3

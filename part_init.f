@@ -650,6 +650,7 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
             
 
  69      enddo
+      tags(1:Ni_tot) = 1
 
 
 
