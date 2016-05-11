@@ -91,6 +91,7 @@ c     x     pf1(nx,ny,nz)      !fluid pressure at n-1/2
       real B_out_buf(Ni_max_buf,3)
       real mrat_out_buf(Ni_max_buf)
 c      real m_arr_out_buf(Ni_max_buf)
+      real part_out
 
       real temp_p(nx,ny,nz)
 c     x     temp_p_1(nx,ny,nz),
@@ -211,6 +212,8 @@ c      stop
 
 c      Ni_tot = 6
       ndiag = 0
+      ndiag_part = 0
+      part_out = 1000
       prev_Etot = 1.0
       nuei = 0.0
 
@@ -837,6 +840,7 @@ c     x                 np(ri-40,rj,rk+50),np(ri+5,rj,rk)
 c         endif
 
 
+         ndiag_part = ndiag_part + 1
          if (ndiag .eq. nout) then
 
 c            call separate_np(np_1,1.0)
@@ -867,14 +871,19 @@ c               write(150) E
                write(181) up
                write(301) m
                write(301) temp_p/1.6e-19
-c               write(305) m
-c               write(305) xp
-c               write(310) m
-c               write(310) vp
-c               write(315) m
-c               write(315) beta_p
-c               write(320) m
-c               write(320) mrat
+               if ( ndiag_part .eq. part_out ) then
+                   write(305) m
+                   write(305) xp
+                   write(310) m
+                   write(310) vp
+                   write(311) m
+                   write(311) tags
+                   write(315) m
+                   write(315) beta_p
+                   write(320) m
+                   write(320) mrat
+                   ndiag_part = 0
+                endif
 c               write(330) m 
 c               write(330) temp_p_1/1.6e-19
 c               write(331) m 
