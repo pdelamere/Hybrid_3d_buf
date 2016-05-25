@@ -145,6 +145,7 @@ c      character filenum
       character flnm
       character(len=:), allocatable::filenum
       character(len=10) :: arg
+      character(len=10) :: acc
 
 
 
@@ -332,24 +333,23 @@ c----------------------------------------------------------------------
       if (restart) then 
          write(*,*) 'opening restart.vars......'
 
-         do i = 1,comm_sz 
-            
-            if (my_rank .eq. i-1) then
 
-               write(*,*) 'reading restart.vars......',i
-
-               open(210,file='restart.vars'//filenum,
+               open(1000+my_rank,file='restart.vars'//filenum,
      x              status='unknown',
      x              form='unformatted')
+               write(*,*) 'reading restart.vars......',filenum, un
          
-               read(210)  b0,b1,b12,b1p2,bt,btc,np,
+               read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x              up,aj,nu,E,input_E,input_p,mstart,input_EeP,
      x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x              beta_p,beta_p_buf,wght,beta
 
-               open(211,file='restart.part'//filenum,
+               close(1000+my_rank)
+
+               open(1000+my_rank,file='restart.part'//filenum,
      x              status='unknown',form='unformatted')
-               read(211) vp,vp1,vplus,vminus,
+               write(*,*) 'reading restart.part......',filenum, un
+               read(1000+my_rank) vp,vp1,vplus,vminus,
      x              xp,Ep,Ni_tot,
      x              Ni_tot_sys,ijkp,
      x              mrat,
@@ -361,12 +361,7 @@ c----------------------------------------------------------------------
 
 c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
 
-               close(210)
-               close(211)
-
-            endif
-            call MPI_Barrier(MPI_COMM_WORLD,ierr)
-         enddo
+               close(1000+my_rank)
             
       endif
 
@@ -441,19 +436,24 @@ c----------------------------------------------------------------------
 c Initialize diagnostic output files
 c----------------------------------------------------------------------
 
+      if(restart) then
+          acc = 'append'
+      else
+          acc = 'sequential'
+      endif
 
       open(110,file=trim(out_dir)//
-     x     'c.np_'//filenum//'.dat',
+     x     'c.np_'//filenum//'.dat', access= acc,
      x     status='unknown',form='unformatted')
       open(111,file=trim(out_dir)//
-     x     'c.np_3d_'//filenum//'.dat',
+     x     'c.np_3d_'//filenum//'.dat', access= acc,
      x     status='unknown',form='unformatted')
 
       open(115,file=trim(out_dir)//
-     x     'c.np_3d_1_'//filenum//'.dat',
+     x     'c.np_3d_1_'//filenum//'.dat', access= acc,
      x     status='unknown',form='unformatted')
       open(116,file=trim(out_dir)//
-     x     'c.np_3d_2_'//filenum//'.dat',
+     x     'c.np_3d_2_'//filenum//'.dat', access= acc,
      x     status='unknown',form='unformatted')
 
 
@@ -477,21 +477,21 @@ c     x     form='unformatted')
 
       open(130,file=trim(out_dir)//
      x     'c.b1_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
       open(131,file=trim(out_dir)//
      x     'c.b1_3d_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(140,file=trim(out_dir)//
      x     'c.aj_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(150,file=trim(out_dir)//
      x     'c.E_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
 c      open(160,file=trim(out_dir)//
@@ -516,11 +516,11 @@ c     x     form='unformatted')
 
       open(180,file=trim(out_dir)//
      x     'c.up_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
       open(181,file=trim(out_dir)//
      x     'c.up_3d_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
 c      open(190,file=trim(out_dir)//
@@ -535,52 +535,52 @@ c     x     form='unformatted')
 
       open(300,file=trim(out_dir)//
      x     'c.temp_p_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
       open(301,file=trim(out_dir)//
      x     'c.temp_p_3d_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(305,file=trim(out_dir)//
      x     'c.xp_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(310,file=trim(out_dir)//
      x     'c.vp_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(311,file=trim(out_dir)//
      x     'c.tags_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(315,file=trim(out_dir)//
      x     'c.beta_p_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(320,file=trim(out_dir)//
      x     'c.mrat_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(320,file=trim(out_dir)//
      x     'c.mrat_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
 
       open(330,file=trim(out_dir)//
      x     'c.temp_p_3d_1_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       open(331,file=trim(out_dir)//
      x     'c.temp_p_3d_2_'//filenum//'.dat',
-     x     status='unknown',
+     x     status='unknown', access= acc,
      x     form='unformatted')
 
       
@@ -918,46 +918,40 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c Write restart file
 c----------------------------------------------------------------------
-c
-c         if (m .eq. mrestart) then
-c
-c            do i = 1,comm_sz 
-c               
-c               if (my_rank .eq. i-1) then
-c
-c                  write(*,*) 'writing restart file....',
-c     x                 'restart.part'//filenum//'.new',my_rank,cart_rank
-c                  
-c                  open(220,file='restart.vars'//filenum//'.new',
-c     x                 status='unknown',
-c     x                 form='unformatted')
-c                  
-c                  write(220) b0,b1,b12,b1p2,bt,btc,np,
-c     x              up,aj,nu,E,input_E,input_p,m,input_EeP,
-c     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
-c     x              beta_p,beta_p_buf,wght,beta
-c
-c                  open(221,file='restart.part'//filenum//'.new',
-c     x                 status='unknown',form='unformatted')
-c                  write(221)  vp,vp1,vplus,vminus,
-c     x              xp,Ep,Ni_tot,
-c     x              Ni_tot_sys,ijkp,
-c     x              mrat,
-c     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
-c     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-c     x              B_out_buf,mrat_out_buf,
-c     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-c     x              mrat_buf
-c
-c                  close(220)
-c                  close(221)
-c
-c               endif
-c               call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-c            enddo
-c
-c         endif
-c
+
+         if (m .eq. mrestart) then
+
+
+                  write(*,*) 'writing restart file....',
+     x                 'restart.part'//filenum//'.new',my_rank,cart_rank
+                  
+                  open(newunit=un,file='restart.vars'//filenum,
+     x                 status='unknown',
+     x                 form='unformatted')
+                  
+                  write(un) b0,b1,b12,b1p2,bt,btc,np,
+     x              up,aj,nu,E,input_E,input_p,m,input_EeP,
+     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x              beta_p,beta_p_buf,wght,beta
+
+                  close(un)
+                  open(newunit=un,file='restart.part'//filenum,
+     x                 status='unknown',form='unformatted')
+                  write(un)  vp,vp1,vplus,vminus,
+     x              xp,Ep,Ni_tot,
+     x              Ni_tot_sys,ijkp,
+     x              mrat,
+     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
+     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
+     x              B_out_buf,mrat_out_buf,
+     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
+     x              mrat_buf
+
+                  close(un)
+
+
+         endif
+
 c----------------------------------------------------------------------
 
 
