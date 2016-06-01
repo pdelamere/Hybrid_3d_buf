@@ -138,6 +138,7 @@ c      real divu(nx,ny,nz)
 
       real recvbuf
       integer count
+      integer restart_counter
 
       integer i,j,k,l,m,mstart
       
@@ -146,6 +147,8 @@ c      character filenum
       character(len=:), allocatable::filenum
       character(len=10) :: arg
       character(len=10) :: acc
+
+      restart_counter = mrestart
 
 
 
@@ -919,7 +922,7 @@ c----------------------------------------------------------------------
 c Write restart file
 c----------------------------------------------------------------------
 
-         if (m .eq. mrestart) then
+         if (m .eq. restart_counter) then
 
 
                   write(*,*) 'writing restart file....',
@@ -948,6 +951,7 @@ c----------------------------------------------------------------------
      x              mrat_buf
 
                   close(un)
+                  restart_counter = restart_counter + mrestart
 
 
          endif
