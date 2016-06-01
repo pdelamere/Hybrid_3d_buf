@@ -363,42 +363,10 @@ c----------------------------------------------------------------------
      x              mrat_buf
 
 c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
-
                close(1000+my_rank)
             
       endif
 
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-c      stop
-
-
-c      write(*,*) 'mstart...',mstart
-c      stop
-
-c      write(*,*) 'restart status....',restart
-c      if (restart) then 
-c         write(*,*) 'opening restart.vars......'
-c         open(210,file='restart.vars',status='unknown',
-c     x            form='unformatted')
-c         write(*,*) 'reading restart.vars......'
-c         read(210) b1,b12,b1p2,bt,btmf,nn,np,nf,vp,vp1,vplus,vminus,
-c     x            up,xp,uf,uf2,ufp2,aj,Ep,Ef,E,uplus,uminus,Evp,Euf,
-c     x            EB1,EB1x,EB1y,EB1z,EE,EeP,input_E,Ni_tot,
-c     x            ijkp,mstart,input_p,input_EeP,prev_Etot,nf1,nf3,nfp1,
-c     x            input_chex,input_bill,pf,pf1,mrat,m_arr
-c         write(*,*) 'restarting hybrid.....'
-
-c         if (my_rank .gt. 0) then 
-c          open(211,file='restart.part'//filenum,
-c     x            status='unknown',form='unformatted')
-c          read(211) vp,vp1,vplus,vminus,xp,Ep,input_E,Ni_tot,
-c     x              ijkp,input_p,mrat,m_arr
-c         endif
-c      endif
-      
-c      close(211)
-c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
@@ -459,25 +427,6 @@ c----------------------------------------------------------------------
      x     'c.np_3d_2_'//filenum//'.dat', access= acc,
      x     status='unknown',form='unformatted')
 
-
-c      open(115,file=trim(out_dir)//
-c     x     'c.nf_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-c      open(116,file=trim(out_dir)//
-c     x     'c.nf_3d_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
-c      open(120,file=trim(out_dir)//
-c     x     'c.uf_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-c      open(121,file=trim(out_dir)//
-c     x     'c.uf_3d_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
       open(130,file=trim(out_dir)//
      x     'c.b1_'//filenum//'.dat',
      x     status='unknown', access= acc,
@@ -497,26 +446,6 @@ c     x     form='unformatted')
      x     status='unknown', access= acc,
      x     form='unformatted')
 
-c      open(160,file=trim(out_dir)//
-c     x     'c.energy_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
-c      open(170,file=trim(out_dir)//
-c     x     'c.chex_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
-c      open(172,file=trim(out_dir)//
-c     x     'c.bill_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
-c      open(175,file=trim(out_dir)//
-c     x     'c.satnp_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
       open(180,file=trim(out_dir)//
      x     'c.up_'//filenum//'.dat',
      x     status='unknown', access= acc,
@@ -525,16 +454,6 @@ c     x     form='unformatted')
      x     'c.up_3d_'//filenum//'.dat',
      x     status='unknown', access= acc,
      x     form='unformatted')
-
-c      open(190,file=trim(out_dir)//
-c     x     'c.momentum_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-
-c      open(192,file=trim(out_dir)//
-c     x     'c.p_conserve_'//filenum//'.dat',
-c     x     status='unknown',               
-c     x     form='unformatted')                 
 
       open(300,file=trim(out_dir)//
      x     'c.temp_p_'//filenum//'.dat',
@@ -575,7 +494,6 @@ c     x     form='unformatted')
      x     status='unknown', access= acc,
      x     form='unformatted')
 
-
       open(330,file=trim(out_dir)//
      x     'c.temp_p_3d_1_'//filenum//'.dat',
      x     status='unknown', access= acc,
@@ -585,26 +503,6 @@ c     x     form='unformatted')
      x     'c.temp_p_3d_2_'//filenum//'.dat',
      x     status='unknown', access= acc,
      x     form='unformatted')
-
-      
-
-c      open(320,file='c.uf2.dat',status='unknown',
-c     x         form='unformatted')
-
-c      open(330,file='c.ufp2.dat',status='unknown',
-c     x         form='unformatted')
-
-c      open(340,file='c.eta.dat',status='unknown',
-c     x         form='unformatted')
-
-c      open(350,file=trim(out_dir)//
-c     x     'c.pf_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
-c      open(351,file=trim(out_dir)//
-c     x     'c.pf_3d_'//filenum//'.dat',
-c     x     status='unknown',
-c     x     form='unformatted')
 
 c----------------------------------------------------------------------
 
