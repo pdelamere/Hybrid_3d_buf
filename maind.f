@@ -336,30 +336,29 @@ c----------------------------------------------------------------------
          write(*,*) 'opening restart.vars......'
 
 
-               open(1000+my_rank,file='restart.vars'//filenum,
-     x              status='unknown',
-     x              form='unformatted')
-               write(*,*) 'reading restart.vars......',filenum, un
+          open(1000+my_rank,file=trim(out_dir)//'restart.vars'//filenum,
+     x          status='unknown',
+     x          form='unformatted')
+          write(*,*) 'reading restart.vars......',filenum, un
          
-               read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
-     x              up,aj,nu,E,input_E,input_p,mstart,input_EeP,
-     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x              beta_p,beta_p_buf,wght,beta
+          read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
+     x         up,aj,nu,E,input_E,input_p,mstart,input_EeP,
+     x         prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x         beta_p,beta_p_buf,wght,beta
 
-               close(1000+my_rank)
-
-               open(1000+my_rank,file='restart.part'//filenum,
-     x              status='unknown',form='unformatted')
-               write(*,*) 'reading restart.part......',filenum, un
-               read(1000+my_rank) vp,vp1,vplus,vminus,
-     x              xp,Ep,Ni_tot,
-     x              Ni_tot_sys,ijkp,
-     x              mrat,
-     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x              B_out_buf,mrat_out_buf,
-     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x              mrat_buf
+          close(1000+my_rank)
+          open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
+     x         status='unknown',form='unformatted')
+          write(*,*) 'reading restart.part......',filenum, un
+          read(1000+my_rank) vp,vp1,vplus,vminus,
+     x         xp,Ep,Ni_tot,
+     x         Ni_tot_sys,ijkp,
+     x         mrat,
+     x         xp_buf,vp_buf,Ep_buf,vplus_buf,
+     x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
+     x         B_out_buf,mrat_out_buf,
+     x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
+     x         mrat_buf
 
 c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
                close(1000+my_rank)
@@ -823,33 +822,33 @@ c----------------------------------------------------------------------
          if (m .eq. restart_counter) then
 
 
-                  write(*,*) 'writing restart file....',
+          write(*,*) 'writing restart file....',
      x                 'restart.part'//filenum//'.new',my_rank,cart_rank
-                  
-                  open(newunit=un,file='restart.vars'//filenum,
-     x                 status='unknown',
-     x                 form='unformatted')
-                  
-                  write(un) b0,b1,b12,b1p2,bt,btc,np,
-     x              up,aj,nu,E,input_E,input_p,m,input_EeP,
-     x              prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x              beta_p,beta_p_buf,wght,beta
+          open(1000+my_rank,file=trim(out_dir)//'restart.vars'//filenum,
+     x              status='unknown',
+     x              form='unformatted')
+         
+          write(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
+     x             up,aj,nu,E,input_E,input_p,m,input_EeP,
+     x             prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x             beta_p,beta_p_buf,wght,beta
 
-                  close(un)
-                  open(newunit=un,file='restart.part'//filenum,
-     x                 status='unknown',form='unformatted')
-                  write(un)  vp,vp1,vplus,vminus,
-     x              xp,Ep,Ni_tot,
-     x              Ni_tot_sys,ijkp,
-     x              mrat,
-     x              xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x              vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x              B_out_buf,mrat_out_buf,
-     x              in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x              mrat_buf
+          close(1000+my_rank)
+          open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
+     x             status='unknown',form='unformatted')
+          write(1000+my_rank) vp,vp1,vplus,vminus,
+     x             xp,Ep,Ni_tot,
+     x             Ni_tot_sys,ijkp,
+     x             mrat,
+     x             xp_buf,vp_buf,Ep_buf,vplus_buf,
+     x             vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
+     x             B_out_buf,mrat_out_buf,
+     x             in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
+     x             mrat_buf
 
-                  close(un)
-                  restart_counter = restart_counter + mrestart
+c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
+          close(1000+my_rank)
+                  
           restart_counter = restart_counter + mrestart
 
 
