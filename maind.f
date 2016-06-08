@@ -408,99 +408,98 @@ c----------------------------------------------------------------------
 
       if(restart) then
           acc = 'append'
+          stat = 'old'
       else
           acc = 'sequential'
+          stat = 'new'
       endif
 
-      open(110,file=trim(out_dir)//
+
+      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+      open(110,file=trim(out_dir)//'grid/'//
      x     'c.np_'//filenum//'.dat', access= acc,
      x     status='unknown',form='unformatted')
-      open(111,file=trim(out_dir)//
+      open(111,file=trim(out_dir)//'grid/'//
      x     'c.np_3d_'//filenum//'.dat', access= acc,
-     x     status='unknown',form='unformatted')
+     x     status=stat,form='unformatted')
 
-      open(115,file=trim(out_dir)//
+      open(115,file=trim(out_dir)//'grid/'//
      x     'c.np_3d_1_'//filenum//'.dat', access= acc,
-     x     status='unknown',form='unformatted')
-      open(116,file=trim(out_dir)//
+     x     status=stat,form='unformatted')
+      open(116,file=trim(out_dir)//'grid/'//
      x     'c.np_3d_2_'//filenum//'.dat', access= acc,
-     x     status='unknown',form='unformatted')
+     x     status=stat,form='unformatted')
 
-      open(130,file=trim(out_dir)//
+      open(130,file=trim(out_dir)//'grid/'//
      x     'c.b1_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
-      open(131,file=trim(out_dir)//
+      open(131,file=trim(out_dir)//'grid/'//
      x     'c.b1_3d_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(140,file=trim(out_dir)//
+      open(140,file=trim(out_dir)//'grid/'//
      x     'c.aj_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(150,file=trim(out_dir)//
+      open(150,file=trim(out_dir)//'grid/'//
      x     'c.E_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(180,file=trim(out_dir)//
+      open(180,file=trim(out_dir)//'grid/'//
      x     'c.up_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
-      open(181,file=trim(out_dir)//
+      open(181,file=trim(out_dir)//'grid/'//
      x     'c.up_3d_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(300,file=trim(out_dir)//
+      open(300,file=trim(out_dir)//'grid/'//
      x     'c.temp_p_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
-      open(301,file=trim(out_dir)//
+      open(301,file=trim(out_dir)//'grid/'//
      x     'c.temp_p_3d_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(305,file=trim(out_dir)//
+      open(305,file=trim(out_dir)//'particle/'//
      x     'c.xp_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(310,file=trim(out_dir)//
+      open(310,file=trim(out_dir)//'particle/'//
      x     'c.vp_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(311,file=trim(out_dir)//
+      open(311,file=trim(out_dir)//'particle/'//
      x     'c.tags_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(315,file=trim(out_dir)//
+      open(315,file=trim(out_dir)//'particle/'//
      x     'c.beta_p_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(320,file=trim(out_dir)//
+      open(320,file=trim(out_dir)//'particle/'//
      x     'c.mrat_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(320,file=trim(out_dir)//
-     x     'c.mrat_'//filenum//'.dat',
-     x     status='unknown', access= acc,
-     x     form='unformatted')
-
-      open(330,file=trim(out_dir)//
+      open(330,file=trim(out_dir)//'grid/'//
      x     'c.temp_p_3d_1_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(331,file=trim(out_dir)//
+      open(331,file=trim(out_dir)//'grid/'//
      x     'c.temp_p_3d_2_'//filenum//'.dat',
-     x     status='unknown', access= acc,
+     x     status=stat, access= acc,
      x     form='unformatted')
 
 c----------------------------------------------------------------------
