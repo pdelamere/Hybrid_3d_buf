@@ -148,7 +148,6 @@ c      character filenum
       character(len=10) :: arg
       character(len=10) :: acc
 
-      restart_counter = mrestart
 
 
 
@@ -366,6 +365,7 @@ c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
                close(1000+my_rank)
             
       endif
+      restart_counter = mstart + mrestart
 
 
 
@@ -850,6 +850,7 @@ c----------------------------------------------------------------------
 
                   close(un)
                   restart_counter = restart_counter + mrestart
+          restart_counter = restart_counter + mrestart
 
 
          endif
