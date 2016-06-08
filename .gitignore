@@ -14,6 +14,5 @@ idl_routines/
 *.mp4
 hybrid_d
 *.swp
-*.py
 tags
 *.pyc

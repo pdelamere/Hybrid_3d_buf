@@ -18,6 +18,7 @@ c----------------------------------------------------------------------
       USE part_init
       USE grid_interp
       USE chem_rates
+      USE iso_fortran_env, only: error_unit
 
 c      include 'incurv.h'
 
@@ -147,6 +148,9 @@ c      character filenum
       character(len=:), allocatable::filenum
       character(len=10) :: arg
       character(len=10) :: acc
+      character(len=3) :: stat
+
+      logical ex
 
 
 
@@ -155,6 +159,7 @@ c----------------------------------------------------------------------
 
       call readInputs()
       call initparameters()
+
 
 c      stop
 
@@ -330,6 +335,33 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c check for restart flag
 c----------------------------------------------------------------------
+      inquire (file=trim(out_dir)//'para.dat',exist=ex)
+      
+      ! sanity check to ensure no files get overwritten
+      if(restart .and. (.not. ex)) then
+          write(*,*) 'restart is true, but '//trim(out_dir)//' does not
+     x      exist'
+          write(*,*) 'stopping'
+          call MPI_FINALIZE(ierr)
+          stop
+      else if((.not. restart) .and. ex) then
+          write(*,*) 'not a restart, but '//trim(out_dir)//' exists'
+          write(*,*) 'stopping'
+          call MPI_FINALIZE(ierr)
+          stop
+      endif
+      if(my_rank .eq. 0) then
+          write(error_unit,*) 'mkdir 1'
+          call execute_command_line('mkdir -p '//trim(out_dir)//'grid')
+          write(error_unit,*) 'mkdir 2'
+          call execute_command_line(
+     x           'mkdir -p '//trim(out_dir)//'particle')
+          write(error_unit,*) 'cp'
+          call execute_command_line(
+     x           'cp --backup=numbered inputs.dat '//trim(out_dir))
+      endif
+      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
       mstart = 0
       write(*,*) 'restart status....',restart
       if (restart) then 
@@ -361,8 +393,29 @@ c----------------------------------------------------------------------
      x         mrat_buf
 
 c               write(*,*) 'Ni_tot....',Ni_tot,Ni_tot_sys,my_rank
-               close(1000+my_rank)
-            
+          close(1000+my_rank)
+
+         if(my_rank .eq. 0) then
+           write(error_unit,*) 'python'
+           call execute_command_line(
+     x     'python3 fileShrinker.py '//
+     x         trim(out_dir)//'grid/ '//int_to_str(mstart)
+     x         ,exitstat=ierr)
+           if(ierr .ne. 0) then
+             write(*,*) 'failed to shrink files1'
+             call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
+             stop
+           endif
+           call execute_command_line(
+     x     'python3 fileShrinker.py '//
+     x         trim(out_dir)//'particle/ '//int_to_str(mstart)
+     x         ,exitstat=ierr)
+           if(ierr .ne. 0) then
+             write(*,*) 'failed to shrink files'
+             call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
+             stop
+           endif
+         endif
       endif
       restart_counter = mstart + mrestart
 
