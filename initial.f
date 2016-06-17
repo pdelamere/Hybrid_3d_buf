@@ -117,6 +117,10 @@ c 50         continue
              nu(i,j,k) = (q*b0_init/mproton)*
      x            exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
 c             nu(i,j,k) = (q*b0_init/mproton)*
+c     x            exp(-(qy(ny)-qy(i))**2/(10.0*dx)**2) + nu_init
+c             nu(i,j,k) = (q*b0_init/mproton)*
+c     x            exp(-(qy(1)-qy(i))**2/(10.0*dx)**2) + nu_init
+c             nu(i,j,k) = (q*b0_init/mproton)*
 c     x            exp(-(qx(1)-qx(i))**2/(10.0*dx)**2) + nu_init
  60   continue
 

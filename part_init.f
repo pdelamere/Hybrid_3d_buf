@@ -334,9 +334,14 @@ c      include 'incurv.h'
       real v,vx,vy,vz
       real rnd,f
 
-      vx = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
-      vy = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
-      vz = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
+c      vx = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
+c      vy = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
+c      vz = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
+
+
+      vx = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
+      vy = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
+      vz = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
 
 
 c      flg = 0

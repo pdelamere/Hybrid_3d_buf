@@ -89,7 +89,7 @@ c      include 'incurv.h'
 
       den_part = 1/(beta*dx**3)
 
-      minden = nf_init/5.
+      minden = nf_init/10.
 c      minden = 2.0*den_part
       do i = 2,nx-1
          do j = 2,ny-1
@@ -2242,6 +2242,14 @@ c         ijkp(l,2) = j
          if (xp(l,3) .gt. qz(k)) go to 15  !find k on non-uniform 
          k = k-1
          ijkp(l,3)= k
+
+c randomize particles within cell
+
+c         if (pad_ranf() .lt. 0.05) then
+c         xp(l,1) = qx(i) + pad_ranf()*dx_grid(i)
+c         xp(l,2) = qy(j) + pad_ranf()*dy_grid(j)
+c         xp(l,3) = qz(k) + pad_ranf()*dz_grid(k)
+c         endif
 
 c         vol = 1.0/(dx*dy*(qz(k+1)-qz(k)))
          vol = 1.0/((qx(i+1)-qx(i))*(qy(j+1)-qy(j))*(qz(k+1)-qz(k)))

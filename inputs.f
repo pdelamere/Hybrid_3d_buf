@@ -35,7 +35,7 @@ c logical variable for restart
       logical restart
       integer mbegin,mrestart
       PARAMETER (restart = .false.)
-      PARAMETER (mrestart = 1000)      ! use -1 for no save
+      PARAMETER (mrestart = 10000)      ! use -1 for no save
       PARAMETER (mbegin = 0)      !mstart
 
 c neutral cloud expansion characteristics
@@ -102,7 +102,7 @@ c domain decompostion parameters
       integer n_up,n_down,n_left,n_right, cart_dims,comm_sz
       integer io_proc
 
-      parameter(comm_sz = 24)
+      parameter(comm_sz = 22)
       parameter(io_proc = nint(comm_sz/2.))
       parameter(cart_dims = 2) !dimensions for virtual topology
       parameter(n_up=1)
