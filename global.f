@@ -104,4 +104,8 @@ c parallel processor info
       integer procnum,my_rank,nbrs(4),cart_rank,cartcomm
       common /procinfo/ procnum, my_rank,nbrs,cart_rank,cartcomm
 
+c Tags for particle origin
+      real tags(Ni_max)
+      real tags_buf(Ni_max_buf)
+
       end MODULE GLOBAL

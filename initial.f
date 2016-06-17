@@ -299,9 +299,9 @@ c 10            continue
 
 c==============stretch x direction=====================================
                
-      xsf = 1.0
+      xsf = 1.4
       ri = nx/2 + ri0
-      nrgrd = 10
+      nrgrd = 20
 c up from center
       do 12 i = ri,ri+nrgrd
          dx_grid(i) = dx

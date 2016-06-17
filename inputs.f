@@ -95,7 +95,7 @@ c      PARAMETER (N_o = 5e34)     !Steady state neutral particle constant
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
       PARAMETER (S_radius = 200)    !units of dx
-      PARAMETER (ri0 = 25)           !offset to neutral center
+      PARAMETER (ri0 = 30)           !offset to neutral center
 
 c domain decompostion parameters
 

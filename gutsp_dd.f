@@ -80,6 +80,8 @@ c      include 'incurv.h'
       real, dimension(:), allocatable :: in_mass
       real, dimension(:), allocatable :: out_mass
       real, dimension(:), allocatable :: out_beta_p
+      real, dimension(:), allocatable :: out_tags
+      real, dimension(:), allocatable :: in_tags
       real, dimension(:), allocatable :: vsqrd_out
 
       real minden !minimum wake density 
@@ -164,6 +166,7 @@ c                     endif
                      mrat(l) = 1.0
 c                     m_arr(l) = mproton
                      beta_p(l) = 1.0
+                     tags(l) = 0
                      Ni_tot = Ni_tot + 1
                   enddo
                endif
@@ -198,6 +201,7 @@ c         wquad(1:Ni_tot,3) = -1.0
       allocate(out_part_wght(Ni_out,8))
       allocate(out_mass(Ni_out))
       allocate(out_beta_p(Ni_out))
+      allocate(out_tags(Ni_out))
       allocate(vsqrd_out(Ni_out))
 
       dest = nbrs(n_down)
@@ -216,6 +220,7 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
       allocate(in_ijkp(Ni_in,3))
       allocate(in_part_wght(Ni_in,8))
       allocate(in_mass(Ni_in))
+      allocate(in_tags(Ni_in))
 
 
       do m = 1,3
@@ -352,6 +357,21 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
+      out_tags(1:Ni_out) =
+     x     pack(tags(1:Ni_tot), .not.in_bounds(1:Ni_tot))
+
+      call pack_pd(tags, in_bounds, 1)
+
+      call MPI_ISEND(out_tags, Ni_out, MPI_REAL, dest, tag,
+     x     cartcomm, reqs(1), ierr)
+      call MPI_IRECV(in_tags, Ni_in, MPI_REAL, source, tag,
+     x     cartcomm, reqs(2), ierr)
+
+      call MPI_WAITALL(2, reqs, stats, ierr)
+
+      tags(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_tags(:)
+
+
 c      out_mass(1:Ni_out) = 
 c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
@@ -400,12 +420,14 @@ c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       deallocate(out_part_wght)
       deallocate(out_mass)
       deallocate(out_beta_p)
+      deallocate(out_tags)
       deallocate(vsqrd_out)
 
       deallocate(in_part)
       deallocate(in_ijkp)
       deallocate(in_part_wght)
       deallocate(in_mass)
+      deallocate(in_tags)
 
       return
       end SUBROUTINE check_min_den
@@ -773,6 +795,7 @@ cc      real m_arr_out_buf(Ni_max_buf)
       real, dimension(:,:), allocatable :: out_vp
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
+      real, dimension(:), allocatable :: out_tags
 c      real, dimension(:,:), allocatable :: out_E
 c      real, dimension(:,:), allocatable :: out_B
       integer, dimension(:,:), allocatable :: out_ijkp
@@ -794,6 +817,7 @@ c      real, dimension(:,:), allocatable :: out_B
       allocate(out_vp(Ni_out,3))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
+      allocate(out_tags(Ni_out))
       
       do m = 1,3 
          
@@ -840,6 +864,8 @@ c     x     .not.in_bounds(1:Ni_tot))
      x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
+      out_tags(1:Ni_out) = pack(tags(1:Ni_tot),
+     x     .not.in_bounds(1:Ni_tot))
       
 cc      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), 
 cc     x     in_bounds(1:Ni_tot))
@@ -850,6 +876,7 @@ c     x     in_bounds(1:Ni_tot))
       
       call pack_pd(mrat, in_bounds, 1)
       call pack_pd(beta_p, in_bounds, 1)
+      call pack_pd(tags, in_bounds, 1)
             
       do m = 1,3
          xp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_xp(:,m)
@@ -859,6 +886,7 @@ c     x     in_bounds(1:Ni_tot))
 c      m_arr_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_m_arr(:)
       mrat_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_mrat(:)
       beta_p_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_beta_p(:)
+      tags_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_tags(:)
       
 c     remove energy
 
@@ -890,6 +918,7 @@ c      enddo
       deallocate(out_vp)
       deallocate(out_mrat)
       deallocate(out_beta_p)
+      deallocate(out_tags)
       
 
       return
@@ -925,6 +954,7 @@ c      real m_arr_out_buf(Ni_max_buf)
 c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
+      real, dimension(:), allocatable :: out_tags
       real, dimension(:,:), allocatable :: out_E
       real, dimension(:,:), allocatable :: out_B
       integer, dimension(:,:), allocatable :: out_ijkp
@@ -952,6 +982,7 @@ c      endwhere
 c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
+      allocate(out_tags(Ni_out))
       
 
       do m = 1,3 
@@ -1000,6 +1031,8 @@ c     x     .not.in_bounds(1:Ni_tot))
      x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
+      out_tags(1:Ni_out) = pack(tags(1:Ni_tot), 
+     x     .not.in_bounds(1:Ni_tot))
       
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -1027,6 +1060,7 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(mrat, in_bounds, 1)
       call pack_pd(beta_p, in_bounds, 1)
+      call pack_pd(tags, in_bounds, 1)
             
 c     remove energy
 
@@ -1066,6 +1100,7 @@ c      endif
 c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
+      deallocate(out_tags)
       
       Ni_tot = count(in_bounds)
 
@@ -1105,6 +1140,8 @@ c      include 'incurv.h'
       real, dimension(:), allocatable :: in_mass
       real, dimension(:), allocatable :: out_mass
       real, dimension(:), allocatable :: out_beta_p
+      real, dimension(:), allocatable :: out_tags
+      real, dimension(:), allocatable :: in_tags
       real, dimension(:), allocatable :: vsqrd_out
       integer :: cnt
 
@@ -1353,6 +1390,7 @@ c         wquad(1:Ni_tot,3) = 0.0
       allocate(out_mass(Ni_out))
       allocate(vsqrd_out(Ni_out))
       allocate(out_beta_p(Ni_out))
+      allocate(out_tags(Ni_out))
 
 c      write(*,*) 'Ni_out up...',Ni_out, my_rank
 
@@ -1377,6 +1415,7 @@ c      call MPI_WAITALL(2, reqs, stats, ierr)
       allocate(in_ijkp(Ni_in,3))
       allocate(in_part_wght(Ni_in,8))
       allocate(in_mass(Ni_in))
+      allocate(in_tags(Ni_in))
 
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -1573,6 +1612,20 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
+      out_tags(1:Ni_out) =
+     x     pack(tags(1:Ni_tot), .not.in_bounds(1:Ni_tot))
+
+      call pack_pd(tags, in_bounds, 1)
+
+      call MPI_ISEND(out_tags, Ni_out, MPI_REAL, dest, tag,
+     x     cartcomm, reqs(1), ierr)
+      call MPI_IRECV(in_tags, Ni_in, MPI_REAL, source, tag,
+     x     cartcomm, reqs(2), ierr)
+
+      call MPI_WAITALL(2, reqs, stats, ierr)
+
+      tags(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_tags(:)
+
 c      out_mass(1:Ni_out) = 
 c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
@@ -1640,12 +1693,14 @@ c      enddo
       deallocate(out_part_wght)
       deallocate(out_mass)
       deallocate(out_beta_p)
+      deallocate(out_tags)
       deallocate(vsqrd_out)
 
       deallocate(in_part)
       deallocate(in_ijkp)
       deallocate(in_part_wght)
       deallocate(in_mass)
+      deallocate(in_tags)
 
 
 c ---------z exchange down---------------------------------------
@@ -1679,6 +1734,7 @@ c         wquad(1:Ni_tot,3) = -1.0
       allocate(out_mass(Ni_out))
       allocate(vsqrd_out(Ni_out))
       allocate(out_beta_p(Ni_out))
+      allocate(out_tags(Ni_out))
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -1700,6 +1756,7 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
       allocate(in_ijkp(Ni_in,3))
       allocate(in_part_wght(Ni_in,8))
       allocate(in_mass(Ni_in))
+      allocate(in_tags(Ni_in))
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -1839,6 +1896,21 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
+      out_tags(1:Ni_out) =
+     x     pack(tags(1:Ni_tot), .not.in_bounds(1:Ni_tot))
+
+      call pack_pd(tags, in_bounds, 1)
+
+      call MPI_ISEND(out_tags, Ni_out, MPI_REAL, dest, tag,
+     x     cartcomm, reqs(1), ierr)
+      call MPI_IRECV(in_tags, Ni_in, MPI_REAL, source, tag,
+     x     cartcomm, reqs(2), ierr)
+
+      call MPI_WAITALL(2, reqs, stats, ierr)
+
+      tags(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_tags(:)
+
+
 c      out_mass(1:Ni_out) = 
 c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
@@ -1891,12 +1963,14 @@ c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       deallocate(out_part_wght)
       deallocate(out_mass)
       deallocate(out_beta_p)
+      deallocate(out_tags)
       deallocate(vsqrd_out)
 
       deallocate(in_part)
       deallocate(in_ijkp)
       deallocate(in_part_wght)
       deallocate(in_mass)
+      deallocate(in_tags)
 
       return
       end SUBROUTINE move_ion_half

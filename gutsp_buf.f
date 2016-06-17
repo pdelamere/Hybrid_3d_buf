@@ -55,6 +55,7 @@ c      m_arr_buf(Ni_tot_buf+1:) = m_pu*mproton
       mrat_buf(Ni_tot_buf+1:) = 1.0/m_pu       
       beta_p_buf(1:Ni_tot_buf) = 1.0
       beta_p_buf(Ni_tot_buf+1:) = 1.0
+      tags_buf(1:Ni_tot_buf) = 1
 
 c initialize He++ (m/q =2) 
 
@@ -80,6 +81,7 @@ c initialize He++ (m/q =2)
 c         m_arr_buf(l) = 2*mproton
          mrat_buf(l) = 1./2.
          beta_p_buf(l) = b_mq_2
+         tags_buf(l) = 1
 
  20   continue
          
@@ -98,6 +100,7 @@ c add shell distribution
 c         m_arr_buf(l) = mproton
          mrat_buf(l) = 1.0
          beta_p_buf(l) = b_shl
+         tags_buf(l) = 1
          
          theta = pad_ranf()*PI
          phi = pad_ranf()*2*PI
@@ -393,6 +396,7 @@ c      include 'incurv.h'
 c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
+      real, dimension(:), allocatable :: out_tags
 
       in_bounds_buf(1:Ni_tot_buf) = .true.
       in_bounds_buf(Ni_tot_buf+1:) = .false.
@@ -408,6 +412,7 @@ c      real, dimension(:), allocatable :: out_m_arr
 c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
+      allocate(out_tags(Ni_out))
       
       do m = 1,3 
 
@@ -429,6 +434,8 @@ c     x                            .not.in_bounds_buf(1:Ni_tot_buf))
 
       out_beta_p(1:Ni_out) = pack(beta_p_buf(1:Ni_tot_buf), 
      x                            .not.in_bounds_buf(1:Ni_tot_buf))
+      out_tags(1:Ni_out) = pack(tags_buf(1:Ni_tot_buf), 
+     x                            .not.in_bounds_buf(1:Ni_tot_buf))
 
 c      m_arr_buf(1:Ni_tot_in) = pack(m_arr_buf(1:Ni_tot_buf), 
 c     x                              in_bounds_buf(1:Ni_tot_buf))
@@ -436,6 +443,8 @@ c     x                              in_bounds_buf(1:Ni_tot_buf))
      x                             in_bounds_buf(1:Ni_tot_buf))
       
       beta_p_buf(1:Ni_tot_in) = pack(beta_p_buf(1:Ni_tot_buf), 
+     x                             in_bounds_buf(1:Ni_tot_buf))
+      tags_buf(1:Ni_tot_in) = pack(tags_buf(1:Ni_tot_buf), 
      x                             in_bounds_buf(1:Ni_tot_buf))
       
 
@@ -495,6 +504,7 @@ c         beta_p(l) = 1.0    !add as solar wind ions
 c      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
       mrat(Ni_tot+1:Ni_tot+Ni_out) = out_mrat(:)
       beta_p(Ni_tot+1:Ni_tot+Ni_out) = out_beta_p(:)
+      tags(Ni_tot+1:Ni_tot+Ni_out) = out_tags(:)
       
       do l = Ni_tot+1,Ni_tot+Ni_out 
          do m=1,3
@@ -513,6 +523,7 @@ c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
 c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
+      deallocate(out_tags)
 
 
       return
