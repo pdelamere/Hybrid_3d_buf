@@ -5,6 +5,7 @@
 
 if [[ $# -ne 1 ]]; then
     printf "Wrong number of command line aguments.\n"
+    printf "Usage: run.sh <num-proc>\n"
     exit 10
 fi
 
