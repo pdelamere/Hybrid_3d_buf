@@ -99,11 +99,9 @@ c      PARAMETER (dNi = 2500)
 
 c domain decompostion parameters
 
-      integer n_up,n_down,n_left,n_right, cart_dims,comm_sz
+      integer n_up,n_down,n_left,n_right, cart_dims
       integer io_proc
 
-      parameter(comm_sz = 22)
-      parameter(io_proc = nint(comm_sz/2.))
       parameter(cart_dims = 2) !dimensions for virtual topology
       parameter(n_up=1)
       parameter(n_down=2)
@@ -114,7 +112,7 @@ c domain decompostion parameters
       data periods /.true.,.false./, reorder /.false./
 
       integer dims(cart_dims), tag, cart_coords(2)
-      data dims /comm_sz,1/, tag /1/ !dimenions, /rows,columns/
+      data tag /1/ !dimenions, /rows,columns/
 
 
 c solar wind composition

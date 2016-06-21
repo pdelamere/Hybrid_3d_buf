@@ -190,6 +190,9 @@ c      filenum = adjustr(adjustl(filenum))
       write(*,*) 'filenum...',filenum,my_rank+1
 
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
+      io_proc = nint(procnum/2.)
+      dims(1) = procnum
+      dims(2) = 1
 
 c create virtual topology (set dimensions in para.h)
 
