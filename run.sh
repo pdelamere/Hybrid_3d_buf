@@ -42,8 +42,10 @@ make clean
 make || { printf "\nBuild failed, aborting\n"; exit 2; }
 
 # Make a folder to save all the data. Error if it already exists.
-mkdir -p $HOME/data/ || { printf "There was a problem making the data folder.\n"; exit 3; }
-DATA_FOLDER=$HOME/data/pluto.$(date +"%Y-%m-%d-%T")
+DATE=$(date +"%Y-%m-%d")
+TIME=$(date +"%T")
+mkdir -p $HOME/data/$DATE || { printf "There was a problem making the data folder.\n"; exit 3; }
+DATA_FOLDER=$HOME/data/$DATE/pluto.$TIME
 mkdir $DATA_FOLDER || { printf "There was a problem making the folder for this run.\n"; exit 4; }
 
 # Copy required files into the new data folder
