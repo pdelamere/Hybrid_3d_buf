@@ -166,6 +166,18 @@ c      stop
       call MPI_INIT(ierr)
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
 
+      ! Do some initial setup of the working directory.
+      if(my_rank .eq. 0) then
+          write(error_unit,*) 'mkdir 1'
+          call execute_command_line('mkdir -p '//trim(out_dir)//'grid')
+          write(error_unit,*) 'mkdir 2'
+          call execute_command_line(
+     x           'mkdir -p '//trim(out_dir)//'particle')
+          write(error_unit,*) 'cp'
+          call execute_command_line(
+     x           'cp --backup=numbered inputs.dat '//trim(out_dir))
+      endif
+
       filenum = int_to_str(my_rank+1)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -349,16 +361,6 @@ c----------------------------------------------------------------------
           write(*,*) 'stopping'
           call MPI_FINALIZE(ierr)
           stop
-      endif
-      if(my_rank .eq. 0) then
-          write(error_unit,*) 'mkdir 1'
-          call execute_command_line('mkdir -p '//trim(out_dir)//'grid')
-          write(error_unit,*) 'mkdir 2'
-          call execute_command_line(
-     x           'mkdir -p '//trim(out_dir)//'particle')
-          write(error_unit,*) 'cp'
-          call execute_command_line(
-     x           'cp --backup=numbered inputs.dat '//trim(out_dir))
       endif
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
