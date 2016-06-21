@@ -120,9 +120,9 @@ c domain decompostion parameters
 c solar wind composition
       real f_mq_2,b_mq_2,f_shl,b_shl
       PARAMETER (b_mq_2 = 2.0)
-      PARAMETER (f_mq_2 = 0.1/b_mq_2) 
+      PARAMETER (f_mq_2 = 0.1*b_mq_2) 
       PARAMETER (b_shl = 2.0)
-      PARAMETER (f_shl = 0.1/b_shl)
+      PARAMETER (f_shl = 0.1*b_shl)
 
       CONTAINS
 
