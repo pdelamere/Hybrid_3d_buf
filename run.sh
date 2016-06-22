@@ -3,30 +3,24 @@
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
 
-USAGE="Usage: run.sh [-i] <num-proc>\n"
-if [[ $# -ne 1 ]]; then
-    if [[ $# -ne 2 ]]; then
-        printf "Wrong number of command line arguments.\n"
-        printf $USAGE
-        exit 10
-    elif [[ $1 -ne "-i" ]]; then
-        printf "Invalid option"
-        printf $USAGE
-        exit 10
-    else # [[ $# -eq 2 && $1 -eq "-i" ]]; then
-        IGNORE=true
-        NUM_PROC=$2
-    fi
-else
-    IGNORE=false
-    NUM_PROC=$1
-fi
+usage() { echo "Usage: $0 [-i] <num-proc>" 1>&2; exit 1; }
+IGNORE=false #default value
+while getopts ":i" opt; do
+    case $opt in
+        i)
+            IGNORE=true
+            ;;
+        \?)
+            usage
+    esac
+done
+shift $((OPTIND-1))
 
+NUM_PROC=$1
 re='^[0-9]+$'
 if ! [[ $NUM_PROC =~ $re ]]; then
-    printf "Invalid number of processors"
-    printf $USAGE
-    exit 10
+    printf "Invalid number of processors\n"
+    usage
 fi
 
 # Check if working directory is clean
