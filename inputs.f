@@ -34,8 +34,6 @@ c      PARAMETER (out_dir='./tmp3/')
 c logical variable for restart
       logical restart
       integer mbegin,mrestart
-      PARAMETER (restart = .false.)
-      PARAMETER (mrestart = 10000)      ! use -1 for no save
       PARAMETER (mbegin = 0)      !mstart
 
 c neutral cloud expansion characteristics
@@ -157,6 +155,8 @@ c      write(*,*) 'Ni_max....',Ni_max
       write(*,*) 'nu_init_frac......',nu_init_frac
       read(100,*) out_dir
       write(*,*) 'output dir........',out_dir
+      read(100,*) mrestart
+      write(*,*) 'mrestart...........',mrestart
      
       close(100)
       end subroutine readInputs

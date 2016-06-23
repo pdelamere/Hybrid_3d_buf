@@ -216,6 +216,10 @@ c Initialize all variables
 c----------------------------------------------------------------------
       write(*,*) 'initializing variables...'
 
+
+      call get_command_argument(number=1,value=arg,status=ierr)
+      restart = (trim(arg) == "restart")
+
       if (.not. restart) then
          Ni_tot = Ni_tot_0
          Ni_tot_sw = Ni_tot
