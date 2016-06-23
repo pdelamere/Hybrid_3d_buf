@@ -3,15 +3,25 @@
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
 
-usage() { echo "Usage: $0 [-i] <num-proc>" 1>&2; exit 1; }
-IGNORE=false #default value
-while getopts ":i" opt; do
+usage() { echo "Usage: $0 [-n] [-i] [-m <mpi-path>] <num-proc>" 1>&2; exit 1; }
+# Default values
+IGNORE=false
+MPI=""
+BUILD=true
+while getopts ":im:n" opt; do
     case $opt in
-        i)
+        i)# Ignore the fact that the changes are not commited
             IGNORE=true
+            ;;
+        m)# Specify the path to mpi
+            MPI=$OPTARG/bin/
+            ;;
+        n)# Disable recompiling the program
+            BUILD=false
             ;;
         \?)
             usage
+            ;;
     esac
 done
 shift $((OPTIND-1))
@@ -31,9 +41,10 @@ if [ "$IGNORE" = false ]; then
 fi
 
 # Make sure the program is rebuilt correctly.
-printf "Attempting to rebuild the working directory from scratch.\n"
-make clean
-make || { printf "\nBuild failed, aborting\n"; exit 2; }
+if [ "$BUILD" = true ]; then
+    make clean
+    make FC=${MPI}mpif90 || { printf "\nBuild failed, aborting\n"; exit 2; }
+fi
 
 # Make a folder to save all the data. Error if it already exists.
 DATE=$(date +"%Y-%m-%d")
@@ -54,6 +65,6 @@ fi
 
 # Finally, run the program from the data folder
 cd $DATA_FOLDER
-mpirun -n $NUM_PROC $DATA_FOLDER/hybrid > $DATA_FOLDER/output 2> $DATA_FOLDER/error &
+${MPI}mpirun -n $NUM_PROC $DATA_FOLDER/hybrid > $DATA_FOLDER/output 2> $DATA_FOLDER/error &
 
 echo Done
