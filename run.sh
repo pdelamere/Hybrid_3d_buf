@@ -2,7 +2,7 @@
 # Script for running the hybrid code.
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
-
+COMMAND_LINE="$0 $@"
 usage() { echo "Usage: $0 [-n] [-i] [-m <mpi-path>] <num-proc>" 1>&2; exit 1; }
 # Default values
 IGNORE=false
@@ -57,6 +57,8 @@ mkdir $DATA_FOLDER || { printf "There was a problem making the folder for this r
 cp hybrid $DATA_FOLDER/hybrid || { printf "Error while copying executable\n"; exit 5; }
 cp inputs.dat $DATA_FOLDER/inputs.dat || { printf "Error while copying inputs.dat\n"; exit 6; }
 cp fileShrinker.py $DATA_FOLDER/fileShrinker.py || { printf "Error while copying fileShrinker.py\n"; exit 7; }
+
+echo $COMMAND_LINE > $DATA_FOLDER/invocation
 
 # Record the version of the code being used.
 if [ "$IGNORE" = false ]; then
