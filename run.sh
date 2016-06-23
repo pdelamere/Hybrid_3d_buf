@@ -3,7 +3,7 @@
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
 COMMAND_LINE="$0 $@"
-usage() { echo "Usage: $0 [-n] [-i] [-m <mpi-path>] <num-proc>" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-i][-m <mpi-path>][-n][-d <data-folder>] <num-proc>" 1>&2; exit 1; }
 # Default values
 IGNORE=false
 MPI=""
@@ -20,7 +20,7 @@ while getopts ":im:nd:" opt; do
         n)# Disable recompiling the program
             BUILD=false
             ;;
-        d)
+        d)# Set folder to hold data
             MAIN_DATA="$OPTARG"
         \?)
             usage
