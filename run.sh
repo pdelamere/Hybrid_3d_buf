@@ -8,17 +8,20 @@ usage() { echo "Usage: $0 [-n] [-i] [-m <mpi-path>] <num-proc>" 1>&2; exit 1; }
 IGNORE=false
 MPI=""
 BUILD=true
-while getopts ":im:n" opt; do
+MAIN_DATA="$HOME/data"
+while getopts ":im:nd:" opt; do
     case $opt in
         i)# Ignore the fact that the changes are not commited
             IGNORE=true
             ;;
         m)# Specify the path to mpi
-            MPI=$OPTARG/bin/
+            MPI="${OPTARG}/bin/"
             ;;
         n)# Disable recompiling the program
             BUILD=false
             ;;
+        d)
+            MAIN_DATA="$OPTARG"
         \?)
             usage
             ;;
@@ -28,7 +31,7 @@ shift $((OPTIND-1))
 
 NUM_PROC=$1
 re='^[0-9]+$'
-if ! [[ $NUM_PROC =~ $re ]]; then
+if ! [[ "$NUM_PROC" =~ $re ]]; then
     printf "Invalid number of processors\n"
     usage
 fi
@@ -47,26 +50,26 @@ if [ "$BUILD" = true ]; then
 fi
 
 # Make a folder to save all the data. Error if it already exists.
-DATE=$(date +"%Y-%m-%d")
-TIME=$(date +"%T")
-mkdir -p $HOME/data/$DATE || { printf "There was a problem making the data folder.\n"; exit 3; }
-DATA_FOLDER=$HOME/data/$DATE/pluto.$TIME
-mkdir $DATA_FOLDER || { printf "There was a problem making the folder for this run.\n"; exit 4; }
+DATE="$(date +"%Y-%m-%d")"
+TIME="$(date +"%T")"
+mkdir -p "$HOME/data/$DATE" || { printf "There was a problem making the data folder.\n"; exit 3; }
+DATA_FOLDER="$HOME/data/$DATE/pluto.$TIME"
+mkdir "$DATA_FOLDER" || { printf "There was a problem making the folder for this run.\n"; exit 4; }
 
 # Copy required files into the new data folder
-cp hybrid $DATA_FOLDER/hybrid || { printf "Error while copying executable\n"; exit 5; }
-cp inputs.dat $DATA_FOLDER/inputs.dat || { printf "Error while copying inputs.dat\n"; exit 6; }
-cp fileShrinker.py $DATA_FOLDER/fileShrinker.py || { printf "Error while copying fileShrinker.py\n"; exit 7; }
+cp hybrid "$DATA_FOLDER/hybrid" || { printf "Error while copying executable\n"; exit 5; }
+cp inputs.dat "$DATA_FOLDER/inputs.dat" || { printf "Error while copying inputs.dat\n"; exit 6; }
+cp fileShrinker.py "$DATA_FOLDER/fileShrinker.py" || { printf "Error while copying fileShrinker.py\n"; exit 7; }
 
-echo $COMMAND_LINE > $DATA_FOLDER/invocation
+echo "$COMMAND_LINE" > "$DATA_FOLDER/invocation"
 
 # Record the version of the code being used.
 if [ "$IGNORE" = false ]; then
-    git rev-parse --verify HEAD > $DATA_FOLDER/version.sha1 || { printf "Error getting the git commit sha1.\n"; exit 8; }
+    git rev-parse --verify HEAD > "$DATA_FOLDER/version.sha1" || { printf "Error getting the git commit sha1.\n"; exit 8; }
 fi
 
 # Finally, run the program from the data folder
-cd $DATA_FOLDER
-${MPI}mpirun -n $NUM_PROC $DATA_FOLDER/hybrid > $DATA_FOLDER/output 2> $DATA_FOLDER/error &
+cd "$DATA_FOLDER"
+eval "${MPI}mpirun -n $NUM_PROC $DATA_FOLDER/hybrid > $DATA_FOLDER/output 2> $DATA_FOLDER/error &"
 
 echo Done
