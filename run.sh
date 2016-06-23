@@ -3,13 +3,14 @@
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
 COMMAND_LINE="$0 $@"
-usage() { echo "Usage: $0 [-i][-m <mpi-path>][-n][-d <data-folder>] <num-proc>" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-i][-m <mpi-path>][-n][-d <data-folder>][-f <flags>] <num-proc>" 1>&2; exit 1; }
 # Default values
 IGNORE=false
 MPI=""
 BUILD=true
 MAIN_DATA="$HOME/data"
-while getopts ":im:nd:" opt; do
+unset FFLAGS
+while getopts ":im:nd:f:" opt; do
     case $opt in
         i)# Ignore the fact that the changes are not commited
             IGNORE=true
@@ -22,6 +23,9 @@ while getopts ":im:nd:" opt; do
             ;;
         d)# Set folder to hold data
             MAIN_DATA="$OPTARG"
+            ;;
+        f)# Set flags for the compiler. Overrides all defaults
+            FFLAGS="$OPTARG"
             ;;
         \?)
             usage
@@ -47,7 +51,12 @@ fi
 # Make sure the program is rebuilt correctly.
 if [ "$BUILD" = true ]; then
     make clean
-    make FC=${MPI}mpif90 || { printf "\nBuild failed, aborting\n"; exit 2; }
+    if [ -z ${FFLAGS+x} ]; then # Check if FFLAGS is set
+        make FC="${MPI}mpif90" || { printf "\nBuild failed, aborting\n"; exit 2; }
+    else
+        make FC="${MPI}mpif90" FFLAGS="$FFLAGS" || { printf "\nBuild failed, aborting\n"; exit 2; }
+    fi
+
 fi
 
 # Make a folder to save all the data. Error if it already exists.
