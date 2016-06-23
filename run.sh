@@ -2,7 +2,7 @@
 # Script for running the hybrid code.
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
-COMMAND_LINE="$0 $@"
+COMMAND_LINE="${0##*/} $@"
 usage() { echo "Usage: $0 [-i][-m <mpi-path>][-n][-d <data-folder>][-f <flags>] <num-proc>" 1>&2; exit 1; }
 # Default values
 IGNORE=false
