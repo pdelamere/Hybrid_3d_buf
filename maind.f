@@ -168,12 +168,9 @@ c      stop
 
       ! Do some initial setup of the working directory.
       if(my_rank .eq. 0) then
-          write(error_unit,*) 'mkdir 1'
           call execute_command_line('mkdir -p '//trim(out_dir)//'grid')
-          write(error_unit,*) 'mkdir 2'
           call execute_command_line(
      x           'mkdir -p '//trim(out_dir)//'particle')
-          write(error_unit,*) 'cp'
           call execute_command_line(
      x           'cp --backup=numbered inputs.dat '//trim(out_dir))
       endif
