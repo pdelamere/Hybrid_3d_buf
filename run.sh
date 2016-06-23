@@ -22,6 +22,7 @@ while getopts ":im:nd:" opt; do
             ;;
         d)# Set folder to hold data
             MAIN_DATA="$OPTARG"
+            ;;
         \?)
             usage
             ;;
