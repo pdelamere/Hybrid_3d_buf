@@ -95,7 +95,7 @@ fi
 
 # Record the version of the code being used.
 if [ "$IGNORE" = false ]; then
-    git rev-parse --verify HEAD > "$DATA_FOLDER/version.sha1" || { echo "Error getting the git commit sha1."; exit 8; }
+    git show --quiet --pretty=fuller HEAD > "$DATA_FOLDER/commit" || { echo "Error getting the git commit sha1."; exit 8; }
 fi
 
 # Finally, run the program from the data folder
