@@ -3,7 +3,11 @@
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
 COMMAND_LINE="${0##*/} $@"
-usage() { echo "Usage: $0 [-h][-i][-p <mpi-path>][-n][-d <data-folder>][-f <flags>][-m <message>] <num-proc>" 1>&2; exit 1; }
+usage() { 
+    printf "Usage: $0 [-h][-i][-p <mpi-path>][-n][-d <data-folder>][-f <flags>][-m <message>] <num-proc>\n"
+    
+
+}
 # Default values
 IGNORE=false
 MPI=""
@@ -75,10 +79,10 @@ cp hybrid "$DATA_FOLDER/hybrid" || { printf "Error while copying executable\n"; 
 cp inputs.dat "$DATA_FOLDER/inputs.dat" || { printf "Error while copying inputs.dat\n"; exit 6; }
 cp fileShrinker.py "$DATA_FOLDER/fileShrinker.py" || { printf "Error while copying fileShrinker.py\n"; exit 7; }
 
-echo "$COMMAND_LINE" > "$DATA_FOLDER/invocation"
+printf "$COMMAND_LINE" > "$DATA_FOLDER/invocation"
 
 if ! [ -z ${MESSAGE+x} ]; then
-    echo "$MESSAGE" > "$DATA_FOLDER/message"
+    printf "$MESSAGE" > "$DATA_FOLDER/message"
 fi
 
 # Record the version of the code being used.
@@ -90,4 +94,4 @@ fi
 cd "$DATA_FOLDER"
 eval "${MPI}mpirun -n $NUM_PROC $DATA_FOLDER/hybrid > $DATA_FOLDER/output 2> $DATA_FOLDER/error &"
 
-echo Done
+printf "Done\n"
