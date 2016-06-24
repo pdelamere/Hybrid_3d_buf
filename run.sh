@@ -100,6 +100,6 @@ fi
 
 # Finally, run the program from the data folder
 cd "$DATA_FOLDER"
-eval "${MPI}mpirun -n $NUM_PROC $DATA_FOLDER/hybrid > $DATA_FOLDER/output 2> $DATA_FOLDER/error &"
+"${MPI}mpirun" -n "$NUM_PROC" "$DATA_FOLDER/hybrid" > "$DATA_FOLDER/output" 2> "$DATA_FOLDER/error" &
 
 echo "Done"
