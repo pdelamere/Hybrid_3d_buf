@@ -4,9 +4,17 @@
 # of the hybrid code being used is stored along with its output.
 COMMAND_LINE="${0##*/} $@"
 usage() { 
-    printf "Usage: $0 [-h][-i][-p <mpi-path>][-n][-d <data-folder>][-f <flags>][-m <message>] <num-proc>\n"
-    
-
+    echo "Usage: "
+    echo "$0 [-h]"
+    echo "$0 [-i][-p <mpi-path>][-n][-d <data-folder>][-f <flags>][-m <message>] <num-proc>"
+    echo "-h                :   Print this help message and exit"
+    echo "-i                :   Ignore uncommited changes in the working directory"
+    echo "-p <mpi-path>     :   Specify the path to the mpi installation directory"
+    echo "-n                :   Disable recompiling the program (nocompile)"
+    echo "-d <data-folder>  :   Specify the path where data will be stored"
+    echo "-f <flags>        :   Override the default compiler flags"
+    echo "-m <message>      :   Provide a message to be saved in the data folder"
+    exit 10
 }
 # Default values
 IGNORE=false
