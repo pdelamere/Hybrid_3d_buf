@@ -2,7 +2,11 @@
 # Script for running the hybrid code.
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
-COMMAND_LINE="${0##*/} $@"
+COMMAND_LINE="\"${0##*/}\""
+for var in "$@"; do
+    COMMAND_LINE="$COMMAND_LINE \"$var\" "
+done
+
 usage() { 
     echo "Usage: "
     echo "$0 [-h]"
@@ -16,6 +20,7 @@ usage() {
     echo "-m <message>      :   Provide a message to be saved in the data folder"
     exit 10
 }
+
 # Default values
 IGNORE=false
 MPI=""
