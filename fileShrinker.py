@@ -14,10 +14,6 @@ from os.path import isfile, join
 
 files = [open(join(mypath,f),'r+b') for f in listdir(mypath) if isfile(join(mypath,f))]
 
-print(list(map(lambda x:x.name,files)))
-print('waiting...')
-input()
-
 import struct
 
 for f in files:
