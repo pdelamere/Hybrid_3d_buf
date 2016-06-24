@@ -3,7 +3,7 @@
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
 COMMAND_LINE="${0##*/} $@"
-usage() { echo "Usage: $0 [-i][-p <mpi-path>][-n][-d <data-folder>][-f <flags>][-m <message>] <num-proc>" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-h][-i][-p <mpi-path>][-n][-d <data-folder>][-f <flags>][-m <message>] <num-proc>" 1>&2; exit 1; }
 # Default values
 IGNORE=false
 MPI=""
@@ -11,7 +11,7 @@ BUILD=true
 MAIN_DATA="$HOME/data"
 unset FFLAGS
 unset MESSAGE
-while getopts ":ip:nd:f:m:" opt; do
+while getopts ":hip:nd:f:m:" opt; do
     case $opt in
         i)# Ignore the fact that the changes are not commited
             IGNORE=true
@@ -31,7 +31,7 @@ while getopts ":ip:nd:f:m:" opt; do
         m)# Save a message in the data folder
             MESSAGE="$OPTARG"
             ;;
-        \?)
+        \?|h)
             usage
             ;;
     esac
