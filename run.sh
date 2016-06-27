@@ -33,8 +33,9 @@ while getopts ":hip:nd:f:m:" opt; do
         i)# Ignore the fact that the changes are not commited
             IGNORE=true
             ;;
-        p)# Specify the path to mpi
+        p)# Specify the path to mpi and save it for restarting.
             MPI="${OPTARG}/bin/"
+            echo "$MPI" > mpipath
             ;;
         n)# Disable recompiling the program
             BUILD=false
@@ -91,6 +92,7 @@ mkdir "$DATA_FOLDER" || { echo "There was a problem making the folder for this r
 cp hybrid "$DATA_FOLDER/hybrid" || { echo "Error while copying executable"; exit 5; }
 cp inputs.dat "$DATA_FOLDER/inputs.dat" || { echo "Error while copying inputs.dat"; exit 6; }
 cp fileShrinker.py "$DATA_FOLDER/fileShrinker.py" || { echo "Error while copying fileShrinker.py"; exit 7; }
+cp restart.sh "$DATA_FOLDER/restart.sh" || { echo "Error while copying restart.sh"; exit 7; }
 
 echo "$COMMAND_LINE" > "$DATA_FOLDER/invocation"
 
