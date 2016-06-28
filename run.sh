@@ -4,7 +4,7 @@
 # of the hybrid code being used is stored along with its output.
 COMMAND_LINE="\"${0##*/}\""
 for var in "$@"; do
-    COMMAND_LINE="$COMMAND_LINE \"$var\" "
+    COMMAND_LINE="$COMMAND_LINE \"$var\""
 done
 
 usage() { 
