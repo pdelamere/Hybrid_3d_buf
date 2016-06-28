@@ -35,7 +35,6 @@ while getopts ":hip:nd:f:m:" opt; do
             ;;
         p)# Specify the path to mpi and save it for restarting.
             MPI="${OPTARG}/bin/"
-            echo "$MPI" > mpipath
             ;;
         n)# Disable recompiling the program
             BUILD=false
@@ -95,6 +94,7 @@ cp fileShrinker.py "$DATA_FOLDER/fileShrinker.py" || { echo "Error while copying
 cp restart.sh "$DATA_FOLDER/restart.sh" || { echo "Error while copying restart.sh"; exit 7; }
 
 echo "$COMMAND_LINE" > "$DATA_FOLDER/invocation"
+echo "$MPI" > "$DATA_FOLDER/mpipath"
 
 if ! [ -z ${MESSAGE+x} ]; then
     echo "$MESSAGE" > "$DATA_FOLDER/message"
