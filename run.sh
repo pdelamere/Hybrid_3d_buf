@@ -66,16 +66,16 @@ fi
 # if not, exit with error message.
 if [ "$IGNORE" = false ]; then
     git diff-index --quiet HEAD -- ||\
-        { echo "Working directory has uncommitted changes.\nPlease commit and retry."; exit 1; }
+        { echo -e "Working directory has uncommitted changes.\nPlease commit and retry."; exit 1; }
 fi
 
 # Make sure the program is rebuilt correctly.
 if [ "$BUILD" = true ]; then
     make clean
     if [ -z ${FFLAGS+x} ]; then # Check if FFLAGS is set
-        make FC="${MPI}mpif90" || { echo "\nBuild failed, aborting"; exit 2; }
+        make FC="${MPI}mpif90" || { echo -e "\nBuild failed, aborting"; exit 2; }
     else
-        make FC="${MPI}mpif90" FFLAGS="$FFLAGS" || { echo "\nBuild failed, aborting"; exit 2; }
+        make FC="${MPI}mpif90" FFLAGS="$FFLAGS" || { echo -e "\nBuild failed, aborting"; exit 2; }
     fi
 
 fi
