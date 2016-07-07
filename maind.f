@@ -467,7 +467,7 @@ c----------------------------------------------------------------------
 
       if(restart) then
           acc = 'append'
-          stat = 'old'
+          stat = 'unknown'
       else
           acc = 'sequential'
           stat = 'new'
