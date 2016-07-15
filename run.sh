@@ -83,8 +83,8 @@ fi
 # Make a folder to save all the data. Error if it already exists.
 DATE="$(date +"%Y-%m-%d")"
 TIME="$(date +"%T")"
-mkdir -p "$HOME/data/$DATE" || { echo "There was a problem making the data folder."; exit 3; }
-DATA_FOLDER="$HOME/data/$DATE/pluto.$TIME"
+mkdir -p "$MAIN_DATA/$DATE" || { echo "There was a problem making the data folder."; exit 3; }
+DATA_FOLDER="$MAIN_DATA/$DATE/pluto.$TIME"
 mkdir "$DATA_FOLDER" || { echo "There was a problem making the folder for this run."; exit 4; }
 
 # Copy required files into the new data folder
