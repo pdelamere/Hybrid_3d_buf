@@ -2,6 +2,16 @@
 # Script for running the hybrid code.
 # Ensures that no data files are overwritten and that the exact version
 # of the hybrid code being used is stored along with its output.
+
+mknumdir() {
+    name="$1"
+    i=1
+    while [[ -e "pluto-${i}" ]]; do
+        let i++
+    done
+    mkdir "pluto-$i"
+}
+
 COMMAND_LINE="\"${0##*/}\""
 for var in "$@"; do
     COMMAND_LINE="$COMMAND_LINE \"$var\""
@@ -81,10 +91,15 @@ if [ "$BUILD" = true ]; then
 fi
 
 # Make a folder to save all the data. Error if it already exists.
-DATE="$(date +"%Y-%m-%d")"
-TIME="$(date +"%T")"
+DATE="$(date +"%Y-%a-%b-%d")"
 mkdir -p "$MAIN_DATA/$DATE" || { echo "There was a problem making the data folder."; exit 3; }
-DATA_FOLDER="$MAIN_DATA/$DATE/pluto.$TIME"
+
+i=1
+while [[ -e "$MAIN_DATA/$DATE/pluto-$i" ]]; do
+    let i++
+done
+
+DATA_FOLDER="$MAIN_DATA/$DATE/pluto-$i"
 mkdir "$DATA_FOLDER" || { echo "There was a problem making the folder for this run."; exit 4; }
 
 # Copy required files into the new data folder
