@@ -453,6 +453,20 @@ c         write(109) RIo
          write(109) alpha,beta
 c         write(109) comm_sz
          write(109) RIo
+
+         write(109) b0_init
+         write(109) ion_amu
+         write(109) mpu
+         write(109) nf_init
+         write(109) dt_frac
+         write(109) vsw
+         write(109) vth
+         write(109) Ni_tot_frac
+         write(109) dx_frac
+         write(109) nu_init_frac
+         write(109) mrestart
+         write(109) ri0
+
          close(109)
 
       endif
