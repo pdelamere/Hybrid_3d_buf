@@ -33,7 +33,7 @@ fi
 
 date +"%Y-%m-%d-%T" >> restarts
 if ! [ -z ${MESSAGE+x} ]; then
-    echo "\t$MESSAGE" >> restarts
+    echo -e "\t$MESSAGE" >> restarts
 fi
 
 cp --backup=numbered output old-output
