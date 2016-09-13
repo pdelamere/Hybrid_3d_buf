@@ -494,7 +494,6 @@ c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
       real nf_at_Ba
 
       call face_to_center(aj,ajc)
-      call face_to_center(up,upc)
 c      call face_to_center(uf,ufc)
 c      call face_to_center(gradP,gradPc)
 
@@ -533,10 +532,10 @@ c         fnp = np_at_Ba/ntot
      x          + ajc(i,jp,k,m)*wght(l,5) + ajc(ip,jp,k,m)*wght(l,6)
      x          + ajc(i,jp,kp,m)*wght(l,7) + ajc(ip,jp,kp,m)*wght(l,8)
 
-            up3(m) = upc(i,j,k,m)*wght(l,1) + upc(ip,j,k,m)*wght(l,2) 
-     x          + upc(i,j,kp,m)*wght(l,3) + upc(ip,j,kp,m)*wght(l,4)
-     x          + upc(i,jp,k,m)*wght(l,5) + upc(ip,jp,k,m)*wght(l,6)
-     x          + upc(i,jp,kp,m)*wght(l,7) + upc(ip,jp,kp,m)*wght(l,8)
+            up3(m) = up(i,j,k,m)*wght(l,1) + up(ip,j,k,m)*wght(l,2) 
+     x          + up(i,j,kp,m)*wght(l,3) + up(ip,j,kp,m)*wght(l,4)
+     x          + up(i,jp,k,m)*wght(l,5) + up(ip,jp,k,m)*wght(l,6)
+     x          + up(i,jp,kp,m)*wght(l,7) + up(ip,jp,kp,m)*wght(l,8)
 
 c            uf3(m) = ufc(i,j,k,m)*wght(l,1) + ufc(ip,j,k,m)*wght(l,2) 
 c     x          + ufc(i,j,kp,m)*wght(l,3) + ufc(ip,j,kp,m)*wght(l,4)
@@ -2743,14 +2742,9 @@ c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
       do 30 i=1,nx-1      !interpolate back to contravarient positions
          do 30 j=1,ny-1
             do 30 k=1,nz-1
-c               up(i,j,k,1) = ct(i,j,k,1)
-c               up(i,j,k,2) = ct(i,j,k,2)
-c               up(i,j,k,3) = ct(i,j,k,3)
-
-               up(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
-               up(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
-               up(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
-
+               up(i,j,k,1) = ct(i,j,k,1)
+               up(i,j,k,2) = ct(i,j,k,2)
+               up(i,j,k,3) = ct(i,j,k,3)
  30            continue
 
 
