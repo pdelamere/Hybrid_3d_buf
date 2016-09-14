@@ -1258,6 +1258,7 @@ c     x     c(nx,ny,nz,3)  !dummy vars for doing cross product
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
+      call face_to_center(aj,aa)
 
       do 10 k=2,nz-1    
          do 10 j=2,ny-1
@@ -1292,7 +1293,7 @@ c               fnp = np(i,j,k)/ntot
 c               fnf = nf(i,j,k)/ntot
 
                do 10 m=1,3
-                  a(i,j,k,m) = aj(i,j,k,m) - up(i,j,k,m)
+                  a(i,j,k,m) = aa(i,j,k,m) - up(i,j,k,m)
 c                  a(i,j,k,m) = aj(i,j,k,m) - fnp(m)*up(i,j,k,m) - 
 c     x                         fnf(m)*0.5*(uf2(i,j,k,m)+uf(i,j,k,m))
 c                  a(i,j,k,m) = - fnp(m)*up(i,j,k,m) - 
@@ -1303,9 +1304,8 @@ c     x                         fnf(m)*0.5*(uf2(i,j,k,m)+uf(i,j,k,m))
 
 
 c      call crossf(a,btmf,c)
-      call face_to_center(a,aa)
       call edge_to_center(bt,btc)
-      call crossf2(aa,btc,c)
+      call crossf2(a,btc,c)
 
 
       do 20 k=2,nz-1      
@@ -1466,6 +1466,7 @@ c      call obstacle_boundary_B(b0,b1p1)
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
 
+      call face_to_center(aj,aa)
       do 10 k=2,nz-1       
          do 10 j=2,ny-1
             do 10 i=2,nx-1
@@ -1501,20 +1502,17 @@ c               fnf = nf(i,j,k)/ntot
                do 10 m=1,3
 c                  a(i,j,k,m) = aj(i,j,k,m) - fnp(m)*up(i,j,k,m) - 
 c     x                                       fnf(m)*uf(i,j,k,m)
-                  a(i,j,k,m) = aj(i,j,k,m) - up(i,j,k,m)
+                  a(i,j,k,m) = aa(i,j,k,m) - up(i,j,k,m)
 c                  a(i,j,k,m) = - fnp(m)*up(i,j,k,m) - 
 c     x                           fnf(m)*uf(i,j,k,m)
  10               continue
 
 c      call cov_to_contra(btp1,btp1mf)
-      call face_to_center(a,aa)
-c      call edge_to_center(btp1,btc)
-      call edge_to_face(btp1,btp1mf)   !add shift to cell face for smoothing
-      call face_to_center(btp1mf,btc)
+      call edge_to_center(btp1,btc)
 c      call face_to_center(btp1mf,btc)
 
 c       call crossf(a,btp1mf,c)
-      call crossf2(aa,btc,c)
+      call crossf2(a,btc,c)
        
       do 20 k=2,nz-1       
          do 20 j=2,ny-1     
