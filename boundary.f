@@ -851,8 +851,8 @@ c      cx = qx(ri) + vsat*t       !release point
 c      cy = qy(rj) + dy/1e10      !second term to avoid division
 c      cz = qz(rk)                !by zero.  That is to avoid
 
-      x0 = dx/2
-      y0 = dy/2
+      x0 = dx_grid(nx/2+ri0)/2
+      y0 = dy_grid(ny/2)/2
       z0 = dz_grid(nz/2)/2
       
       cx = qx(int(nx/2+ri0)) + x0
