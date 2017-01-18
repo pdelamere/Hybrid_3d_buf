@@ -680,6 +680,9 @@ c      real Nofr(200)        !number of neutrals as func of r
 c      real neutral_density
       real npmax
 
+      real small_beta_r
+      small_beta_r = 1.5*Rpluto
+
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
                                    !flow velocity
@@ -703,8 +706,8 @@ c get source density
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
-                  if (r .le. 2*Rpluto) then
-                     bpu = 0.1
+                  if (r .le. small_beta_r) then
+                     bpu = 0.01
                      npofr = vol*beta*bpu*
      x                    neutral_density(r)*dt/tau_photo
                   else 
