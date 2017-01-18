@@ -35,6 +35,7 @@ c of the magnetic field.
 c----------------------------------------------------------------------
       save
 
+
       real b0(nx,ny,nz,3),            !ambient magnetic field
      x     b1(nx,ny,nz,3),    !1st order magnetic field
      x     b12(nx,ny,nz,3),   !b1 at previous time step
@@ -67,7 +68,6 @@ c----------------------------------------------------------------------
       real E_out_buf(Ni_max_buf,3)
       real B_out_buf(Ni_max_buf,3)
       real mrat_out_buf(Ni_max_buf)
-      real part_out
 
       real temp_p(nx,ny,nz)
 
@@ -114,6 +114,7 @@ c      character filenum
       character(len=3) :: stat
 
       logical ex
+      integer para_dat_version = 3
 
 
 
@@ -190,7 +191,6 @@ c----------------------------------------------------------------------
 
       ndiag = 0
       ndiag_part = 0
-      part_out = 1000
       prev_Etot = 1.0
       nuei = 0.0
 
@@ -342,6 +342,7 @@ c write para.h file
          open(109, file=trim(out_dir)//'para.dat',
      x        status='unknown',form='unformatted')
          
+         write(109) para_dat_version
          write(109) nx,ny,nz,dx,dy,delz
          write(109) nt,dtsub_init,ntsub,dt,nout
          write(109) out_dir
@@ -366,6 +367,8 @@ c write para.h file
          write(109) nu_init_frac
          write(109) mrestart
          write(109) ri0
+
+         write(109) part_nout
 
          close(109)
 
@@ -643,7 +646,7 @@ c               write(150) E
                write(181) up
                write(301) m
                write(301) temp_p/1.6e-19
-               if ( ndiag_part .eq. part_out ) then
+               if ( ndiag_part .eq. part_nout ) then
                    write(305) m
                    write(305) xp
                    write(310) m

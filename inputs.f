@@ -11,6 +11,7 @@
       real dt_frac
       integer nt
       integer nout
+      integer part_nout
       real vsw
       real vth
       real Ni_tot_frac
@@ -140,6 +141,8 @@ c----------------------------------------------------------------
       write(*,*) 'nt................',nt
       read(100,*) nout
       write(*,*) 'nout..............',nout
+      read(100,*) part_nout
+      write(*,*) 'part_nout..............',part_nout
       read(100,*) vsw
       write(*,*) 'vsw...............',vsw
       read(100,*) vth
