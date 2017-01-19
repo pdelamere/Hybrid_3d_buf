@@ -659,6 +659,7 @@ c      real vol              !volume of grid cell
       real r                !dist of particle to neutral cloud center
       real t                !run time
       real v                !neutral cloud velocity, r/t
+      real cx,cy,cz         !x,y,z coord of neutral cloud center
       real theta,phi        !spherical coords used to get velocities
       integer flg           !flag for while loop
       real zsum             !sum along z to find cell for new_borns
@@ -689,6 +690,7 @@ c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions
 c      real vsum(nx,ny,nz,3) !total particle velocity in cell of the
                             !new born ions...for get bulk flow
 
+      call Neut_Center(cx,cy,cz)
 
 c get source density
 
