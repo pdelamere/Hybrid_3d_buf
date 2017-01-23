@@ -6,7 +6,7 @@ c simulation domain dimensions
 c particle array dimensions
 
       integer*4 Ni_max, Ni_max_buf
-      PARAMETER (Ni_max = 3000000)
+      PARAMETER (Ni_max = 300000)
       PARAMETER (Ni_max_buf = Ni_max/10)
 
       END MODULE DIMENSIONS
