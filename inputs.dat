@@ -2,10 +2,10 @@
 1                    !atomic mass for reference species
 16                    !mass of pickup ion species
 0.027e15               !density (km^-3)
-0.001                   !particle time step (fraction of omega_i)
+0.0001                   !particle time step (fraction of omega_i)
 10000                  !number of time steps
-5000                     !grid data output interval
-1000                    !particle data output interval
+1000                     !grid data output interval
+5000                    !particle data output interval
 401.0                   !flow speed (km/s) 
 11.4                  !thermal speed for Maxwellian (km/s)
 0.5                   !Ni_tot initial (fraction of Ni_max)
