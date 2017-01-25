@@ -9,6 +9,25 @@
       contains
 
 c----------------------------------------------------------------------
+      real function atmosphere(r)
+          real r
+          atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
+      end function atmosphere
+
+      real function phi_func(p)
+          real p
+          if (p > 3.14159/2 .or. p < -3.14159) then
+              phi_func = (cos(2*p)+3)/2
+          else
+              phi_func = 1
+          endif
+      end function phi_func
+
+      real function theta_func(t)
+          real t
+          theta_func = (-cos(2*t)+3)/2
+      end function theta_func
+c---------------------------------------------------------------------
       real FUNCTION neutral_density(i,j,k)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
@@ -16,7 +35,7 @@ c      include 'incurv.h'
       integer i,j,k
       real x,y,z
       real cx,cy,cz
-      real r,phi,theta
+      real r,p,t
       real nn0
       real cap_r
 
@@ -27,22 +46,14 @@ c      include 'incurv.h'
       y = qy(j)-cy
       z = gz(k)-cz ! global z
       r = sqrt(x**2+y**2+z**2)
-      phi = atan2(y,x)
-      theta = atan2(sqrt(x**2+y**2),z)
+      p = atan2(y,x)
+      t = atan2(sqrt(x**2+y**2),z)
 
-      if (r .ge. cap_r*Rpluto) then
-          neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
-      else
-          neutral_density = 1e15*(1/cap_r)**25.0 + 5e9*(1/cap_r)**8.0
-      endif
+      neutral_density = atmosphere(max(r,cap_r))*phi_func(p)*theta_func(t)
 
       
       neutral_density = neutral_density*1e15
       
-      if (phi .gt. 3.14159/2. .and. phi .lt. -3.14159/2.) then
-          neutral_density =
-     x          neutral_density*abs(cos(phi)*sin(theta))*r**5
-      endif
 
       return
       end FUNCTION neutral_density
