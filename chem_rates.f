@@ -49,7 +49,7 @@ c      include 'incurv.h'
       p = atan2(y,x)
       t = atan2(sqrt(x**2+y**2),z)
 
-      neutral_density = atmosphere(max(r,cap_r))*phi_func(p)*theta_func(t)
+      neutral_density=atmosphere(max(r,cap_r))*phi_func(p)*theta_func(t)
 
       
       neutral_density = neutral_density*1e15
