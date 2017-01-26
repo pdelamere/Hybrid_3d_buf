@@ -29,6 +29,11 @@ c      include 'incurv.h'
       do 10 l=ion_l,Ni_tot-1
 c         m_arr(l) = m_arr(l+1)
          mrat(l) = mrat(l+1)
+         tags(l) = tags(l+1)
+         beta_p(l) = beta_p(l+1)
+         do 7 m=1,8
+            wght(l,m) = wght(l+1,m)
+ 7       continue
          do 10 m=1,3 
             xp(l,m) = xp(l+1,m)
             vp(l,m) = vp(l+1,m)
@@ -37,12 +42,6 @@ c         m_arr(l) = m_arr(l+1)
 c            wquad(l,m) = wquad(l+1,m)
  10      continue
 
-
-
-      do 20 m=1,8
-         do 20 l=ion_l,Ni_tot-1
-            wght(l,m) = wght(l+1,m)
- 20         continue
 
       Ni_tot = Ni_tot - 1
 
