@@ -21,8 +21,9 @@ c      include 'incurv.h'
       real vp1(Ni_max,3)
 
       do 5 m=1,3   !remove ion energy from total input energy
-         input_E = input_E-0.5*(mion/mrat(ion_l))*(vp(ion_l,m)*km_to_m)**2 /
-     x             (beta*beta_p(ion_l))
+         input_E = input_E
+     x             -0.5*(mion/mrat(ion_l))*(vp(ion_l,m)*km_to_m)**2
+     x             / (beta*beta_p(ion_l))
  5    continue
       write(*,*) 'removing ion...',ion_l
 

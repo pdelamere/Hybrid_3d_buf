@@ -569,7 +569,8 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
          enddo
       enddo
 
-      write(*,*) '    Proc ionioz rate XIANZHE(in 6Rio)= ',ndot_intgl,my_rank
+      write(*,*) '    Proc ionioz rate XIANZHE(in 6Rio)= ',
+     x           ndot_intgl, my_rank
 
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -578,7 +579,8 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
      x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       if(my_rank.eq.0) then
-      write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',recvbuf,my_rank
+      write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',
+     x           recvbuf,my_rank
       endif
 
 c     DOLS I remove the scaling to Mdot from para.h
