@@ -928,7 +928,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
      x     E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x     B_out_buf,mrat_out_buf) 
+     x     B_out_buf,mrat_out_buf, save_unit) 
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -958,10 +958,12 @@ c      real, dimension(:), allocatable :: out_m_arr
       integer, dimension(:,:), allocatable :: out_ijkp
       integer Ni_tot_in, Ni_out
       integer :: cnt
+      integer :: save_unit
 
 
       in_bounds(1:Ni_tot) = .true.
       in_bounds(Ni_tot+1:) = .false.
+
       
 c     where(xp(Ni_tot_sw+1:Ni_tot,1) .le. qx(1)) 
 c     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
@@ -969,6 +971,11 @@ c     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
       where(xp(1:Ni_tot,1) .le. qx(1))
      X     in_bounds(1:Ni_tot) = .false.
 c      endwhere         
+
+      write(save_unit) mrat(.not. in_bounds)
+      write(save_unit) beta_p(.not. in_bounds)
+      write(save_unit) tags(.not. in_bounds)
+
       Ni_tot_in = count(in_bounds)
       Ni_out = count(.not.in_bounds(1:Ni_tot))
       
