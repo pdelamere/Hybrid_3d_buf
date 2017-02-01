@@ -478,8 +478,8 @@ c----------------------------------------------------------------------
      x     status=stat, access= acc,
      x     form='unformatted')
 
-      open(9000,file=trim(out_dir)//'grid/'//
-     x     'c.outflow_'//filenum//'.dat',
+      open(9000,file=trim(out_dir)//'particle/'//
+     x     'c.outflowing_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
 
