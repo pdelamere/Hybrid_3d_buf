@@ -972,9 +972,6 @@ c     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
      X     in_bounds(1:Ni_tot) = .false.
 c      endwhere         
 
-      write(save_unit) mrat(.not. in_bounds)
-      write(save_unit) beta_p(.not. in_bounds)
-      write(save_unit) tags(.not. in_bounds)
 
       Ni_tot_in = count(in_bounds)
       Ni_out = count(.not.in_bounds(1:Ni_tot))
@@ -1038,6 +1035,10 @@ c     x     .not.in_bounds(1:Ni_tot))
      x     .not.in_bounds(1:Ni_tot))
       out_tags(1:Ni_out) = pack(tags(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
+
+      write(save_unit) out_mrat
+      write(save_unit) out_beta_p
+      write(save_unit) out_tags
       
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
