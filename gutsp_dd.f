@@ -204,8 +204,8 @@ c         wquad(1:Ni_tot,3) = -1.0
       allocate(out_tags(Ni_out))
       allocate(vsqrd_out(Ni_out))
 
-      dest = nbrs(n_down)
-      source = nbrs(n_up)
+      dest = down_proc
+      source = up_proc
       
       call MPI_ISEND(Ni_out, 1, MPI_INTEGER, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -1395,8 +1395,8 @@ c      write(*,*) 'Ni_out up...',Ni_out, my_rank
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
 
 c      call MPI_ISEND(Ni_out, 1, MPI_INTEGER, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
@@ -1738,8 +1738,8 @@ c         wquad(1:Ni_tot,3) = -1.0
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
 
-      dest = nbrs(n_down)
-      source = nbrs(n_up)
+      dest = down_proc
+      source = up_proc
       
       call MPI_ISEND(Ni_out, 1, MPI_INTEGER, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -2710,8 +2710,8 @@ cc      stop
 
       out_buf_z(:,:,:) = ct(:,:,nz,:)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -2789,8 +2789,8 @@ c      include 'incurv.h'
 
       out_buf_z(:,:) = np(:,:,nz)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -2974,8 +2974,8 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 
       out_buf_z(:,:,:) = ct(:,:,nz,:)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -3117,8 +3117,8 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 
       out_buf_z(:,:,:) = ct(:,:,nz,:)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -3291,8 +3291,8 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 
       out_buf_z(:,:,:) = ct(:,:,nz,:)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -3396,8 +3396,8 @@ c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
 
       out_buf_z(:,:,:) = ct(:,:,nz,:)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,

@@ -159,7 +159,7 @@ c create virtual topology (set dimensions in para.h)
       call MPI_COMM_RANK(cartcomm, cart_rank, ierr)
       call MPI_CART_COORDS(cartcomm, cart_rank, cart_dims, cart_coords, 
      x                     ierr)
-      call MPI_CART_SHIFT(cartcomm,0,1,nbrs(n_up),nbrs(n_down),ierr)
+      call MPI_CART_SHIFT(cartcomm,0,1,up_proc,down_proc,ierr)
 
       call system_clock(t1,cnt_rt)
 
