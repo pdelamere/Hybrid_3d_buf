@@ -96,17 +96,15 @@ c      PARAMETER (dNi = 2500)
 
 c domain decompostion parameters
 
-      integer n_up,n_down,n_left,n_right, cart_dims
+      integer n_up, n_down, cart_dims
       integer io_proc
 
-      parameter(cart_dims = 2) !dimensions for virtual topology
+      parameter(cart_dims = 1) !dimensions for virtual topology
       parameter(n_up=1)
       parameter(n_down=2)
-      parameter(n_left=3)
-      parameter(n_right=4)
 
       logical periods(cart_dims), reorder
-      data periods /.true.,.false./, reorder /.false./
+      data periods /.true./, reorder /.false./
 
       integer dims(cart_dims), tag, cart_coords(2)
       data tag /1/ !dimenions, /rows,columns/

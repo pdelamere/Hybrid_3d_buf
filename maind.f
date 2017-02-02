@@ -148,21 +148,18 @@ c----------------------------------------------------------------------
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
       io_proc = nint(procnum/2.)
       dims(1) = procnum
-      dims(2) = 1
 
 c create virtual topology (set dimensions in para.h)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      call MPI_CART_CREATE(MPI_COMM_WORLD, 2, dims, periods, 
+      call MPI_CART_CREATE(MPI_COMM_WORLD, cart_dims, dims, periods, 
      x     reorder,cartcomm, ierr)
 
       call MPI_COMM_RANK(cartcomm, cart_rank, ierr)
       call MPI_CART_COORDS(cartcomm, cart_rank, cart_dims, cart_coords, 
      x                     ierr)
       call MPI_CART_SHIFT(cartcomm,0,1,nbrs(n_up),nbrs(n_down),ierr)
-      call MPI_CART_SHIFT(cartcomm, 1, 1, nbrs(n_left), nbrs(n_right), 
-     &     ierr)
 
       call system_clock(t1,cnt_rt)
 
