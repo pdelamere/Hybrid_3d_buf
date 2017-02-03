@@ -302,7 +302,7 @@ c==============stretch x direction=====================================
                
       xsf = 1.4
       ri = nx/2 + ri0
-      nrgrd = 20
+      nrgrd = 10
 c up from center
       do 12 i = ri,ri+nrgrd
          dx_grid(i) = dx
