@@ -11,5 +11,5 @@
 1                   !grid size as fraction of lambda_i
 0.05 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './databig/'             !output directory 
-999                !mrestart
-40                  !pluto_offset
+5000                !mrestart
+30                  !pluto_offset

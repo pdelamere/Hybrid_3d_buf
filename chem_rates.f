@@ -571,7 +571,8 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
          enddo
       enddo
 
-      write(*,*) '    Proc ionioz rate XIANZHE(in 6Rio)= ',ndot_intgl,my_rank
+      write(*,*) '    Proc ionioz rate XIANZHE(in 6Rio)= ',
+     x           ndot_intgl, my_rank
 
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -580,7 +581,8 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
      x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       if(my_rank.eq.0) then
-      write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',recvbuf,my_rank
+      write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',
+     x           recvbuf,my_rank
       endif
 
 c     DOLS I remove the scaling to Mdot from para.h
@@ -683,6 +685,9 @@ c      real Nofr(200)        !number of neutrals as func of r
 c      real neutral_density
       real npmax
 
+      real small_beta_r
+      small_beta_r = 1.5*Rpluto
+
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
                                    !flow velocity
@@ -706,8 +711,8 @@ c get source density
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
-                  if (r .le. 2*Rpluto) then
-                     bpu = 0.1
+                  if (r .le. small_beta_r) then
+                     bpu = 0.01
                      npofr = vol*beta*bpu*
      x                    neutral_density(i,j,k)*dt/tau_photo
                   else 

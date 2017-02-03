@@ -53,6 +53,7 @@ c               b0(i,j,k,1) = 0.5*(b0_1x+b0_2x) +
 c     x              0.5*(b0_1x-b0_2x)*tanh((qz(k)-qz(nz/2))/(Lo))
 c               b0(i,j,k,2) = 0.5*(b0_1y+b0_2y) + 
 c     x              0.5*(b0_1y-b0_2y)*tanh((qz(k)-qz(nz/2))/(Lo))
+               b0(i,j,k,1) = 0.0*b0_top*eoverm
                b0(i,j,k,2) = 1.0*b0_top*eoverm
 c               b0(i,j,k,1) = 0.0
                b0(i,j,k,3) = 0.0*b0_top*eoverm
@@ -301,7 +302,7 @@ c==============stretch x direction=====================================
                
       xsf = 1.4
       ri = nx/2 + ri0
-      nrgrd = 20
+      nrgrd = 10
 c up from center
       do 12 i = ri,ri+nrgrd
          dx_grid(i) = dx
