@@ -59,8 +59,8 @@ c 30   continue
       
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -72,8 +72,8 @@ c 30   continue
       
       out_buf_z(:,:,:) = b(:,:,2,:)         
       
-      dest = nbrs(n_down)
-      source = nbrs(n_up)
+      dest = down_proc
+      source = up_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -637,8 +637,8 @@ c 30          continue
 
       out_buf_z(:,:) = b(:,:,nz-1)         
 
-      dest = nbrs(n_up)
-      source = nbrs(n_down)
+      dest = up_proc
+      source = down_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
@@ -649,8 +649,8 @@ c 30          continue
       
       out_buf_z(:,:) = b(:,:,2)         
 
-      dest = nbrs(n_down)
-      source = nbrs(n_up)
+      dest = down_proc
+      source = up_proc
       call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
       call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
