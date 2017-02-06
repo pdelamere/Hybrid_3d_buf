@@ -711,11 +711,11 @@ c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
                   if (r .le. small_beta_r) then
-                     bpu = 0.01
+                     bpu = 0.001
                      npofr = vol*beta*bpu*
      x                    neutral_density(r)*dt/tau_photo
                   else 
-                     bpu = 2.0
+                     bpu = 0.1
                      npofr = vol*beta*bpu*
      x                    neutral_density(r)*dt/tau_photo
                   endif
