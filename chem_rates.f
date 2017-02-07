@@ -39,7 +39,7 @@ c      include 'incurv.h'
       real nn0
       real cap_r
 
-      cap_r = 2.5
+      cap_r = 2.5*Rpluto
 
       call Neut_Center(cx,cy,cz)
       x = qx(i)-cx
