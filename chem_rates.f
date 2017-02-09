@@ -9,6 +9,11 @@
       contains
 
 c----------------------------------------------------------------------
+      real function neut_corona(r,t,p)
+          real r,t,p
+          neut_corona = atmosphere(r)*phi_func(p)*theta_func(t) 
+      end function neut_corona
+
       real function atmosphere(r)
           real r
           atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
@@ -49,7 +54,7 @@ c      include 'incurv.h'
       p = atan2(y,x)
       t = atan2(sqrt(x**2+y**2),z)
 
-      neutral_density=atmosphere(max(r,cap_r))*phi_func(p)*theta_func(t)
+      neutral_density=neut_corona(max(r,cap_r),t,p)
 
       
       neutral_density = neutral_density*1e15
