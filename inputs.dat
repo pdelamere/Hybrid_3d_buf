@@ -13,4 +13,4 @@
 0.05 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './databig/'             !output directory 
 5000                !mrestart
-10                  !pluto_offset
+5                  !pluto_offset
