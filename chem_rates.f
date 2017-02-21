@@ -713,6 +713,12 @@ c get source density
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1
+
+               x = qx(i)-cx
+               y = qy(j)-cy
+               z = gz(k)-cz ! global z
+               rho2 = y**2 + z**2
+               r = sqrt(x**2+rho2)
              
                npmax = sqrt(neutral_density(i,j,k)/(tau_photo*k_rec))
 
