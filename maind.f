@@ -483,6 +483,26 @@ c  MAIN LOOP!
 c======================================================================
 
       do 1 m = mstart+1, nt
+         if (m .eq. 1000) then
+           call Neut_Center(cx,cy,cz)
+           do i = 1,nx
+              do j = 1,ny 
+                 do k = 1,nz
+                    x = qx(i)-cx
+                    y = qy(j)-cy
+                    z = gz(k)-cz ! global z
+
+                    r = sqrt(x**2 + y**2 + z**2)
+
+                    b0(i,j,k,1) = 3*moment*x*y/r**5 + b0(i,j,k,1)
+                    b0(i,j,k,2) = moment*(3*y**2 - r**2)/r**5
+     x                              + b0(i,j,k,1)
+                    b0(i,j,k,3) = 3*moment*z*y/r**5 + b0(i,j,k,3)
+                 enddo
+              enddo
+           enddo
+           call f_update_tlev(b1,b12,b1p2,bt,b0)
+         endif
 
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart

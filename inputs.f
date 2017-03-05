@@ -117,6 +117,7 @@ c solar wind composition
       PARAMETER (b_shl = 2.0)
       PARAMETER (f_shl = 0.1*b_shl)
 
+      real moment
       CONTAINS
 
 c----------------------------------------------------------------      
@@ -159,6 +160,8 @@ c      write(*,*) 'Ni_max....',Ni_max
       write(*,*) 'mrestart...........',mrestart
       read(100,*) ri0
       write(*,*) 'pluto offset.......',ri0
+      read(100,*) moment
+      write(*,*) 'dipole moment of pluto.......',moment
      
       close(100)
       end subroutine readInputs
@@ -232,7 +235,7 @@ c----------------------------------------------------------------
 
       real*8 ak, btot, a1, a2, womega, phi, deltat
 
-   !   check input parameters
+      !check input parameters
 
       if (my_rank .eq. 0) then 
       write(*,*) 'alpha...',alpha

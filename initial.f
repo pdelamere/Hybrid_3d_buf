@@ -1,6 +1,7 @@
       MODULE initial
 
       USE global
+      USE boundary, only: Neut_Center
 c      USE dimensions
 c      USE inputs
 
@@ -29,6 +30,8 @@ c      parameter(eoverm = q/mO)
       real b0_1x, b0_2x, b0_1y, b0_2y
       real phi
 
+      real cx, cy, cz
+
       mO_q = mO/q
 
       phi = 0.0*PI/180.
@@ -46,17 +49,21 @@ c      a2 = kr**2*b0r**2/(alpha*nfr)
 
 c      omegar = 0.5*(a1 + sqrt(a1**2 + 4*a2))
 
+      call Neut_Center(cx,cy,cz)
+
       do i = 1,nx
          do j = 1,ny 
             do k = 1,nz
-c               b0(i,j,k,1) = 0.5*(b0_1x+b0_2x) + 
-c     x              0.5*(b0_1x-b0_2x)*tanh((qz(k)-qz(nz/2))/(Lo))
-c               b0(i,j,k,2) = 0.5*(b0_1y+b0_2y) + 
-c     x              0.5*(b0_1y-b0_2y)*tanh((qz(k)-qz(nz/2))/(Lo))
-               b0(i,j,k,1) = 0.0*b0_top*eoverm
-               b0(i,j,k,2) = 1.0*b0_top*eoverm
-c               b0(i,j,k,1) = 0.0
-               b0(i,j,k,3) = 0.0*b0_top*eoverm
+               x = qx(i)-cx
+               y = qy(j)-cy
+               z = gz(k)-cz ! global z
+
+               r = sqrt(x**2 + y**2 + z**2)
+
+               b0(i,j,k,1) = (3*moment*x*y/r**5)*eoverm
+               b0(i,j,k,2) = (moment*(3*y**2 - r**2)/r**5 
+     x                            + 1.0*b0_top)*eoverm
+               b0(i,j,k,3) = (3*moment*z*y/r**5)*eoverm
             enddo
          enddo
       enddo
