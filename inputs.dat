@@ -14,4 +14,4 @@
 './databig/'             !output directory 
 1000                !mrestart
 30                  !pluto_offset
-20.0e-9               !pluto surface field (Tesla)
+35.0e-9               !pluto surface field (Tesla)
