@@ -15,41 +15,17 @@ c      include 'incurv.h'
 
       real r
       real nn0
+      real cap_r
 
 
 c Pluto isotropic escape
-
-c      neutral_density = Qo/(4*PI*r**2*vrad)
-
 c Pluto Strobel Atm post NH
 
+      cap_r = 2.0*Rpluto
+      r = max(r, cap_r)
       neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
-      if (r .lt. 2.0*Rpluto) then
-          neutral_density =  1e15*(1/2.5)**25.0 + 5e9*(1/2.5)**8.0
-      endif
       
       neutral_density = neutral_density*1e15
-
-c Pluto Strobel Atm (July 12, 2015 for exobase upward)
-
-c      neutral_density = 4e9*(Rpluto/r)**(4.5) + 1.4e6*(Rpluto/r)**2.1
-     
-c      if (r .lt. 8*Rpluto) then
-c         neutral_density = 4e9*(1./8.)**(4.5) + 1.4e6*(1./8.)**2.1
-c      endif
-
-c      neutral_density = neutral_density*1e15
-
-cc      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
-ccc     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
-cc      neutral_density = neutral_density*1e9 !km^-3
-
-
-c      if (neutral_density .ge. 1e22) then 
-c         neutral_density = 1e22
-c      endif
-
-c      write(*,*) 'nden...',neutral_density
 
       return
       end FUNCTION neutral_density
