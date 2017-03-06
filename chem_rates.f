@@ -24,7 +24,7 @@ c      neutral_density = Qo/(4*PI*r**2*vrad)
 c Pluto Strobel Atm post NH
 
       neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
-      if (r .lt. 2.5*Rpluto) then
+      if (r .lt. 2.0*Rpluto) then
           neutral_density =  1e15*(1/2.5)**25.0 + 5e9*(1/2.5)**8.0
       endif
       
@@ -684,7 +684,7 @@ c      real neutral_density
       real npmax
 
       real small_beta_r
-      small_beta_r = 1.5*Rpluto
+      small_beta_r = 1.0*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
