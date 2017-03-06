@@ -118,6 +118,7 @@ c solar wind composition
       PARAMETER (f_shl = 0.1*b_shl)
 
       real moment
+      real surf_field
       CONTAINS
 
 c----------------------------------------------------------------      
@@ -160,8 +161,8 @@ c      write(*,*) 'Ni_max....',Ni_max
       write(*,*) 'mrestart...........',mrestart
       read(100,*) ri0
       write(*,*) 'pluto offset.......',ri0
-      read(100,*) moment
-      write(*,*) 'dipole moment of pluto.......',moment
+      read(100,*) surf_field
+      write(*,*) 'surface field of pluto.......',surf_field
      
       close(100)
       end subroutine readInputs
@@ -223,6 +224,8 @@ c----------------------------------------------------------------
       nu_init = nu_init_frac*q*b0_init/mion
 
       alpha = (mu0/1e3)*q*(q/mion) !mH...determines particle scaling
+
+      moment = surf_field * Rpluto**3
 
       end subroutine initparameters
 c----------------------------------------------------------------      
