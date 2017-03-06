@@ -497,10 +497,12 @@ c======================================================================
 
                     r = sqrt(x**2 + y**2 + z**2)
 
-                    b0(i,j,k,1) = 3*moment*x*y/r**5 + b0(i,j,k,1)
-                    b0(i,j,k,2) = moment*(3*y**2 - r**2)/r**5
+                    b0(i,j,k,1) = (3*moment*x*y/r**5)*eoverm
      x                              + b0(i,j,k,1)
-                    b0(i,j,k,3) = 3*moment*z*y/r**5 + b0(i,j,k,3)
+                    b0(i,j,k,2) = (moment*(3*y**2-r**2)/r**5)*eoverm
+     x                              + b0(i,j,k,1)
+                    b0(i,j,k,3) = (3*moment*z*y/r**5)*eoverm
+     x                              + b0(i,j,k,3)
                  enddo
               enddo
            enddo
