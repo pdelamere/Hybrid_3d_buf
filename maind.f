@@ -281,7 +281,7 @@ c----------------------------------------------------------------------
           open(1000+my_rank,file=trim(out_dir)//'restart.vars'//filenum,
      x          status='unknown',
      x          form='unformatted')
-          write(*,*) 'reading restart.vars......',filenum, un
+          write(*,*) 'reading restart.vars......',filenum
          
           read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x         up,aj,nu,E,input_E,input_p,mstart,input_EeP,
@@ -291,7 +291,7 @@ c----------------------------------------------------------------------
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x         status='unknown',form='unformatted')
-          write(*,*) 'reading restart.part......',filenum, un
+          write(*,*) 'reading restart.part......',filenum
           read(1000+my_rank) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
      x         Ni_tot_sys,ijkp,
@@ -409,6 +409,14 @@ c----------------------------------------------------------------------
      x     form='unformatted')
       open(131,file=trim(out_dir)//'grid/'//
      x     'c.b1_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(132,file=trim(out_dir)//'grid/'//
+     x     'c.b0_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(133,file=trim(out_dir)//'grid/'//
+     x     'c.bt_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
 
@@ -659,7 +667,11 @@ c               write(115) np_1
 c               write(116) m
 c               write(116) np_2
                write(131) m
-               write(131) bt
+               write(131) b1
+               write(132) m
+               write(132) b0
+               write(133) m
+               write(133) bt
 c               write(140) m
 c               write(140) aj
 c               write(150) m
