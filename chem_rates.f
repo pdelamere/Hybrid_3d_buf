@@ -21,7 +21,7 @@ c      include 'incurv.h'
 c Pluto isotropic escape
 c Pluto Strobel Atm post NH
 
-      cap_r = 2.0*Rpluto
+      cap_r = 1.6*Rpluto
       r = max(r, cap_r)
       neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
       
@@ -660,7 +660,7 @@ c      real neutral_density
       real npmax
 
       real small_beta_r
-      small_beta_r = 1.0*Rpluto
+      small_beta_r = 1.6*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk

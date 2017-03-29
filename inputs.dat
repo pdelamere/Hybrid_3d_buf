@@ -3,15 +3,15 @@
 16                    !mass of pickup ion species
 0.027e15               !density (km^-3)
 0.005                   !particle time step (fraction of omega_i)
-10000                  !number of time steps
+30000                  !number of time steps
 100                     !grid data output interval
 500                    !particle data output interval
 401.0                   !flow speed (km/s) 
 11.4                  !thermal speed for Maxwellian (km/s)
-0.5                   !Ni_tot initial (fraction of Ni_max)
-0.5                   !grid size as fraction of lambda_i
+0.3                   !Ni_tot initial (fraction of Ni_max)
+1.0                   !grid size as fraction of lambda_i
 0.05 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './databig/'             !output directory 
 1000                !mrestart
 30                  !pluto_offset
-35.0e-9               !pluto surface field (Tesla)
+30.0e-9               !pluto surface field (Tesla)
