@@ -281,7 +281,7 @@ c----------------------------------------------------------------------
           open(1000+my_rank,file=trim(out_dir)//'restart.vars'//filenum,
      x          status='unknown',
      x          form='unformatted')
-          write(*,*) 'reading restart.vars......',filenum, un
+          write(*,*) 'reading restart.vars......',filenum
          
           read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x         up,aj,nu,E,input_E,input_p,mstart,input_EeP,
@@ -291,7 +291,7 @@ c----------------------------------------------------------------------
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x         status='unknown',form='unformatted')
-          write(*,*) 'reading restart.part......',filenum, un
+          write(*,*) 'reading restart.part......',filenum
           read(1000+my_rank) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
      x         Ni_tot_sys,ijkp,
