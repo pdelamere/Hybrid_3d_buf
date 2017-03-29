@@ -111,7 +111,7 @@ c      character filenum
       character(len=:), allocatable::filenum
       character(len=10) :: arg
       character(len=10) :: acc
-      character(len=3) :: stat
+      character(len=7) :: stat
 
       logical ex
       integer para_dat_version = 3
