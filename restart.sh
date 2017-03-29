@@ -38,4 +38,4 @@ fi
 
 cp --backup=numbered output old-output
 cp --backup=numbered error old-error
-"$MPI" ./hybrid restart > output 2> error
+"$MPI" -n 24 ./hybrid "restart" > output 2> error &
