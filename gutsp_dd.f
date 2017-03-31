@@ -107,8 +107,12 @@ c               deltat = 0.1*dx/phi
 c               if (deltat .le. dtsub) then
 c                  write(*,*) 'Time stepping error...'
 c               endif
-               if ((np(i,j,k) .le. minden) .or. 
-     x              (np(i,j,k) .le. 2.0*den_part)) then
+               if (Ni_tot+1 .ge. Ni_max) then
+                   write(*,*) "Warning: Ni_max ions. Minden failed"
+               endif
+               if (((np(i,j,k) .le. minden) .or. 
+     x              (np(i,j,k) .le. 2.0*den_part)) .and.
+     x              (Ni_tot + 1 .lt. Ni_max)) then
                   npart = nint(minden/(np(i,j,k)))
                   do ipart = 1,npart 
 c                     write(*,*) 'min den...',np(i,j,k),min_den,den_part,

@@ -529,7 +529,7 @@ c         endif
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
 
          mr = 1.0/m_pu
-         if (Ni_tot .lt. 0.95*Ni_max) then
+         if (Ni_tot .lt. 0.90*Ni_max) then
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
          endif
 

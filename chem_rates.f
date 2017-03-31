@@ -9,24 +9,54 @@
       contains
 
 c----------------------------------------------------------------------
-      real FUNCTION neutral_density(r)
+      real function neut_corona(r,t,p)
+          real r,t,p
+          neut_corona = atmosphere(r)*phi_func(p)*theta_func(t) 
+      end function neut_corona
+
+      real function atmosphere(r)
+          real r
+          atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
+      end function atmosphere
+
+      real function phi_func(p)
+          real p
+          if (p > 3.14159/2 .or. p < -3.14159) then
+              phi_func = (cos(2*p)+3)/2
+          else
+              phi_func = 1
+          endif
+      end function phi_func
+
+      real function theta_func(t)
+          real t
+          theta_func = (-cos(2*t)+3)/2
+      end function theta_func
+c---------------------------------------------------------------------
+      real FUNCTION neutral_density(i,j,k)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
-      real r
+      integer i,j,k
+      real x,y,z
+      real cx,cy,cz
+      real r,p,t
       real nn0
       real cap_r
 
-
-c Pluto isotropic escape
-c Pluto Strobel Atm post NH
-
       cap_r = 1.6*Rpluto
-      r = max(r, cap_r)
-      neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
-      
-      neutral_density = neutral_density*1e15
 
+      call Neut_Center(cx,cy,cz)
+      x = qx(i)-cx
+      y = qy(j)-cy
+      z = gz(k)-cz ! global z
+      r = sqrt(x**2+y**2+z**2)
+      p = atan2(y,x)
+      t = atan2(sqrt(x**2+y**2),z)
+
+      neutral_density=neut_corona(max(r,cap_r),t,p)
+
+      neutral_density = neutral_density*1e15
       return
       end FUNCTION neutral_density
 c----------------------------------------------------------------------
@@ -53,11 +83,9 @@ c      include 'incurv.h'
       call Neut_Center(cx,cy,cz)
       
       do l = 1,Ni_tot 
-         r = sqrt((xp(l,1)-cx)**2 + (xp(l,2)-cy)**2 + 
-     x            (gz(ijkp(l,3))-cz)**2) !use global coords
          vrel = sqrt(vp(l,1)**2 + vp(l,2)**2 + vp(l,3)**2)
 c         if (r .ge. RIo) then 
-         nn = neutral_density(r)
+         nn = neutral_density(ijkp(l,1),ijkp(l,2),ijkp(l,3))
 c            nn = nn0*(RIo/r)**(pwl)
 c         else
 c            nn = nn0
@@ -143,7 +171,7 @@ c                  ndot_chex = 0.0
 c               endif
 
                if (r .gt. 2*RIo) then
-                  delta_N = vol*beta*neutral_density(r)*dt/tau_photo
+                  delta_N = vol*beta*neutral_density(i,j,k)*dt/tau_photo
                endif
 c               delta_N = vol*(ndot(i,j,k))*dt*beta
 
@@ -349,7 +377,7 @@ c               if (r .le. RIo) then
 c                  ndot(i,j,k) = 0.0
 c               endif
 
-               npofr = vol*beta*neutral_density(r)*dt/tau_photo
+               npofr = vol*beta*neutral_density(i,j,k)*dt/tau_photo
                ndot(i,j,k) = exp(-(r - 1.4*RIo)**2/(0.2*RIo)**2)*
      x                       sin(theta)*(cos(phi)+1)/2 !+
 c     x                    0.2*dvol*exp(-(r - 1.2*RIo)**2/(0.1*RIo)**2)*
@@ -679,21 +707,20 @@ c get source density
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1
-               r = sqrt((qx(i)-cx)**2 + (qy(j)-cy)**2 + (gz(k)-cz)**2)
              
-               npmax = sqrt(neutral_density(r)/(tau_photo*k_rec))
+               npmax = sqrt(neutral_density(i,j,k)/(tau_photo*k_rec))
 
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
                   if (r .le. small_beta_r) then
-                     bpu = 0.01
+                     bpu = 0.1
                      npofr = vol*beta*bpu*
-     x                    neutral_density(r)*dt/tau_photo
+     x                    neutral_density(i,j,k)*dt/tau_photo
                   else 
-                     bpu = 2.0
+                     bpu = 2
                      npofr = vol*beta*bpu*
-     x                    neutral_density(r)*dt/tau_photo
+     x                    neutral_density(i,j,k)*dt/tau_photo
                   endif
 
                   if ((npofr .ge. 1) .and. (npofr+l1 .lt. Ni_max)) then
