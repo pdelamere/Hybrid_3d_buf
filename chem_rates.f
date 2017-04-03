@@ -9,9 +9,12 @@
       contains
 
 c----------------------------------------------------------------------
-      real function neut_corona(r,t,p)
-          real r,t,p
-          neut_corona = atmosphere(r)*phi_func(p)*theta_func(t) 
+      real function neut_corona(a,r)
+          real a,r
+          real pi
+          pi = 3.14159
+          neut_corona = 
+     x         atmosphere(r)*((r/Rpluto)**((tanh(5*(a-pi/2))+1)/2))
       end function neut_corona
 
       real function atmosphere(r)
@@ -40,7 +43,7 @@ c      include 'incurv.h'
       integer i,j,k
       real x,y,z
       real cx,cy,cz
-      real r,p,t
+      real r,a
       real nn0
       real cap_r
 
@@ -50,11 +53,11 @@ c      include 'incurv.h'
       x = qx(i)-cx
       y = qy(j)-cy
       z = gz(k)-cz ! global z
-      r = sqrt(x**2+y**2+z**2)
-      p = atan2(y,x)
-      t = atan2(sqrt(x**2+y**2),z)
+      rho2 = y**2 + z**2
+      r = sqrt(x**2+rho2)
+      a = atan2(sqrt(rho2), x)
 
-      neutral_density=neut_corona(max(r,cap_r),t,p)
+      neutral_density=neut_corona(a, max(r,cap_r))
 
       neutral_density = neutral_density*1e15
       return
@@ -707,6 +710,12 @@ c get source density
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1
+
+               x = qx(i)-cx
+               y = qy(j)-cy
+               z = gz(k)-cz ! global z
+               rho2 = y**2 + z**2
+               r = sqrt(x**2+rho2)
              
                npmax = sqrt(neutral_density(i,j,k)/(tau_photo*k_rec))
 
