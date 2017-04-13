@@ -2,13 +2,13 @@
 1                    !atomic mass for reference species
 16                    !mass of pickup ion species
 0.027e15               !density (km^-3)
-0.005                   !particle time step (fraction of omega_i)
+0.0025                   !particle time step (fraction of omega_i)
 30000                  !number of time steps
 100                     !grid data output interval
 500                    !particle data output interval
 401.0                   !flow speed (km/s) 
 11.4                  !thermal speed for Maxwellian (km/s)
-0.1                   !Ni_tot initial (fraction of Ni_max)
+0.3                   !Ni_tot initial (fraction of Ni_max)
 1.0                   !grid size as fraction of lambda_i
 0.05 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './databig/'             !output directory 

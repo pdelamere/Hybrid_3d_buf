@@ -14,7 +14,7 @@ c----------------------------------------------------------------------
           real pi
           pi = 3.14159
           neut_corona = 
-     x         atmosphere(r)*((r/Rpluto)**((tanh(5*(a-pi/2))+1)/2))
+     x         atmosphere(r)*((r/Rpluto)**(2*(tanh(5*(a-pi/2))+1)/2))
       end function neut_corona
 
       real function atmosphere(r)
@@ -460,6 +460,8 @@ c      real Nofr(200)        !number of neutrals as func of r
 c      real neutral_density
       real npmax
 
+      real rho2
+      real x,y,z
       real small_beta_r
       small_beta_r = 1.6*Rpluto
 
@@ -493,11 +495,11 @@ c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
                   if (r .le. small_beta_r) then
-                     bpu = 0.1
+                     bpu = 0.01
                      npofr = vol*beta*bpu*
      x                    neutral_density(i,j,k)*dt/tau_photo
                   else 
-                     bpu = 2
+                     bpu = 2.0
                      npofr = vol*beta*bpu*
      x                    neutral_density(i,j,k)*dt/tau_photo
                   endif
