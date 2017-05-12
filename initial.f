@@ -260,7 +260,7 @@ c      include 'incurv.h'
 
 c==============stretch y direction=====================================
                
-      ysf = 1.0
+      ysf = 0.0
       rj = ny/2
       nrgrd = 10
 c up from center
