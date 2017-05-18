@@ -59,10 +59,17 @@ c      omegar = 0.5*(a1 + sqrt(a1**2 + 4*a2))
                z = gz(k)-cz ! global z
 
                r = sqrt(x**2 + y**2 + z**2)
+               ! Dipole
                b0(i,j,k,1) = (3.*moment*x*y/r**5)*eoverm
-               b0(i,j,k,2) = (moment*(3.*y**2 - r**2)/r**5 
-     x                            + 1.0*b0_top)*eoverm
+               b0(i,j,k,2) = (moment*(3.*y**2 - r**2)/r**5)*eoverm
                b0(i,j,k,3) = (3.*moment*z*y/r**5)*eoverm
+               ! plus IMF
+               b0(i,j,k,1) = b0(i,j,k,1)
+     x                 + cos(imf_phi)*sin(imf_theta)*b0_top*eoverm
+               b0(i,j,k,2) = b0(i,j,k,2)
+     x                 + sin(imf_phi)*sin(imf_theta)*b0_top*eoverm
+               b0(i,j,k,3) = b0(i,j,k,3)
+     x                 + cos(imf_theta)*b0_top*eoverm
             enddo
          enddo
       enddo

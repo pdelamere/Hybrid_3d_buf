@@ -15,3 +15,5 @@
 1000                !mrestart
 30                  !pluto_offset
 30.0e-9               !pluto surface field (Tesla)
+105                 !IMF theta
+60                  !IMF phi
