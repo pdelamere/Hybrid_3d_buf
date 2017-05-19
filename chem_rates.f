@@ -462,7 +462,9 @@ c      real neutral_density
       real rho2
       real x,y,z
       real small_beta_r
+      real max_r
       small_beta_r = 1.6*Rpluto
+      max_r = 200*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
@@ -492,6 +494,8 @@ c get source density
 
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
+
+                  if (r .gt. max_r) cycle
 
                   if (r .le. small_beta_r) then
                      bpu = 0.01
