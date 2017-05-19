@@ -534,7 +534,7 @@ c         endif
          endif
 
          call get_interp_weights(xp)
-         call update_np(np)             !np at n+1/2
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          call update_np_boundary(np)
 
@@ -574,7 +574,7 @@ c         endif
 
 
          call get_interp_weights(xp)
-         call update_np(np)             !np at n+1/2
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
          if (ndiag .eq. nout) then         

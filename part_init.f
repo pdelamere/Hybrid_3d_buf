@@ -662,7 +662,7 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
       write(*,*) 'get interp weights...'
       call get_interp_weights(xp)
       write(*,*) 'update_np...'
-      call update_np(np)
+      call update_np(xp, vp, vp1, np)
       write(*,*) 'update_up...'
       call update_up(vp,np,up)
       write(*,*) 'update_up complete...'
@@ -901,7 +901,7 @@ c         if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
  10      continue
 
       call get_interp_weights(xp)
-      call update_np(np)
+      call update_np(xp, vp, vp1, np)
       call update_up(vp,np,up)
 
       return
