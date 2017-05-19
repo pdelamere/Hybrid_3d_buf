@@ -43,7 +43,6 @@ c      include 'incurv.h'
       rho2 = y**2 + z**2
       r = sqrt(x**2+rho2)
       a = atan2(sqrt(rho2), x)
-
       neutral_density=atmosphere(max(r,cap_r)) !neut_corona(a, max(r,cap_r))
 
       neutral_density = neutral_density*1e15
@@ -463,7 +462,9 @@ c      real neutral_density
       real rho2
       real x,y,z
       real small_beta_r
+      real max_r
       small_beta_r = 1.6*Rpluto
+      max_r = 200*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
@@ -493,6 +494,8 @@ c get source density
 
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
+
+                  if (r .gt. max_r) cycle
 
                   if (r .le. small_beta_r) then
                      bpu = 0.01

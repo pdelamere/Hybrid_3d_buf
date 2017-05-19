@@ -19,6 +19,7 @@ c      include 'incurv.h'
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
+      integer ion_l
 
       do 5 m=1,3   !remove ion energy from total input energy
          input_E = input_E
@@ -2359,7 +2360,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE update_np(np)
+      SUBROUTINE update_np(xp, vp, vp1, np)
 c Weight density to eight nearest grid points.
 c----------------------------------------------------------------------
 c      include 'incurv.h'
@@ -2367,6 +2368,10 @@ c      include 'incurv.h'
       real np(nx,ny,nz)
 
       real volb              !cell volume times beta
+      real xp(Ni_max,3)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
+
 c      real recvbuf(nx*ny*nz)
 c      integer count
 c      count = nx*ny*nz
@@ -2381,35 +2386,23 @@ c      real sumnp,vol
                np(i,j,k)=0.0
  10            continue
 
-      do 20 l=1,Ni_tot
+      do l=1,Ni_tot
 
          i=ijkp(l,1)!+wquad(l,1)
          j=ijkp(l,2)!+wquad(l,2)
          k=ijkp(l,3)!+wquad(l,3)
 
-         if (i .lt. 1) then
-            i = 1
-            write(*,*) 'i index error...',ijkp(l,1)!,wquad(l,1)
-         endif
-         if (j .lt. 1) then 
-            j = 1
-            write(*,*) 'j index error...',ijkp(l,2)!,wquad(l,2)
-         endif
-         if (k .lt. 1) then
-            k = 1
-            write(*,*) 'k index error...',ijkp(l,3)!,wquad(l,3)
-         endif
-
          ip = i+1
          jp = j+1
          kp = k+1
 
-         if (ip .gt. nx) write(*,*) 'ip index error...',ip !ip = 2      !periodic boundary conditions
-         if (jp .gt. ny) write(*,*) 'jp index error...',jp !jp = 2      !periodic boundary conditions
-         if (kp .gt. nz) write(*,*) 'kp index error...',kp !kp = 2      !periodic boundary conditions
+         if (i .lt. 1 .or. j .lt. 1 .or. k .lt. 1 .or.
+     x       ip .gt. nx .or. jp .gt. ny .or. kp .gt. nz) then
+            call remove_ion(xp,vp,vp1,l)
+            cycle
+         endif
 
-c         volb = dx*dy*(qz(k+1)-qz(k))*beta
-c         volb = dx*dy*dz_cell(k)*beta
+
          volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta*beta_p(l))
 
          np(i,j,k) = np(i,j,k) + wght(l,1)*volb
@@ -2421,7 +2414,7 @@ c         volb = dx*dy*dz_cell(k)*beta
          np(i,jp,kp) = np(i,jp,kp) + wght(l,7)*volb
          np(ip,jp,kp) = np(ip,jp,kp) + wght(l,8)*volb
 
- 20      continue
+      enddo
 
 c use for periodic boundary conditions
 c         np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)

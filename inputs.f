@@ -119,6 +119,8 @@ c solar wind composition
 
       real moment
       real surf_field
+      real imf_theta
+      real imf_phi
       CONTAINS
 
 c----------------------------------------------------------------      
@@ -163,6 +165,9 @@ c      write(*,*) 'Ni_max....',Ni_max
       write(*,*) 'pluto offset.......',ri0
       read(100,*) surf_field
       write(*,*) 'surface field of pluto.......',surf_field
+      read(100,*) imf_theta
+      read(100,*) imf_phi
+      write(*,*) 'IMF direction.......',imf_theta, imf_phi
      
       close(100)
       end subroutine readInputs
@@ -226,6 +231,9 @@ c----------------------------------------------------------------
       alpha = (mu0/1e3)*q*(q/mion) !mH...determines particle scaling
 
       moment = surf_field * Rpluto**3
+
+      imf_theta = (pi/180)*imf_theta
+      imf_phi = (pi/180)*imf_phi
 
       end subroutine initparameters
 c----------------------------------------------------------------      

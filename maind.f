@@ -499,28 +499,6 @@ c======================================================================
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart
          endif
-c         if (m .eq. 300) then
-c           call Neut_Center(cx,cy,cz)
-c           do i = 1,nx
-c              do j = 1,ny 
-c                 do k = 1,nz
-c                    x = qx(i)-cx
-c                    y = qy(j)-cy
-c                    z = gz(k)-cz ! global z
-c
-c                    r = sqrt(x**2 + y**2 + z**2)
-c
-c                    b0(i,j,k,1) = (3*moment*x*y/r**5)*eoverm
-c     x                              + b0(i,j,k,1)
-c                    b0(i,j,k,2) = (moment*(3*y**2-r**2)/r**5)*eoverm
-c     x                              + b0(i,j,k,1)
-c                    b0(i,j,k,3) = (3*moment*z*y/r**5)*eoverm
-c     x                              + b0(i,j,k,3)
-c                 enddo
-c              enddo
-c           enddo
-c           call f_update_tlev(b1,b12,b1p2,bt,b0)
-c         endif
 
          !Calculate neutral density
 
@@ -534,7 +512,7 @@ c         endif
          endif
 
          call get_interp_weights(xp)
-         call update_np(np)             !np at n+1/2
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          call update_np_boundary(np)
 
@@ -574,7 +552,7 @@ c         endif
 
 
          call get_interp_weights(xp)
-         call update_np(np)             !np at n+1/2
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
          if (ndiag .eq. nout) then         
