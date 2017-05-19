@@ -43,8 +43,7 @@ c      include 'incurv.h'
       rho2 = y**2 + z**2
       r = sqrt(x**2+rho2)
       a = atan2(sqrt(rho2), x)
-
-      neutral_density=neut_corona(a, max(r,cap_r))
+      neutral_density=atmosphere(max(r,cap_r)) !neut_corona(a, max(r,cap_r))
 
       neutral_density = neutral_density*1e15
       return
