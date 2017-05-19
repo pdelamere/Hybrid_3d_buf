@@ -19,6 +19,7 @@ c      include 'incurv.h'
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
+      integer ion_l
 
       do 5 m=1,3   !remove ion energy from total input energy
          input_E = input_E
