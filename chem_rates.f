@@ -9,48 +9,43 @@
       contains
 
 c----------------------------------------------------------------------
-      real FUNCTION neutral_density(r)
+      real function neut_corona(a,r)
+          real a,r
+          real pi
+          pi = 3.14159
+          neut_corona = 
+     x         atmosphere(r)*((r/Rpluto)**(2*(tanh(5*(a-pi/2))+1)/2))
+      end function neut_corona
+
+      real function atmosphere(r)
+          real r
+          atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
+      end function atmosphere
+
+c---------------------------------------------------------------------
+      real FUNCTION neutral_density(i,j,k)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
-      real r
+      integer i,j,k
+      real x,y,z
+      real cx,cy,cz
+      real r,a
       real nn0
+      real cap_r
 
+      cap_r = 1.6*Rpluto
 
-c Pluto isotropic escape
+      call Neut_Center(cx,cy,cz)
+      x = qx(i)-cx
+      y = qy(j)-cy
+      z = gz(k)-cz ! global z
+      rho2 = y**2 + z**2
+      r = sqrt(x**2+rho2)
+      a = atan2(sqrt(rho2), x)
+      neutral_density=atmosphere(max(r,cap_r)) !neut_corona(a, max(r,cap_r))
 
-c      neutral_density = Qo/(4*PI*r**2*vrad)
-
-c Pluto Strobel Atm post NH
-
-      neutral_density = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
-      if (r .lt. 2.5*Rpluto) then
-          neutral_density =  1e15*(1/2.5)**25.0 + 5e9*(1/2.5)**8.0
-      endif
-      
       neutral_density = neutral_density*1e15
-
-c Pluto Strobel Atm (July 12, 2015 for exobase upward)
-
-c      neutral_density = 4e9*(Rpluto/r)**(4.5) + 1.4e6*(Rpluto/r)**2.1
-     
-c      if (r .lt. 8*Rpluto) then
-c         neutral_density = 4e9*(1./8.)**(4.5) + 1.4e6*(1./8.)**2.1
-c      endif
-
-c      neutral_density = neutral_density*1e15
-
-cc      neutral_density = 4e21*(RIo/r)**16 + 4e16*(RIo/r)**5.0 !+ 
-ccc     x     3.4e27/(4*PI*(r*1e3)**2*100.)               !m^-3
-cc      neutral_density = neutral_density*1e9 !km^-3
-
-
-c      if (neutral_density .ge. 1e22) then 
-c         neutral_density = 1e22
-c      endif
-
-c      write(*,*) 'nden...',neutral_density
-
       return
       end FUNCTION neutral_density
 c----------------------------------------------------------------------
@@ -77,11 +72,9 @@ c      include 'incurv.h'
       call Neut_Center(cx,cy,cz)
       
       do l = 1,Ni_tot 
-         r = sqrt((xp(l,1)-cx)**2 + (xp(l,2)-cy)**2 + 
-     x            (gz(ijkp(l,3))-cz)**2) !use global coords
          vrel = sqrt(vp(l,1)**2 + vp(l,2)**2 + vp(l,3)**2)
 c         if (r .ge. RIo) then 
-         nn = neutral_density(r)
+         nn = neutral_density(ijkp(l,1),ijkp(l,2),ijkp(l,3))
 c            nn = nn0*(RIo/r)**(pwl)
 c         else
 c            nn = nn0
@@ -112,223 +105,6 @@ c            write(*,*) 'chex...',l,chex_prob
       return
       end SUBROUTINE res_chex
 c----------------------------------------------------------------------
-
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE Ionize_Io(np,vp,vp1,xp,up,ndot)
-c Ionizes the neutral cloud with a 28 s time constant and fill particle
-c arrays, np, vp, up (ion particle density, velocity, 
-c and bulk velocity).   
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-
-      real np(nx,ny,nz),
-     x     vp(Ni_max,3),
-     x     vp1(Ni_max,3),
-     x     xp(Ni_max,3),
-     x     up(nx,ny,nz,3),
-     x     ndot(nx,ny,nz)
-
-      real ndot_chex
-c      real neutral_density
-      real r,z1,y1,x1
-c      real function ranf      
-
-      integer flg           !flag for while loop
-      real rnd              !random number
-
-      integer cnt
-      real delta_N
-      integer dNion
-      real vol
-
-      integer recvbuf
-      integer count
-      count = 1
-
-      call Neut_Center(cx,cy,cz)
-
-      cnt = 0
-      do i = 1,nx-1
-         do j = 1,ny-1
-            do k = 2,nz-1
-               vol = dx*dy*dz_cell(k)
-
-               x1 = qx(i) - cx
-               y1 = qy(j) - cy
-               z1 = gz(k) - cz !global coordinate
-               r = sqrt(x1**2 + y1**2 + z1**2)
-c               ndot_chex = 0.
-c               ndot_chex = nuin(i,j,k)*nf(i,j,k)
-c               if (r .gt. 3.0*Rio) then
-cc                  ndot_chex = nuin(i,j,k)*nf(i,j,k)
-c                  ndot_chex = 0.0
-c               endif
-
-               if (r .gt. 2*RIo) then
-                  delta_N = vol*beta*neutral_density(r)*dt/tau_photo
-               endif
-c               delta_N = vol*(ndot(i,j,k))*dt*beta
-
-
-
-               if (delta_N .ge. 1.0) then 
-c               write(*,*) 'delta_N...',my_rank,delta_N,i,j,k
-c                  write(*,*) 'ndot...',delta_N
-                  dNion = nint(delta_N)
-                  l1 = Ni_tot + 1
-                  Ni_tot = Ni_tot + dNion
-                  do l = l1,Ni_tot
-                     vp(l,:) = 0.0
-                     
-                     xp(l,1) = qx(i) + (pad_ranf())*dx_grid(i)
-                     xp(l,2) = qy(j) + (pad_ranf())*dy_grid(j)
-                     xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
-                     
-c                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-c                     ijkp(l,2) = floor(xp(l,2)/dy)
-
-
-                     ii=0
- 17                  continue
-                     ii = ii + 1
-                     if (xp(l,1) .gt. qx(ii)) go to 17 !find i on non-uniform 
-                     ii = ii-1
-                     ijkp(l,1)= ii                     
-                     
-                     jj=0
- 18                  continue
-                     jj = jj + 1
-                     if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
-                     jj = jj-1
-                     ijkp(l,2)= jj
-
-                     kk=0
- 16                  continue
-                     kk = kk + 1
-                     if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 
-                     kk = kk-1
-                     ijkp(l,3)= kk
-
-c                     kk=1
-c                     do 16 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-c                        ijkp(l,3) = kk !grid
-c                        kk=kk+1
-c 16                  continue
-c                     kk=ijkp(l,3)
-c                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-c                        ijkp(l,3) = kk+1
-c                     endif
-                     
-                     mrat(l) = 1.0/m_pu
-c                     m_arr(l) = mproton*m_pu
-c                     Ni_tot = l
-                     cnt = cnt + 1
-                     do m=1,3
-                        vp1(l,m) = vp(l,m)
-                        input_E = input_E + 
-     x                     0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /beta
-c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
-
-                     enddo                     
-                  enddo
-
-               endif
-               if (delta_N .lt. 1.0) then 
-                  if (delta_N .gt. pad_ranf()) then
-                     l = Ni_tot + 1
-                     vp(l,:) = 0.0
-                     
-                     xp(l,1) = qx(i) + (pad_ranf())*dx_grid(i)
-                     xp(l,2) = qy(j) + (pad_ranf())*dy_grid(j)
-                     xp(l,3) = qz(k) + (pad_ranf())*dz_grid(k)
-                     
-c                     ijkp(l,1) = floor(xp(l,1)/dx) !particle grid location index
-c                     ijkp(l,2) = floor(xp(l,2)/dy)
-
-
-                     ii=0
- 27                  continue
-                     ii = ii + 1
-                     if (xp(l,1) .gt. qx(ii)) go to 27 !find i on non-uniform 
-                     ii = ii-1
-                     ijkp(l,1)= ii                     
-                     
-                     jj=0
- 28                  continue
-                     jj = jj + 1
-                     if (xp(l,2) .gt. qy(jj)) go to 28 !find j on non-uniform 
-                     jj = jj-1
-                     ijkp(l,2)= jj
-
-                     kk=0
- 29                  continue
-                     kk = kk + 1
-                     if (xp(l,3) .gt. qz(kk)) go to 29 !find k on non-uniform 
-                     kk = kk-1
-                     ijkp(l,3)= kk
-                     
-c                     kk=1
-c                     do 18 while((xp(l,3).gt.qz(kk)).and.(kk .le. nz)) !find k
-c                        ijkp(l,3) = kk !grid
-c                        kk=kk+1
-c 18                  continue
-c                     kk=ijkp(l,3)
-c                     if (xp(l,3) .gt. (qz(kk)+(dz_grid(kk)/2))) then
-c                        ijkp(l,3) = kk+1
-c                     endif
-
-                     if (ijkp(l,3) .le. 0) then 
-                     write(*,*) 'index error...',ijkp(l,3),qz(k),xp(l,3)
-                     endif
-                     
-                     mrat(l) = 1.0/m_pu
-c                     m_arr(l) = mproton*m_pu
-                     Ni_tot = l
-                     cnt = cnt + 1
-                     do m=1,3
-                        vp1(l,m) = vp(l,m)
-                        input_E = input_E + 
-     x                    0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /beta
-c                        input_p(m) = input_p(m) + m_arr(l)*vp(l,m)/beta
-                     enddo                     
-                  endif
-               endif
-            enddo
-         enddo
-      enddo
-
-
-      write(*,*) 'total new ions...',cnt,Ni_tot,my_rank
-
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_ALLREDUCE(cnt,recvbuf,count,
-c     x     MPI_INTEGER,MPI_SUM,MPI_COMM_WORLD,ierr)
-
-c      write(*,*) 'total dNi....',recvbuf
-c      stop
-
-      
-      do 60 l = l1,Ni_tot
-         if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,2) .gt. ny) .or. 
-     x        (ijkp(l,3) .gt. nz)) then
-            call remove_ion(xp,vp,vp1,l)
-            
-         endif
- 60   continue
-      
-
-      call get_interp_weights(xp)
-      call update_np(np)
-      call update_up(vp,np,up)
-
-      return
-      end SUBROUTINE Ionize_Io
-c----------------------------------------------------------------------
-
 
 c----------------------------------------------------------------------
       SUBROUTINE get_ndot(ndot)
@@ -373,7 +149,7 @@ c               if (r .le. RIo) then
 c                  ndot(i,j,k) = 0.0
 c               endif
 
-               npofr = vol*beta*neutral_density(r)*dt/tau_photo
+               npofr = vol*beta*neutral_density(i,j,k)*dt/tau_photo
                ndot(i,j,k) = exp(-(r - 1.4*RIo)**2/(0.2*RIo)**2)*
      x                       sin(theta)*(cos(phi)+1)/2 !+
 c     x                    0.2*dvol*exp(-(r - 1.2*RIo)**2/(0.1*RIo)**2)*
@@ -569,7 +345,8 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
          enddo
       enddo
 
-      write(*,*) '    Proc ionioz rate XIANZHE(in 6Rio)= ',ndot_intgl,my_rank
+      write(*,*) '    Proc ionioz rate XIANZHE(in 6Rio)= ',
+     x           ndot_intgl, my_rank
 
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -578,7 +355,8 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
      x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       if(my_rank.eq.0) then
-      write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',recvbuf,my_rank
+      write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',
+     x           recvbuf,my_rank
       endif
 
 c     DOLS I remove the scaling to Mdot from para.h
@@ -681,8 +459,12 @@ c      real Nofr(200)        !number of neutrals as func of r
 c      real neutral_density
       real npmax
 
+      real rho2
+      real x,y,z
       real small_beta_r
-      small_beta_r = 1.5*Rpluto
+      real max_r
+      small_beta_r = 1.6*Rpluto
+      max_r = 200*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
@@ -701,21 +483,28 @@ c get source density
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1
-               r = sqrt((qx(i)-cx)**2 + (qy(j)-cy)**2 + (gz(k)-cz)**2)
+
+               x = qx(i)-cx
+               y = qy(j)-cy
+               z = gz(k)-cz ! global z
+               rho2 = y**2 + z**2
+               r = sqrt(x**2+rho2)
              
-               npmax = sqrt(neutral_density(r)/(tau_photo*k_rec))
+               npmax = sqrt(neutral_density(i,j,k)/(tau_photo*k_rec))
 
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
+                  if (r .gt. max_r) cycle
+
                   if (r .le. small_beta_r) then
                      bpu = 0.01
                      npofr = vol*beta*bpu*
-     x                    neutral_density(r)*dt/tau_photo
+     x                    neutral_density(i,j,k)*dt/tau_photo
                   else 
                      bpu = 2.0
                      npofr = vol*beta*bpu*
-     x                    neutral_density(r)*dt/tau_photo
+     x                    neutral_density(i,j,k)*dt/tau_photo
                   endif
 
                   if ((npofr .ge. 1) .and. (npofr+l1 .lt. Ni_max)) then

@@ -57,7 +57,6 @@ c misc constants
 c      PARAMETER (m_pu = 64.0)
       PARAMETER (mproton = 1.67e-27)
 c      PARAMETER (mO = 2.3e-25)    !mass of Ba (kg)
-      PARAMETER (m_pu = 28.0)
 c      PARAMETER (mBa = m_pu*mO)    !mass of Ba (kg)
 c      PARAMETER (O_to_Ba = mO/mBa) !convert E and B for particle move
 
@@ -97,17 +96,15 @@ c      PARAMETER (dNi = 2500)
 
 c domain decompostion parameters
 
-      integer n_up,n_down,n_left,n_right, cart_dims
+      integer n_up, n_down, cart_dims
       integer io_proc
 
-      parameter(cart_dims = 2) !dimensions for virtual topology
+      parameter(cart_dims = 1) !dimensions for virtual topology
       parameter(n_up=1)
       parameter(n_down=2)
-      parameter(n_left=3)
-      parameter(n_right=4)
 
       logical periods(cart_dims), reorder
-      data periods /.true.,.false./, reorder /.false./
+      data periods /.true./, reorder /.false./
 
       integer dims(cart_dims), tag, cart_coords(2)
       data tag /1/ !dimenions, /rows,columns/
@@ -120,6 +117,10 @@ c solar wind composition
       PARAMETER (b_shl = 2.0)
       PARAMETER (f_shl = 0.1*b_shl)
 
+      real moment
+      real surf_field
+      real imf_theta
+      real imf_phi
       CONTAINS
 
 c----------------------------------------------------------------      
@@ -131,8 +132,9 @@ c----------------------------------------------------------------
       write(*,*) 'b0_init...........',b0_init
       read(100,*) ion_amu
       write(*,*) 'amu...............',ion_amu
-      read(100,*) mpu
-      write(*,*) 'mpu...............',mpu
+      read(100,*) m_pu
+      write(*,*) 'mpu...............',m_pu
+      mpu = m_pu ! mpu is depreciated
       read(100,*) nf_init
       write(*,*) 'nf_init...........',nf_init
       read(100,*) dt_frac
@@ -161,6 +163,11 @@ c      write(*,*) 'Ni_max....',Ni_max
       write(*,*) 'mrestart...........',mrestart
       read(100,*) ri0
       write(*,*) 'pluto offset.......',ri0
+      read(100,*) surf_field
+      write(*,*) 'surface field of pluto.......',surf_field
+      read(100,*) imf_theta
+      read(100,*) imf_phi
+      write(*,*) 'IMF direction.......',imf_theta, imf_phi
      
       close(100)
       end subroutine readInputs
@@ -223,6 +230,11 @@ c----------------------------------------------------------------
 
       alpha = (mu0/1e3)*q*(q/mion) !mH...determines particle scaling
 
+      moment = surf_field * Rpluto**3
+
+      imf_theta = (pi/180)*imf_theta
+      imf_phi = (pi/180)*imf_phi
+
       end subroutine initparameters
 c----------------------------------------------------------------      
 
@@ -234,7 +246,7 @@ c----------------------------------------------------------------
 
       real*8 ak, btot, a1, a2, womega, phi, deltat
 
-   !   check input parameters
+      !check input parameters
 
       if (my_rank .eq. 0) then 
       write(*,*) 'alpha...',alpha

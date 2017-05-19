@@ -111,7 +111,7 @@ c      character filenum
       character(len=:), allocatable::filenum
       character(len=10) :: arg
       character(len=10) :: acc
-      character(len=3) :: stat
+      character(len=7) :: stat
 
       logical ex
       integer para_dat_version = 3
@@ -148,21 +148,18 @@ c----------------------------------------------------------------------
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
       io_proc = nint(procnum/2.)
       dims(1) = procnum
-      dims(2) = 1
 
 c create virtual topology (set dimensions in para.h)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      call MPI_CART_CREATE(MPI_COMM_WORLD, 2, dims, periods, 
+      call MPI_CART_CREATE(MPI_COMM_WORLD, cart_dims, dims, periods, 
      x     reorder,cartcomm, ierr)
 
       call MPI_COMM_RANK(cartcomm, cart_rank, ierr)
       call MPI_CART_COORDS(cartcomm, cart_rank, cart_dims, cart_coords, 
      x                     ierr)
-      call MPI_CART_SHIFT(cartcomm,0,1,nbrs(n_up),nbrs(n_down),ierr)
-      call MPI_CART_SHIFT(cartcomm, 1, 1, nbrs(n_left), nbrs(n_right), 
-     &     ierr)
+      call MPI_CART_SHIFT(cartcomm,0,1,up_proc,down_proc,ierr)
 
       call system_clock(t1,cnt_rt)
 
@@ -284,7 +281,7 @@ c----------------------------------------------------------------------
           open(1000+my_rank,file=trim(out_dir)//'restart.vars'//filenum,
      x          status='unknown',
      x          form='unformatted')
-          write(*,*) 'reading restart.vars......',filenum, un
+          write(*,*) 'reading restart.vars......',filenum
          
           read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x         up,aj,nu,E,input_E,input_p,mstart,input_EeP,
@@ -294,7 +291,7 @@ c----------------------------------------------------------------------
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x         status='unknown',form='unformatted')
-          write(*,*) 'reading restart.part......',filenum, un
+          write(*,*) 'reading restart.part......',filenum
           read(1000+my_rank) vp,vp1,vplus,vminus,
      x         xp,Ep,Ni_tot,
      x         Ni_tot_sys,ijkp,
@@ -414,6 +411,14 @@ c----------------------------------------------------------------------
      x     'c.b1_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
+      open(132,file=trim(out_dir)//'grid/'//
+     x     'c.b0_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(133,file=trim(out_dir)//'grid/'//
+     x     'c.bt_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
 
       open(140,file=trim(out_dir)//'grid/'//
      x     'c.aj_'//filenum//'.dat',
@@ -490,13 +495,16 @@ c======================================================================
 c  MAIN LOOP!
 c======================================================================
 
+      if (Ni_tot .lt. 0.95*Ni_max) then
+        do i=1,100
+         call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
+        enddo
+      endif
       do 1 m = mstart+1, nt
-
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart
          endif
 
-      
          !Calculate neutral density
 
 
@@ -504,12 +512,12 @@ c======================================================================
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
 
          mr = 1.0/m_pu
-         if (Ni_tot .lt. 0.95*Ni_max) then
+         if (Ni_tot .lt. 0.80*Ni_max) then
             call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
          endif
 
          call get_interp_weights(xp)
-         call update_np(np)             !np at n+1/2
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          call update_np_boundary(np)
 
@@ -549,7 +557,7 @@ c======================================================================
 
 
          call get_interp_weights(xp)
-         call update_np(np)             !np at n+1/2
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
          if (ndiag .eq. nout) then         
@@ -642,7 +650,11 @@ c               write(115) np_1
 c               write(116) m
 c               write(116) np_2
                write(131) m
-               write(131) bt
+               write(131) b1
+               write(132) m
+               write(132) b0
+               write(133) m
+               write(133) bt
 c               write(140) m
 c               write(140) aj
 c               write(150) m
