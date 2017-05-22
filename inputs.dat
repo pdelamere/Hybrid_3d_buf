@@ -4,7 +4,7 @@
 0.027e15               !density (km^-3)
 0.0025                   !particle time step (fraction of omega_i)
 30000                  !number of time steps
-100                     !grid data output interval
+10                     !grid data output interval
 500                    !particle data output interval
 401.0                   !flow speed (km/s) 
 11.4                  !thermal speed for Maxwellian (km/s)
@@ -15,7 +15,5 @@
 1000                !mrestart
 20                  !pluto_offset
 0.0               !pluto surface field (Tesla)
-30                  !pluto_offset
-30.0e-9               !pluto surface field (Tesla)
-105                 !IMF theta
-60                  !IMF phi
+90                 !IMF theta
+90                  !IMF phi
