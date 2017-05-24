@@ -474,8 +474,11 @@ c----------------------------------------------------------------------
       call rcumsum(dy_grid, qy)
 
       dz_grid(:) = delz
-      call rcumsum(dz_grid, qz)
-      dz_grid = dz_grid - delz
+
+      qz(1) = 0.0
+      do 38 k=2,nz
+         qz(k) = qz(k-1)+dz_grid(k)
+ 38   continue
 
       dz_cell(1) = dz_grid(1)
       dz_cell(nz) = dz_grid(nz)
