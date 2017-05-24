@@ -457,9 +457,94 @@ c      open(40,file='coord.dat',status='unknown',form='unformatted')
       return
       end subroutine grd8
 c----------------------------------------------------------------------
+      subroutine rcumsum(inarr, outarr)
+          real, dimension(:), intent(in) :: inarr
+          real, dimension(size(inarr)), intent(out) :: outarr
+          outarr(1) = inarr(1)
+          do i=2, size(inarr)
+              outarr(i) = outarr(i-1) + inarr(i)
+          enddo
+      end subroutine rcumsum
+
+      SUBROUTINE grdINFINITYYYY()
+      dx_grid(:) = dx
+      call rcumsum(dx_grid, qx)
+
+      dy_grid(:) = dy
+      call rcumsum(dy_grid, qy)
+
+      dz_grid(:) = delz
+      call rcumsum(dz_grid, qz)
+      dz_grid = dz_grid - delz
+
+      dz_cell(1) = dz_grid(1)
+      dz_cell(nz) = dz_grid(nz)
+      zrat(1) = 0.5
+      zrat(nz) = 0.5
+      do 40 k=2,nz-1
+         dz_cell(k) = ((qz(k+1) + qz(k))/2.0) -
+     x                ((qz(k) + qz(k-1))/2.0)
+               
+         zplus = (qz(k+1) + qz(k))/2.0
+         zminus = (qz(k) + qz(k-1))/2.0
+         zrat(k) = (qz(k) - zminus)/(zplus - zminus)
+ 40   continue
 
 
+      dx_cell(1) = dx_grid(1)
+      dx_cell(nx) = dx_grid(nx)
+      xrat(1) = 0.5
+      xrat(nx) = 0.5
+      do 50 i=2,nx-1
+         dx_cell(i) = ((qx(i+1) + qx(i))/2.0) -
+     x                ((qx(i) + qx(i-1))/2.0)
+         xplus = (qx(i+1) + qx(i))/2.0
+         xminus = (qx(i) + qx(i-1))/2.0
+         xrat(i) = (qx(i) - xminus)/(xplus - xminus)
+ 50   continue
 
+      dy_cell(1) = dy_grid(1)
+      dy_cell(ny) = dy_grid(ny)
+      yrat(1) = 0.5
+      yrat(ny) = 0.5
+      do 60 j=2,ny-1
+         dy_cell(j) = ((qy(j+1) + qy(j))/2.0) -
+     x                ((qy(j) + qy(j-1))/2.0)
+         yplus = (qy(j+1) + qy(j))/2.0
+         yminus = (qy(j) + qy(j-1))/2.0
+         yrat(j) = (qy(j) - yminus)/(yplus - yminus)
+ 60   continue
+
+      if (cart_rank .eq. procnum-1) then
+         gz(:) = qz(:)
+      endif
+
+c      do i = 1,procnum 
+      if (cart_rank .lt. procnum-1) then
+         do k = 1,nz
+            i = procnum - (cart_rank+1)
+            gz(k)=qz(nz)*i + ((k-1)*delz) - (i*delz)
+         enddo
+      endif
+
+c      call assign('assign -F system -N ultrix f:' //'c.coord.dat')
+      open(40,file=trim(out_dir)//'c.coord.dat',status='unknown',
+     x         form='unformatted')
+
+c      open(40,file='coord.dat',status='unknown',form='unformatted')
+      write(40) nx
+      write(40) ny
+      write(40) nz
+      write(40) qx
+      write(40) qy
+      write(40) qz
+      write(40) dz_grid
+      write(40) dz_cell
+      close(40)
+
+      return
+
+      end subroutine grdINFINITYYYY
 
 c----------------------------------------------------------------------
       SUBROUTINE grd9()

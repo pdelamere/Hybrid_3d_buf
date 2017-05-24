@@ -226,7 +226,7 @@ c initialize seed for each processor
          beta_p(Ni_tot+1:) = beta_pu
       endif
 
-      call grd8()
+      call grdINFINITYYYY()
       call grd6_setup(b0,bt,b12,b1,b1p2,nu)
 
 
