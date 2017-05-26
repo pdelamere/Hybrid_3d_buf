@@ -85,6 +85,33 @@ c         m_arr_buf(l) = 2*mproton
 
  20   continue
          
+c add shell distribution
+
+      Ni_tot_buf_1 = Ni_tot_buf 
+      
+      Ni_tot_buf = Ni_tot_buf_1 + f_shl*Ni_tot_buf_1
+      
+      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
+         
+         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
+         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+         
+c         m_arr_buf(l) = mproton
+         mrat_buf(l) = 1.0
+         beta_p_buf(l) = b_shl
+         tags_buf(l) = 1
+         
+         theta = pad_ranf()*PI
+         phi = pad_ranf()*2*PI
+         
+         vp_buf(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
+         vp_buf(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
+         vp_buf(l,3) = vsw*cos(theta)
+         
+ 69   enddo
+
+
       return
       end SUBROUTINE part_setup_buf
 c----------------------------------------------------------------------
