@@ -1159,214 +1159,18 @@ c      include 'incurv.h'
          xp0 = xp(l,1)
          vp0 = vp(l,1)
          xp(l,1) = xp(l,1) + dth*vp(l,1)
-c         ijkp(l,1) = nint(xp(l,1)/dx) 
-
-
-c         if ((xp(l,1) .gt. qx(nx)) .or. (xp(l,1) .lt. qx(1))) then
-c            write(*,*) 'WARNING...part OB...',xp(l,:),nint(xp(l,:)/dx)
-c         endif
-c         if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,1) .lt. 1)) then
-c            write(*,*) 'WARNING...part OB...',ijkp(l,:),xp(l,1),vp(l,1),
-c     x                  xp0,vp0,vp1(l,1),Ep(l,:)
-c            stop
-c         endif
-
- 
-
 
          xp(l,2) = xp(l,2) + dth*vp(l,2)
-c         ijkp(l,2) = nint(xp(l,2)/dy) 
 
          xp(l,3) = xp(l,3) + dth*vp(l,3)
-c         ijkp(l,3) = nint(xp(l,3)/delz)
-
-c         k=1
-c         do 15 while((xp(l,3) .gt. qz(k)) .and. (k .le. nz))  !find k
-c            ijkp(l,3) = k                 !grid
-c            k=k+1
-c 15      continue
-c         k=ijkp(l,3)
-c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c            ijkp(l,3) = k+1
-c         endif
-
-c         if (abs(xp(l,3)-qz(ijkp(l,3))) .gt. delz) then
-c            write(*,*) 'k index error...',xp(l,3),ijkp(l,3)
-c            stop
-c         endif
-
-c         if ((ijkp(l,3) .gt. nz) .or. (ijkp(l,3) .lt. 2)) then
-c            write(*,*) 'WARNING...part OB...',ijkp(l,3)
-c         endif
-
-c         if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,1) .lt. 1)) then
-c            write(*,*) 'WARNING...part OB...',ijkp(l,:)
-c         endif
-
-
  10      continue
 
-
-c      do l = 1,Ni_tot
-c         zindx(:) = minloc(abs(xp(l,3) - qz(:)))      
-c         ijkp(l,3) = zindx(1)
-cc         write(*,*) 'zindx...',ijkp(l,3)
-c      enddo
-
-c      where (xp(:,1) .ge. qx(nx))
-c         ijkp(:,1) = 1
-c         wquad(:,1) = 0.0
-c         xp(:,1) = qx(1) + ( xp(:,1) - qx(nx) )
-c      endwhere
-
-c      do l = Ni_tot+1,Ni_tot+dNi_sw
-cc      do l = 1,Ni_tot_sw
-cc         if (xp(l,1) .le. qx(1)) then
-cc            write(*,*) 'x boundary 1...',l,ijkp(l,1),ijkp(l,2),ijkp(l,3)
-cc            do m=1,3
-cc               vp1(l,m) = vp(l,m)
-cc               input_E = input_E - 
-cc     x              0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
-cc               input_p(m) = input_p(m) - m_arr(l)*vp(l,m) / beta
-cc            enddo
-c            ijkp(l,1) = nx
-c            wquad(l,1) = -1.0
-c            xp(l,1) = qx(nx) - pad_ranf()*dx/2 !(qx(1) - xp(l,1))
-c            xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny)-qy(1))
-cc            xp(l,2) = pad_ranf()*qy(ny)
-c            ijkp(l,2) = nint(xp(l,2)/dy)
-c            xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-cc            xp(l,3) = pad_ranf()*qz(nz)
-cc            ijkp(l,3) = nint(xp(l,3)/dz_grid(nz/2))
-c            k=1
-c            do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c               ijkp(l,3) = k    !grid
-c               k=k+1
-c 50         continue
-c            k=ijkp(l,3)
-c            if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c               ijkp(l,3) = k+1
-c            endif
-c            phi = 2.0*pi*pad_ranf()
-cc            vp(l,1) = -vsw
-c            flg = 0
-c            do 30 while (flg .eq. 0)
-c               theta = pi*pad_ranf()
-c               f = sin(theta)
-c               rnd = pad_ranf()
-c               if (f .ge. rnd) flg = 1
-c 30         continue
-c            flg = 0
-c            do 40 while (flg .eq. 0)
-c               v = (100*pad_ranf())
-cc               f = (vth**2/exp(1.0))*v**2*exp(-(v)**2 / vth**2)
-c               f = exp(-(v)**2 / 19.3**2)
-c               rnd = pad_ranf()
-c               if (f .ge. rnd) then 
-c                  flg = 1
-c                  vp(l,1) = -vsw + v*cos(phi)*sin(theta)
-c                  vp(l,2) = v*sin(phi)*sin(theta)
-c                  vp(l,3) = v*cos(theta)
-c               endif
-c 40         continue
-c            m_arr(l) = mproton
-c            mrat(l) = 1.0
-c            do m=1,3
-c               vp1(l,m) = vp(l,m)
-c               input_E = input_E + 
-c     x              0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
-c               input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
-c            enddo
-cc            write(*,*) 'x boundary 2...',l,ijkp(l,1),ijkp(l,2),ijkp(l,3) 
-cc         endif
-c      enddo
-
-
-c      Ni_tot = Ni_tot + dNi_sw
-
-c      write(*,*) 'Ni_tot + dNi_sw....',Ni_tot
-
-c      in_bounds(1:Ni_tot) = .true.
-c      in_bounds(Ni_tot+1:) = .false.
-
-cc      where(xp(Ni_tot_sw+1:Ni_tot,1) .le. qx(1)) 
-cc     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
-
-c      where(xp(1:Ni_tot,1) .le. qx(1))
-c     x     in_bounds(1:Ni_tot) = .false.
-
-c      Ni_tot_in = count(in_bounds)
-
-cc      write(*,*) 'more outflow particles...',Ni_tot,Ni_tot_in,
-cc     x       Ni_tot-Ni_tot_in,qx(1)
-      
-c      do m = 1,3 
-c        xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c        vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c        vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c        ijkp(1:Ni_tot_in,m)=pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
-c      enddo
-
-c      do m = 1,8
-c        wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c      enddo
-
-c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
-c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
-
-cc remove energy
-
-c      do l = Ni_tot_in+1,Ni_tot  
-c         do m=1,3
-c            input_E = input_E - 
-c     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
-c            input_p(m) = input_p(m) - m_arr(l)*vp(l,m) / beta
-c         enddo         
-c      enddo
-
-c      Ni_tot = count(in_bounds)
-
-c      print *,'Ni_tot in_bounds...',Ni_tot
-
-c      where (xp(:,1) .le. qx(1)) 
-c         ijkp(:,1) = nx
-c         wquad(:,1) = -1.0
-c         xp(:,1) = qx(nx) - (qx(1) - xp(:,1))
-c         xp(:,2) = pad_ranf()*qy(ny)
-c         ijkp(:,2) = ninit(xp(:,2)/dy
-c         vp(:,1) = -vsw
-c         vp(:,2) = 0.0
-c         vp(:,3) = 0.0
-c      endwhere
-
-
-c y periodic
-c      where (xp(:,2) .ge. qy(ny))
-c         ijkp(:,2) = 1
-c         wquad(:,2) = 0.0
-c         xp(:,2) = qy(1) + ( xp(:,2) - qy(ny) )
-c      endwhere
-
-c      where (xp(:,2) .le. qy(1)) 
-c         ijkp(:,2) = ny
-c         wquad(:,2) = -1.0
-c         xp(:,2) = qy(ny) - (qy(1) - xp(:,2))
-c      endwhere
-
-
       where (xp(:,2) .gt. qy(ny-1))
-c         ijkp(:,2) = 1
-c         wquad(:,2) = 0
          xp(:,2) = qy(1) + ( xp(:,2) - qy(ny-1) )
-c         ijkp(:,2) = nint(xp(:,2)/dy)
       endwhere
 
       where (xp(:,2) .le. qy(1)) 
-c         ijkp(:,2) = ny-1
-c         wquad(:,2) = -1
          xp(:,2) = qy(ny-1) - (qy(1) - xp(:,2))
-c         ijkp(:,2) = nint(xp(:,2)/dy)
       endwhere
 
 
@@ -1380,7 +1184,6 @@ c -------------------z exchange, up-----------------------------
       where (xp(1:Ni_tot,3) .gt. qz(nz))
          in_bounds(1:Ni_tot)= .false.
          ijkp(1:Ni_tot,3) = 2
-c         wquad(1:Ni_tot,3) = 0.0
          xp(1:Ni_tot,3) = qz(2)+(xp(1:Ni_tot,3)-qz(nz))
       endwhere
 
@@ -1396,19 +1199,8 @@ c         wquad(1:Ni_tot,3) = 0.0
       allocate(out_beta_p(Ni_out))
       allocate(out_tags(Ni_out))
 
-c      write(*,*) 'Ni_out up...',Ni_out, my_rank
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
       dest = up_proc
       source = down_proc
-
-c      call MPI_ISEND(Ni_out, 1, MPI_INTEGER, dest, tag, 
-c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(Ni_in, 1, MPI_INTEGER, source, tag,
-c     x     cartcomm, reqs(2), ierr)
-      
-c      call MPI_WAITALL(2, reqs, stats, ierr)
 
       call MPI_SEND(Ni_out, 1, MPI_INTEGER, dest, tag, 
      x     cartcomm, ierr)
@@ -1428,12 +1220,9 @@ c      call MPI_WAITALL(2, reqs, stats, ierr)
       do m = 1,3
          out_part(1:Ni_out,m) = 
      x        pack(xp(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         write(*,*) 'finished out_part...',Ni_out,Ni_tot_in,Ni_tot
-c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(xp, in_bounds, 3)
-c      write(*,*) 'finished xp pack...'
                 
 
       call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
@@ -1444,21 +1233,12 @@ c      write(*,*) 'finished xp pack...'
       call MPI_WAITALL(2, reqs, stats, ierr)
 
      
-
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, stat, ierr)
             
       xp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,3
          out_part(1:Ni_out,m) = 
      x          pack(vp(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(vp, in_bounds, 3)
@@ -1475,19 +1255,12 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, stat, ierr)
       
       vp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,3
          out_part(1:Ni_out,m) = 
      x          pack(vp1(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(vp1, in_bounds, 3)
@@ -1499,23 +1272,14 @@ c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, stat, ierr)
       
        vp1(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,3
          out_ijkp(1:Ni_out,m) = 
      x          pack(ijkp(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         ijkp(1:Ni_tot_in,m) = 
-c     x          pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
@@ -1533,47 +1297,14 @@ c      call pack_pd_3(ijkp, in_bounds)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_ijkp, 3*Ni_out, MPI_INTEGER, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_ijkp, 3*Ni_in, MPI_INTEGER, source, tag,
-c     x     cartcomm, stat, ierr)
       
       
       ijkp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_ijkp(:,:)
 
 
-c      do m = 1,3
-c         out_part(1:Ni_out,m) = 
-c     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         wquad(1:Ni_tot_in,m) = 
-c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c      enddo
-
-
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, reqs(2), ierr)
-c      
-c      call MPI_WAITALL(2, reqs, stats, ierr)
-
-cc      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-cc      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-cc     x     cartcomm, ierr)
-cc      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-cc     x     cartcomm, stat, ierr)
-      
-      
-c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
-
       do m = 1,8
          out_part_wght(1:Ni_out,m) = 
      x          pack(wght(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         wght(1:Ni_tot_in,m) = 
-c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
 
@@ -1586,22 +1317,14 @@ c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, stat, ierr)
       
       
       wght(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part_wght(:,:)
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
 
       out_beta_p(1:Ni_out) = 
      x     pack(beta_p(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(beta_p, in_bounds, 1)
 
@@ -1630,28 +1353,12 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       tags(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_tags(:)
 
-c      out_mass(1:Ni_out) = 
-c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
-
-c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, reqs(2), ierr)
-      
-c      call MPI_WAITALL(2, reqs, stats, ierr)
-
-      
-c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
-
 
       out_mass(1:Ni_out) = 
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(mrat, in_bounds, 1)
 
-      ! remove energy of outgoing particles
       input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
      x                        (beta*out_beta_p(:)))
 
@@ -1663,12 +1370,6 @@ c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       
       call MPI_WAITALL(2, reqs, stats, ierr)
       
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c      call MPI_SEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, ierr)
-c      call MPI_RECV(in_mass, Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, stat, ierr)
       
 
       mrat(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
@@ -1683,13 +1384,6 @@ c     x     cartcomm, stat, ierr)
      x                (beta*beta_p(Ni_tot_in+1:Ni_tot)))
       enddo
       
-c      do l = Ni_tot_in+1,Ni_tot  
-c         do m=1,3
-c            input_E = input_E + 
-c     x           0.5*m_arr(l)*(vp(l,m)*km_to_m)**2 /beta
-cc            input_p(m) = input_p(m) - m_arr(l)*vp(l,m) / beta
-c         enddo         
-c      enddo
 
 
       deallocate(out_part)
@@ -1711,11 +1405,6 @@ c ---------z exchange down---------------------------------------
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      where (xp(:,3) .le. qz(1)) 
-c         ijkp(:,3) = nz
-c         wquad(:,3) = -1.0
-c         xp(:,3) = qz(nz) - (qz(1) - xp(:,3))
-c      endwhere
 
       in_bounds(1:Ni_tot) = .true.
       in_bounds(Ni_tot+1:) = .false.
@@ -1723,7 +1412,6 @@ c      endwhere
       where (xp(1:Ni_tot,3) .le. qz(2))
          in_bounds(1:Ni_tot)= .false.
          ijkp(1:Ni_tot,3) = nz
-c         wquad(1:Ni_tot,3) = -1.0
          xp(1:Ni_tot,3) = qz(nz)-(qz(2)-xp(1:Ni_tot,3))
       endwhere
 
@@ -1740,9 +1428,6 @@ c         wquad(1:Ni_tot,3) = -1.0
       allocate(out_beta_p(Ni_out))
       allocate(out_tags(Ni_out))
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-
       dest = down_proc
       source = up_proc
       
@@ -1753,7 +1438,6 @@ c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
 
       call MPI_WAITALL(2, reqs, stats, ierr)
-c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank      
 
 
       allocate(in_part(Ni_in,3))
@@ -1762,12 +1446,10 @@ c      write(*,*) 'down exchange...',Ni_in,Ni_out,my_rank
       allocate(in_mass(Ni_in))
       allocate(in_tags(Ni_in))
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
       do m = 1,3
          out_part(1:Ni_out,m) = 
      x          pack(xp(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(xp, in_bounds, 3)
@@ -1784,7 +1466,6 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       do m = 1,3
          out_part(1:Ni_out,m) = 
      x          pack(vp(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(vp, in_bounds, 3)
@@ -1805,7 +1486,6 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       do m = 1,3
          out_part(1:Ni_out,m) = 
      x          pack(vp1(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(vp1, in_bounds, 3)
@@ -1822,11 +1502,8 @@ c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
       do m = 1,3
          out_ijkp(1:Ni_out,m) = 
      x          pack(ijkp(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         ijkp(1:Ni_tot_in,m) = 
-c     x          pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
-c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
@@ -1847,27 +1524,10 @@ c      call pack_pd_3(ijkp, in_bounds)
       ijkp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_ijkp(:,:)
 
 
-c      do m = 1,3
-c         out_part(1:Ni_out,m) = 
-c     x          pack(wquad(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         wquad(1:Ni_tot_in,m) = 
-c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c      enddo
-
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, reqs(2), ierr)
-      
-c      call MPI_WAITALL(2, reqs, stats, ierr)
-      
-c      wquad(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
 
       do m = 1,8
          out_part_wght(1:Ni_out,m) = 
      x          pack(wght(1:Ni_tot,m), .not.in_bounds(1:Ni_tot))
-c         wght(1:Ni_tot_in,m) = 
-c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(wght, in_bounds, 8)
@@ -1885,7 +1545,6 @@ c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       out_beta_p(1:Ni_out) = 
      x     pack(beta_p(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
 
       call pack_pd(beta_p, in_bounds, 1)
@@ -1915,27 +1574,10 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
       tags(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_tags(:)
 
 
-c      out_mass(1:Ni_out) = 
-c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
-
-c      ! remove energy of outgoing particles
-c      input_E = input_E - sum(0.5*out_mass(:)*vsqrd_out(:)/
-c     x                        (beta*out_beta_p(:)))
-
-c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
-c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
-c     x     cartcomm, reqs(2), ierr)
-      
-c      call MPI_WAITALL(2, reqs, stats, ierr)
-
-c      m_arr(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
       out_mass(1:Ni_out) = 
      x     pack(mrat(1:Ni_tot), .not.in_bounds(1:Ni_tot))
-c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(mrat, in_bounds, 1)
 
