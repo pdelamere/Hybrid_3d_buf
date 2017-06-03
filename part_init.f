@@ -6,6 +6,9 @@
       USE misc
       USE gutsp_dd
       USE mpi
+      USE cdf_gamma_mod
+      USE biomath_constants_mod, only: dpkind
+      USE iso_fortran_env, only: error_unit
 
       contains
 
@@ -379,6 +382,41 @@ c 44   continue
       end SUBROUTINE maxwl_init
 c----------------------------------------------------------------------
 
+      SUBROUTINE shl_dist(w)
+      integer :: stat
+      real (dpkind) :: x
+      real (dpkind) :: cum, ccum
+      real(dpkind) :: ww
+      real, intent(out) :: w
+
+      call random_number(x)
+      ccum = shl_dist_Q*x
+      cum = 1 - ccum
+
+      ww=((1/shl_c)*inv_gamma(cum, ccum, 1.0d0/3.0d0, 1.0d0, stat))
+     x                                                  **(-2.0/3.0)
+      if(stat .ne. 0) then
+          write(error_unit,*) 'error: inv_gamma has nonzero status.'
+          write(error_unit,*) 'inv_gamma status = ', stat
+      else if(ww .gt. 1) then
+          write(error_unit,*)
+     x              'error: SW shl ion velocity out of bounds'
+      endif
+
+      w = real(ww)
+      end SUBROUTINE
+
+      SUBROUTINE shl_init(vsw, vx, vy, vz)
+      real, intent(in) :: vsw
+      real, intent(out) :: vx,vy,vz
+      call shl_dist(vx)
+      call shl_dist(vy)
+      call shl_dist(vz)
+      vx = vx*vsw
+      vy = vy*vsw
+      vz = vz*vsw
+      end SUBROUTINE
+
 
 c----------------------------------------------------------------------
       SUBROUTINE sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
@@ -637,9 +675,11 @@ c            vp(l,1) = 1.0*vsw*cos(theta) + vx !+dvx
 c            vp(l,2) = vy 
 c            vp(l,3) = 1.0*vsw*sin(theta) + vz        !+dvz 
 
-            vp(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
-            vp(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
-            vp(l,3) = vsw*cos(theta)
+
+            call shl_init(vsw,vx,vy,vz)
+            vp(l,1) = -vsw+vx*cos(phi)*sin(theta) !+dvx
+            vp(l,2) = vy*sin(phi)*sin(theta) !+dvz 
+            vp(l,3) = vz*cos(theta)
 
 c            if (xp(l,3) .gt. qz(nz/2)) mix_ind(l) = 1
 c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0

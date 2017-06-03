@@ -105,9 +105,10 @@ c         m_arr_buf(l) = mproton
          theta = pad_ranf()*PI
          phi = pad_ranf()*2*PI
          
-         vp_buf(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
-         vp_buf(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
-         vp_buf(l,3) = vsw*cos(theta)
+         call shl_init(vsw,vx,vy,vz)
+         vp_buf(l,1) = -vsw+vx*cos(phi)*sin(theta) !+dvx
+         vp_buf(l,2) = vy*sin(phi)*sin(theta) !+dvz 
+         vp_buf(l,3) = vz*cos(theta)
          
  69   enddo
 

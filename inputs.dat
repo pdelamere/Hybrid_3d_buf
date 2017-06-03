@@ -17,3 +17,4 @@
 0.0               !pluto surface field (Tesla)
 90                 !IMF theta
 90                  !IMF phi
+0                 !Angle to nose direction of intersetellar neutral gas

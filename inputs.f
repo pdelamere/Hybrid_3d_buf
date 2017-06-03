@@ -2,6 +2,8 @@
 
       USE dimensions
       USE mpi
+      USE cdf_gamma_mod
+      USE biomath_constants_mod, only: dpkind
       save
 
       real b0_init
@@ -121,6 +123,14 @@ c solar wind composition
       real surf_field
       real imf_theta
       real imf_phi
+      real nose_theta
+
+      real(dpkind) :: shl_dist_Q
+      real(dpkind) :: shl_c
+
+      real(dpkind) :: ionization_length, sun_dist
+      PARAMETER (ionization_length = 1.0D0)
+      PARAMETER (sun_dist = 1.0D0)
       CONTAINS
 
 c----------------------------------------------------------------      
@@ -168,6 +178,8 @@ c      write(*,*) 'Ni_max....',Ni_max
       read(100,*) imf_theta
       read(100,*) imf_phi
       write(*,*) 'IMF direction.......',imf_theta, imf_phi
+      read(100,*) nose_theta
+      write(*,*) 'IPU nose direction..',nose_theta
      
       close(100)
       end subroutine readInputs
@@ -177,6 +189,7 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------      
       subroutine initparameters()
 c----------------------------------------------------------------      
+      integer stat
 
       mion = ion_amu*1.67e-27
 
@@ -234,6 +247,19 @@ c----------------------------------------------------------------
 
       imf_theta = (pi/180)*imf_theta
       imf_phi = (pi/180)*imf_phi
+
+      nose_theta = (pi/180)*imf_theta
+
+      if(nose_theta .ne. 0.0) then
+          shl_c=ionization_length/sun_dist*nose_theta/sin(nose_theta)
+      else
+          shl_c = ionization_length/sun_dist
+      endif
+      shl_dist_Q = real(ccum_gamma(shl_c, 1.0d0/3.0d0, 1.0d0, stat))
+      if(stat .ne. 0) then
+          write(error_unit,*) 'error: inv_gamma has nonzero status.'
+          write(error_unit,*) 'inv_gamma status = ', stat
+      endif
 
       end subroutine initparameters
 c----------------------------------------------------------------      
