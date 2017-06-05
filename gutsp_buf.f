@@ -22,6 +22,14 @@ c      include 'incurv.h'
       integer flg
       integer Ni_tot_buf_1
 
+      real N_proton
+      real N_He
+      real N_shl
+
+      N_He = f_mq_2*Ni_tot
+      N_shl = f_shl*Ni_tot
+      N_proton = Ni_tot - N_He - N_shl
+
       vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
 
       Ni_tot_buf = nint(nf_init*vol_buf*beta)
@@ -31,7 +39,7 @@ c      write(*,*) 'Ni_tot_buf....',Ni_tot_buf,Ni_max_buf,Ni_tot,my_rank
 
 c initialize protons
 
-      do 10 l = 1,Ni_tot_buf
+      do 10 l = 1,N_proton
 
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
@@ -46,23 +54,18 @@ c initialize protons
          vp_buf(l,2) = vy 
          vp_buf(l,3) = vz 
 
+         mrat_buf(l) = 1.0
+         beta_p_buf(l) = 1.0
+         tags_buf(l) = 1
  10   continue
          
       
 c      m_arr_buf(1:Ni_tot_buf) = mproton
 c      m_arr_buf(Ni_tot_buf+1:) = m_pu*mproton 
-      mrat_buf(1:Ni_tot_buf) = 1.0
-      mrat_buf(Ni_tot_buf+1:) = 1.0/m_pu       
-      beta_p_buf(1:Ni_tot_buf) = 1.0
-      beta_p_buf(Ni_tot_buf+1:) = 1.0
-      tags_buf(1:Ni_tot_buf) = 1
 
 c initialize He++ (m/q =2) 
 
-      Ni_tot_buf_1 = Ni_tot_buf
-      Ni_tot_buf = Ni_tot_buf_1 + f_mq_2*Ni_tot_buf_1
-
-      do 20 l = Ni_tot_buf_1+1,Ni_tot_buf
+      do 20 l = N_proton+1,N_proton+N_He
 
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
@@ -86,12 +89,8 @@ c         m_arr_buf(l) = 2*mproton
  20   continue
          
 c add shell distribution
-
-      Ni_tot_buf_1 = Ni_tot_buf 
       
-      Ni_tot_buf = Ni_tot_buf_1 + f_shl*Ni_tot_buf_1
-      
-      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
+      do 69 l = N_proton+N_He+1,Ni_tot_buf
          
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))

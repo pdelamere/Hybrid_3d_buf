@@ -441,18 +441,24 @@ c      integer np_b_flg(Ni_max)
       real bwght
       real mpart
 
+      real N_proton
+      real N_He
+      real N_shl
+
+      N_He = f_mq_2*Ni_tot
+      N_shl = f_shl*Ni_tot
+      N_proton = Ni_tot - N_He - N_shl
+
+
       v1 = 1.0
 
 c      np_t_flg(:) = 0
 c      np_b_flg(:) = 0
 
 
-      nprat = np_bottom/np_top
-
 c      Ni_tot_O = Ni_tot*(2./3.)
 c      Ni_tot_S = Ni_tot*(1./3.)
 
-      Ni_tot = Ni_tot + Ni_tot*nint((1/nprat)-1)/2
 
 c initialize protons
 
@@ -461,7 +467,7 @@ c initialize protons
       vth = vth_top
       mpart = mproton
 
-      do 10 l = 1,Ni_tot
+      do 10 l = 1, N_proton
 
          xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
@@ -533,11 +539,8 @@ c         m_arr(l) = mpart
 
 c initialize He++
 
-      Ni_tot_1 = Ni_tot + 1
-      
-      Ni_tot = Ni_tot + f_mq_2*Ni_tot
 
-      do 30 l = Ni_tot_1,Ni_tot
+      do 30 l = N_proton+1,N_proton+N_He
 
          xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
@@ -611,11 +614,7 @@ c         m_arr(l) = 2*mproton
 
 c add shell distribution
 
-         Ni_tot_1 = Ni_tot + 1
-
-         Ni_tot = Ni_tot + f_shl*Ni_tot
-
-         do 69 l = Ni_tot_1,Ni_tot
+         do 69 l = N_proton+N_He+1,Ni_tot
 
 
             xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
