@@ -205,7 +205,7 @@ c----------------------------------------------------------------
 
       print*, 'dx....',dx
 
-      dx_buf = 11*dx
+      dx_buf = 3*dx
 
 
       dt = dt_frac*mion/(q*b0_init)     !main time step
