@@ -26,13 +26,14 @@ c      include 'incurv.h'
       real N_He
       real N_shl
 
-      N_He = f_mq_2*Ni_tot
-      N_shl = f_shl*Ni_tot
-      N_proton = Ni_tot - N_He - N_shl
 
       vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
 
       Ni_tot_buf = nint(nf_init*vol_buf*beta)
+
+      N_He = f_mq_2*Ni_tot_buf
+      N_shl = f_shl*Ni_tot_buf
+      N_proton = Ni_tot_buf - N_He - N_shl
 
 c      write(*,*) 'Ni_tot_buf....',Ni_tot_buf,Ni_max_buf,Ni_tot,my_rank
       
