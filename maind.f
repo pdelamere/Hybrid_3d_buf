@@ -114,7 +114,8 @@ c      character filenum
       character(len=7) :: stat
 
       logical ex
-      integer para_dat_version = 3
+      integer para_dat_version
+      para_dat_version = 3
 
 
 
@@ -354,7 +355,7 @@ c write para.h file
 
          write(109) b0_init
          write(109) ion_amu
-         write(109) mpu
+         write(109) m_pu
          write(109) nf_init
          write(109) dt_frac
          write(109) vsw
