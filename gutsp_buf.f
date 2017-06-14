@@ -87,7 +87,7 @@ c initialize He++ (m/q =2)
 c         m_arr_buf(l) = 2*mproton
          mrat_buf(l) = 1./2.
          beta_p_buf(l) = b_mq_2
-         tags_buf(l) = 1
+         tags_buf(l) = 2
 
  20   continue
          
@@ -102,7 +102,7 @@ c add shell distribution
 c         m_arr_buf(l) = mproton
          mrat_buf(l) = 1.0
          beta_p_buf(l) = b_shl
-         tags_buf(l) = 1
+         tags_buf(l) = 3
          
 c Generate a random direction i.e. a point uniformly chosen on the unit
 c sphere

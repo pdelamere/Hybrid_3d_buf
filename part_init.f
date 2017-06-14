@@ -476,6 +476,7 @@ c         endif
 c         m_arr(l) = mpart
          mrat(l) = mproton/mpart
          beta_p(l) = bwght
+         tags(l) = 1
 
          do 20 m=1,3
             vp1(l,m) = vp(l,m)
@@ -551,6 +552,7 @@ c         kk = ijkp(l,3)
 c         m_arr(l) = 2*mproton
          mrat(l) = 1.0/2.0
          beta_p(l) = b_mq_2
+         tags(l) = 2
 
          do 40 m=1,3
             vp1(l,m) = vp(l,m)
@@ -575,6 +577,7 @@ c add shell distribution
 c            m_arr(l) = mproton
             mrat(l) = 1.0
             beta_p(l) = b_shl
+            tags(l) = 3
 
 
             i=0
@@ -649,7 +652,6 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
             
 
  69      enddo
-      tags(1:Ni_tot) = 1
 
 
 
