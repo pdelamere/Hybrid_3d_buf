@@ -248,7 +248,7 @@ c----------------------------------------------------------------
       imf_theta = (pi/180)*imf_theta
       imf_phi = (pi/180)*imf_phi
 
-      nose_theta = (pi/180)*imf_theta
+      nose_theta = (pi/180)*nose_theta
 
       if(nose_theta .ne. 0.0) then
           shl_c=ionization_length/sun_dist*nose_theta/sin(nose_theta)
