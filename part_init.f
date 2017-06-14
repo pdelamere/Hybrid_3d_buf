@@ -367,18 +367,6 @@ c----------------------------------------------------------------------
       w = real(ww)
       end SUBROUTINE
 
-      SUBROUTINE shl_init(vsw, vx, vy, vz)
-      real, intent(in) :: vsw
-      real, intent(out) :: vx,vy,vz
-      call shl_dist(vx)
-      call shl_dist(vy)
-      call shl_dist(vz)
-      vx = vx*vsw
-      vy = vy*vsw
-      vz = vz*vsw
-      end SUBROUTINE
-
-
 c----------------------------------------------------------------------
       SUBROUTINE sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
 c----------------------------------------------------------------------
@@ -390,9 +378,11 @@ c      include 'incurv.h'
       real xp(Ni_max,3)
       real input_p(3)
       real up(nx,ny,nz,3)
-      real phi,theta,rnd,f,v
+      real phi,rnd,f,v
+      real tmp
       real rand
       real vx,vy,vz
+      real x,y,z
       real dvx,dvz,v1
 c      integer np_t_flg(Ni_max)
 c      integer np_b_flg(Ni_max)
@@ -629,17 +619,21 @@ c            endif
 c            ii = ijkp(l,1)
 c            kk = ijkp(l,3)
 
-            theta = pad_ranf()*PI
-            phi = pad_ranf()*2*PI
 c            vp(l,1) = 1.0*vsw*cos(theta) + vx !+dvx
 c            vp(l,2) = vy 
 c            vp(l,3) = 1.0*vsw*sin(theta) + vz        !+dvz 
 
+            z = pad_ranf()*2 - 1
+            tmp = sqrt(1-z**2)
+            phi = 2*PI*pad_ranf()
+            x = tmp*cos(phi)
+            y = tmp*sin(phi)
 
-            call shl_init(vsw,vx,vy,vz)
-            vp(l,1) = -vsw+vx*cos(phi)*sin(theta) !+dvx
-            vp(l,2) = vy*sin(phi)*sin(theta) !+dvz 
-            vp(l,3) = vz*cos(theta)
+            call shl_dist(w)
+
+            vp(l,1) = -vsw+vsw*w*x
+            vp(l,2) = vsw*w*y
+            vp(l,3) = vsw*w*z
 
 c            if (xp(l,3) .gt. qz(nz/2)) mix_ind(l) = 1
 c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0

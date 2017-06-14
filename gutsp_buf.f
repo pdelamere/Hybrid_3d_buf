@@ -17,6 +17,8 @@ c      include 'incurv.h'
       real xp_buf(Ni_max_buf,3)
       real rnd,f,v
       real vx,vy,vz
+      real x,y,z
+      real tmp
       real vol_buf
 
       integer flg
@@ -102,13 +104,19 @@ c         m_arr_buf(l) = mproton
          beta_p_buf(l) = b_shl
          tags_buf(l) = 1
          
-         theta = pad_ranf()*PI
-         phi = pad_ranf()*2*PI
-         
-         call shl_init(vsw,vx,vy,vz)
-         vp_buf(l,1) = -vsw+vx*cos(phi)*sin(theta) !+dvx
-         vp_buf(l,2) = vy*sin(phi)*sin(theta) !+dvz 
-         vp_buf(l,3) = vz*cos(theta)
+c Generate a random direction i.e. a point uniformly chosen on the unit
+c sphere
+         z = pad_ranf()*2 - 1
+         tmp = sqrt(1-z**2)
+         phi = 2*PI*pad_ranf()
+         x = tmp*cos(phi)
+         y = tmp*sin(phi)
+
+         call shl_dist(w)
+
+         vp_buf(l,1) = -vsw+vsw*w*x
+         vp_buf(l,2) = vsw*w*y
+         vp_buf(l,3) = vsw*w*z
          
  69   enddo
 
