@@ -1972,6 +1972,9 @@ c         xp(l,3) = qz(k) + pad_ranf()*dz_grid(k)
 c         endif
 
 c         vol = 1.0/(dx*dy*(qz(k+1)-qz(k)))
+         if(i .lt. 1 .or. j .lt. 1 .or. k .lt. 1) then
+             write(*,*) 'get_interp_weights', i, j, k
+         endif
          vol = 1.0/((qx(i+1)-qx(i))*(qy(j+1)-qy(j))*(qz(k+1)-qz(k)))
          x1=abs(xp(l,1)-qx(i))
          x2=abs(xp(l,1)-qx(i+1))
