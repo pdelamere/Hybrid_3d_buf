@@ -359,6 +359,11 @@ c----------------------------------------------------------------------
       if(stat .ne. 0) then
           write(error_unit,*) 'error: inv_gamma has nonzero status.'
           write(error_unit,*) 'inv_gamma status = ', stat
+          if(stat .eq. -2) then
+              write(error_unit,*) 'cum = ', cum
+              write(error_unit,*) 'ccum = ', ccum
+              write(error_unit,*) 'x = ', x
+          endif
       else if(ww .gt. 1) then
           write(error_unit,*)
      x              'error: SW shl ion velocity out of bounds'
