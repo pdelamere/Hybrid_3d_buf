@@ -666,7 +666,7 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
             enddo
             
 
- 69      enddo
+ 69      continue
 
 
 
