@@ -394,16 +394,27 @@ c      integer np_b_flg(Ni_max)
 
       integer flg
       real nprat
-      real bwght
       real mpart
 
-      real N_proton
-      real N_He
-      real N_shl
+      real rN_proton
+      integer N_proton
+      integer N_He
+      integer N_shl
 
-      N_He = f_mq_2*Ni_tot
-      N_shl = f_shl*Ni_tot
+      rN_proton = Ni_tot/(1 + (f_shl*b_shl/b_sw_proton)
+     x                     + (f_mq_2*b_mq_2/b_sw_proton))
+      N_He = floor(f_mq_2*b_mq_2*rN_proton/b_sw_proton)
+      N_shl = floor(f_shl*b_shl*rN_proton/b_sw_proton)
       N_proton = Ni_tot - N_He - N_shl
+
+      write(*,*) 'SW macroparticles main.....',N_proton,N_He,N_shl
+
+      if(N_proton+N_He+N_shl .ne. Ni_tot) then
+          write(error_unit,*) 'Wrong number of ions'
+          write(error_unit,*) N_proton, N_He, N_shl
+          write(error_unit,*) N_proton+N_He+N_shl, Ni_tot
+          stop
+      endif
 
 
       v1 = 1.0
@@ -419,7 +430,6 @@ c      Ni_tot_S = Ni_tot*(1./3.)
 c initialize protons
 
 
-      bwght = 1.0
       vth = vth_top
       mpart = mproton
 
@@ -480,16 +490,16 @@ c         endif
 
 c         m_arr(l) = mpart
          mrat(l) = mproton/mpart
-         beta_p(l) = bwght
+         beta_p(l) = b_sw_proton
          tags(l) = 1
 
          do 20 m=1,3
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
      x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x           (beta*bwght)
+     x           (beta*b_sw_proton)
             input_p(m) = input_p(m) + mpart*vp(l,m) / 
-     x           (beta*bwght)
+     x           (beta*b_sw_proton)
  20      continue
                  
  10      continue

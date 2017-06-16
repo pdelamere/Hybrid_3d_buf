@@ -13,29 +13,50 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
+      implicit none
       real vp_buf(Ni_max_buf,3)
       real xp_buf(Ni_max_buf,3)
       real rnd,f,v
       real vx,vy,vz
       real x,y,z
+      real phi
       real tmp
       real vol_buf
+      real w
+      real vol
 
       integer flg
       integer Ni_tot_buf_1
+      integer l
 
-      real N_proton
-      real N_He
-      real N_shl
+      real rN_proton
+      integer N_proton
+      integer N_He
+      integer N_shl
 
 
       vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
+      vol = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*(qx(nx-1)-qx(1))
 
-      Ni_tot_buf = nint(nf_init*vol_buf*beta)
+      Ni_tot_buf = nint(Ni_tot_0*vol_buf/vol)
 
-      N_He = f_mq_2*Ni_tot_buf
-      N_shl = f_shl*Ni_tot_buf
+      if( Ni_tot_buf .gt. Ni_max_buf ) then
+          write(error_unit, *) 'Ni_tot_buf > Ni_max_buf'
+          stop
+      endif
+
+      rN_proton = Ni_tot_buf/(1 + (f_shl*b_shl/b_sw_proton)
+     x                     + (f_mq_2*b_mq_2/b_sw_proton))
+      N_He = floor(f_mq_2*b_mq_2*rN_proton/b_sw_proton)
+      N_shl = floor(f_shl*b_shl*rN_proton/b_sw_proton)
       N_proton = Ni_tot_buf - N_He - N_shl
+
+      if(N_proton+N_He+N_shl .ne. Ni_tot_buf) then
+          write(error_unit,*) 'Wrong number of ions in buffer'
+          write(error_unit,*) N_proton, N_He, N_shl
+          write(error_unit,*) N_proton+N_He+N_shl, Ni_tot_buf
+          stop
+      endif
 
 c      write(*,*) 'Ni_tot_buf....',Ni_tot_buf,Ni_max_buf,Ni_tot,my_rank
       
@@ -58,7 +79,7 @@ c initialize protons
          vp_buf(l,3) = vz 
 
          mrat_buf(l) = 1.0
-         beta_p_buf(l) = 1.0
+         beta_p_buf(l) = b_sw_proton
          tags_buf(l) = 1
  10   continue
          
