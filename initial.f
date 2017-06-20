@@ -267,7 +267,7 @@ c      include 'incurv.h'
 
 c==============stretch y direction=====================================
                
-      ysf = 1.0
+      ysf = 0.0
       rj = ny/2
       nrgrd = 10
 c up from center
@@ -313,9 +313,9 @@ c 10            continue
 
 c==============stretch x direction=====================================
                
-      xsf = 1.4
+      xsf = 1.0
       ri = nx/2 + ri0
-      nrgrd = 10
+      nrgrd = 8
 c up from center
       do 12 i = ri,ri+nrgrd
          dx_grid(i) = dx
