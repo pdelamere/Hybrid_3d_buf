@@ -102,12 +102,15 @@ c         m_arr_buf(l) = mproton
          beta_p_buf(l) = b_shl
          tags_buf(l) = 1
          
-         theta = pad_ranf()*PI
-         phi = pad_ranf()*2*PI
+         vz = pad_ranf()*2 - 1
+         tmp = sqrt(1-vz**2)
+         phi = 2*PI*pad_ranf()
+         vx = tmp*cos(phi)
+         vy = tmp*sin(phi)
          
-         vp_buf(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
-         vp_buf(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
-         vp_buf(l,3) = vsw*cos(theta)
+         vp_buf(l,1) = -vsw+vsw*vx !+dvx
+         vp_buf(l,2) = vsw*vy !+dvz 
+         vp_buf(l,3) = vsw*vz
          
  69   enddo
 

@@ -391,7 +391,7 @@ c      include 'incurv.h'
       real xp(Ni_max,3)
       real input_p(3)
       real up(nx,ny,nz,3)
-      real phi,theta,rnd,f,v
+      real phi,theta,rnd,f,v,tmp
       real rand
       real vx,vy,vz
       real dvx,dvz,v1
@@ -631,15 +631,18 @@ c            endif
 c            ii = ijkp(l,1)
 c            kk = ijkp(l,3)
 
-            theta = pad_ranf()*PI
-            phi = pad_ranf()*2*PI
+            vz = pad_ranf()*2 - 1
+            tmp = sqrt(1-vz**2)
+            phi = 2*PI*pad_ranf()
+            vx = tmp*cos(phi)
+            vy = tmp*sin(phi)
 c            vp(l,1) = 1.0*vsw*cos(theta) + vx !+dvx
 c            vp(l,2) = vy 
 c            vp(l,3) = 1.0*vsw*sin(theta) + vz        !+dvz 
 
-            vp(l,1) = -vsw+vsw*cos(phi)*sin(theta) !+dvx
-            vp(l,2) = vsw*sin(phi)*sin(theta) !+dvz 
-            vp(l,3) = vsw*cos(theta)
+            vp(l,1) = -vsw+vsw*vx !+dvx
+            vp(l,2) = vsw*vy !+dvz 
+            vp(l,3) = vsw*vz
 
 c            if (xp(l,3) .gt. qz(nz/2)) mix_ind(l) = 1
 c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
