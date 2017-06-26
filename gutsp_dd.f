@@ -484,6 +484,7 @@ c     x     uf(nx,ny,nz,3),
      x     btc(nx,ny,nz,3),
      x     nu(nx,ny,nz)
 c     x     gradP(nx,ny,nz,3)
+      real us(ny,nz,3)
 
       real ajc(nx,ny,nz,3),       !aj at cell center
      x     upc(nx,ny,nz,3),       !up at cell center
@@ -498,7 +499,8 @@ c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
       real np_at_Ba               !particle density at particle pos
       real nf_at_Ba
 
-      call face_to_center(aj,ajc)
+      us = 0.0
+      call face_to_center(aj,ajc,us)!not always correct
 c      call face_to_center(uf,ufc)
 c      call face_to_center(gradP,gradPc)
 
@@ -2366,17 +2368,13 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real np(nx,ny,nz)
+      real us(ny,nz)
 
       real volb              !cell volume times beta
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
 
-c      real recvbuf(nx*ny*nz)
-c      integer count
-c      count = nx*ny*nz
-
-c      real sumnp,vol
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -2417,48 +2415,10 @@ c      real sumnp,vol
       enddo
 
 c use for periodic boundary conditions
-c         np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
          np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
-c         np(:,:,nz-1) = np(:,:,nz-1)+np(:,:,1)
 
-c         call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-
-c         out_buf_z(:,:) = np(:,:,nz)         
-         
-c         dest = nbrs(n_up)
-c         source = nbrs(n_down)
-c         call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-c     x        cartcomm, reqs(1), ierr)
-c         call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-c     x        cartcomm, reqs(2), ierr)
-         
-c         call MPI_WAITALL(2, reqs, stats, ierr)
-c         np(:,:,2) = np(:,:,2) + in_buf_z
-
-c         call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c         call MPI_ALLREDUCE(np(:,:,:),recvbuf,count,
-c     x        MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-
-c         np(:,:,:) = reshape(recvbuf,(/nx,ny,nz/))
-
-c         write(*,*) 'recvbuf...',recvbuf(nx*ny+1:nx*ny+10)
-c         write(*,*) 'np........',np(1:10,1,2)
-         
-c         write(*,*) 'np ...',np(20,20,20)         
-c         do i = 1,nx
-c            do j = 1,ny
-c               do k = 1,nz
-
-c                  call MPI_ALLREDUCE(np(i,j,k),recvbuf,count,
-c     x                 MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c                  np(i,j,k) = recvbuf
-c               enddo
-c            enddo
-c         enddo
-c         write(*,*) 'np1...',np(20,20,20)
-
-      call periodic_scalar(np)
+      us = nf_init
+      call boundary_scalar(np, us)
 
       return
       end SUBROUTINE update_np
@@ -2472,6 +2432,7 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real np(nx,ny,nz)
+      real us(ny,nz)
       real mr
 
       real volb              !cell volume times beta
@@ -2520,7 +2481,8 @@ c     np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
       np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
 c     np(:,:,nz-1) = np(:,:,nz-1)+np(:,:,1)
       
-      call periodic_scalar(np)
+      us = nf_init
+      call boundary_scalar(np, us)
 
       return
       end SUBROUTINE separate_np
@@ -2631,49 +2593,12 @@ c use for periodic boundary conditions
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
-c      up(:,:,2,:) = (up(:,:,2,:) + in_buf_z)/2
       ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
 
-      call periodic(ct)
+      up = ct
 
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-         
-c      call MPI_ALLREDUCE(ct(:,:,:,1),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,1) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,2),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,2) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,3),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
-      
-
-      do 30 i=1,nx-1      !interpolate back to contravarient positions
-         do 30 j=1,ny-1
-            do 30 k=1,nz-1
-               up(i,j,k,1) = ct(i,j,k,1)
-               up(i,j,k,2) = ct(i,j,k,2)
-               up(i,j,k,3) = ct(i,j,k,3)
- 30            continue
-
-
-      call periodic(up)
-
-
-c must add density contribution from processor below at qz(nz) to 
-c density at qz(2)
-
-
-c      write(*,*) 'up...',up(20,20,21,1),up(20,20,21,2),up(20,20,21,3)
-
-c      up(nx,:,:,1) = -vsw
-c      up(nx,:,:,2) = 0.0
-c      up(nx,:,:,3) = 0.0
-
+      call boundaries(up, spread(spread((/-vsw,0.0,0.0/),1,ny),2,nz))
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -2688,6 +2613,7 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real np(nx,ny,nz)
+      real us(ny,nz)
 
       integer dest, source
       real out_buf_z(nx,ny)
@@ -2712,7 +2638,8 @@ c      include 'incurv.h'
       call MPI_WAITALL(2, reqs, stats, ierr)
       np(:,:,2) = np(:,:,2) + in_buf_z
  
-      call periodic_scalar(np)
+      us = nf_init
+      call boundary_scalar(np, us)
      
 c      out_buf_z(:,:) = np(:,:,2)         
 

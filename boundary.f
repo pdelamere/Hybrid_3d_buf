@@ -5,6 +5,25 @@ c      USE chem_rates
      
       contains
 
+c---------------------------------------------------------------------
+      SUBROUTINE x_boundary(b, us)
+c---------------------------------------------------------------------
+      real b(nx,ny,nz,3)
+      real us(ny,nz,3) ! upstream condition
+c upstream is fixed
+      b(1,:,:,:) = us
+c downstream is extrap
+      b(nx,:,:,:) = b(nx-1,:,:,:)
+      end SUBROUTINE
+c---------------------------------------------------------------------
+      SUBROUTINE boundaries(b, us)
+c---------------------------------------------------------------------
+      real b(nx,ny,nz,3)
+      real us(ny,nz,3) ! upstream condition
+      call x_boundary(b,us)
+      call periodic(b)
+      end SUBROUTINE
+c---------------------------------------------------------------------
 
 c---------------------------------------------------------------------
       SUBROUTINE periodic(b)
@@ -13,6 +32,7 @@ CVD$F VECTOR
 c      include 'incurv.h'
 
       real b(nx,ny,nz,3)
+      real us(ny,nz,3) ! upstream condition
 
       integer stats(MPI_STATUS_SIZE,2), reqs(2)
       integer dest, source
@@ -21,40 +41,13 @@ c      include 'incurv.h'
       integer cnt_buf_z
       cnt_buf_z = nx*ny*3
 
-
-c x direction
-
-      do 10 j=1,ny
-         do 10 k=1,nz
-            do 10 m=1,3
-c     b(1,j,k,m) = b(nx-1,j,k,m)
-c     b(nx,j,k,m) = b(2,j,k,m)
-               b(1,j,k,m) = b(2,j,k,m)
-c     b(nx,j,k,m) = b(2,j,k,m)
-c     b(nx-1,j,k,m) = b(nx-2,j,k,m)
-               b(nx,j,k,m) = b(nx-1,j,k,m)
- 10   continue
+c y direction periodic
       
-      
-c     y direction
-      
-      do 20 i=1,nx
-         do 20 k=1,nz
-            do 20 m=1,3
-               b(i,1,k,m) = b(i,ny-1,k,m)
-               b(i,ny,k,m) = b(i,2,k,m)
- 20         continue
+      b(:,1,:,:) = b(:,ny-1,:,:)
+      b(:,ny,:,:) = b(:,2,:,:)
             
-c     z direction
+c z direction periodic, but has domain decomp
             
-c      do 30 i=1,nx
-c         do 30 j=1,ny
-c            do 30 m=1,3
-c               b(i,j,1,m) = b(i,j,nz-1,m)
-c               b(i,j,nz,m) = b(i,j,2,m)
-c 30   continue
-            
-                        
       out_buf_z(:,:,:) = b(:,:,nz-1,:)         
       
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -90,14 +83,18 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
       SUBROUTINE x_boundary_scalar(b, us)
 c---------------------------------------------------------------------
+      real b(nx,ny,nz)
+      real us(ny,nz) ! upstream condition
 c upstream is fixed
-      b(1,:,:,:) = us
+      b(1,:,:) = us
 c downstream is extrap
-      b(nx,:,:,:) = b(nx-1,:,:,:)
+      b(nx,:,:) = b(nx-1,:,:)
       end SUBROUTINE
 c---------------------------------------------------------------------
       SUBROUTINE boundary_scalar(b, us)
 c---------------------------------------------------------------------
+      real b(nx,ny,nz)
+      real us(ny,nz) ! upstream condition
       call x_boundary_scalar(b,us)
       call periodic_scalar(b)
       end SUBROUTINE
@@ -116,31 +113,11 @@ c      include 'incurv.h'
       integer cnt_buf_z
       cnt_buf_z = nx*ny
 
-c x surfaces      !periodic
-      do 10 j=1,ny
-         do 10 k=1,nz
-c            do 10 m=1,3
-               b(1,j,k) = b(2,j,k)       !tangential
-               b(nx,j,k) = b(nx-1,j,k)
- 10         continue
-
-
 c y surfaces
-       do 20 i=1,nx
-          do 20 k=1,nz
-c             do 20 m=1,3
-                b(i,1,k) = b(i,ny-1,k)      !tangential
-                b(i,ny,k) = b(i,2,k)
- 20          continue
+      b(:,1,:) = b(:,ny-1,:)
+      b(:,ny,:) = b(:,2,:)
 
 c z surfaces
-c       do 30 i=1,nx
-c          do 30 j=1,ny
-cc             do 30 m=1,3
-c                b(i,j,1) = b(i,j,nz-1)      !tangential
-c                b(i,j,nz) = b(i,j,2)
-c 30          continue
-
       out_buf_z(:,:) = b(:,:,nz-1)         
 
       dest = up_proc
@@ -312,32 +289,6 @@ c      call periodic(E)
       return
       end SUBROUTINE fix_tangential_E
 c---------------------------------------------------------------------
-
-
-c---------------------------------------------------------------------
-      SUBROUTINE boundaries(b)
-c---------------------------------------------------------------------
-c      include 'incurv.h'
-
-      real b(nx,ny,nz,3)
-
-c      call periodic(aa)
-c      call extrapolated(aa)
-c      call edges_corners(aa)
-
-c      call normal_B(b)
-c      call tangent_B_zero(b)
-cc      call edges_corners_2(b)
-c      call edges_corners_1(b)
-
-c      call copy_to_boundary(b)
-c      call fix_normal_b(b)
-c      call smooth_boundary(b)
-
-      return
-      end SUBROUTINE boundaries
-c---------------------------------------------------------------------
-
 
 c----------------------------------------------------------------------
       SUBROUTINE Neut_Center(cx,cy,cz)
