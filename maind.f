@@ -555,13 +555,13 @@ c======================================================================
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
-         if (ndiag .eq. nout) then         
-            call get_temperature(xp,vp,np,temp_p)
-            mr = 1.0
-            call separate_np(np_1,mr)
-            mr = 1.0/m_pu
-            call separate_np(np_2,mr)
-         endif
+c         if (ndiag .eq. nout) then         
+c            call get_temperature(xp,vp,np,temp_p)
+c            mr = 1.0
+c            call separate_np(np_1,mr)
+c            mr = 1.0/m_pu
+c            call separate_np(np_2,mr)
+c         endif
          call update_np_boundary(np)
 
          
@@ -656,8 +656,8 @@ c               write(150) m
 c               write(150) E
                write(181) m
                write(181) up
-               write(301) m
-               write(301) temp_p/1.6e-19
+c               write(301) m
+c               write(301) temp_p/1.6e-19
                if ( ndiag_part .eq. part_nout ) then
                    write(305) m
                    write(305) xp

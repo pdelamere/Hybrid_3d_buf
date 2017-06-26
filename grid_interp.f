@@ -143,44 +143,4 @@ c               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
       end SUBROUTINE face_to_center
 c----------------------------------------------------------------------
 
-c----------------------------------------------------------------------
-      SUBROUTINE face_to_center_2(v,vc)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-
-      real v(nx,ny,nz,3)        !vector at contravarient position
-      real vc(nx,ny,nz,3)       !vector at cell center
-      real zfrc(nz)             !0.5*dz_grid(k)/dz_cell(k)
-
-      do 5 k=1,nz
-         zfrc(k) = 0.5*dz_grid(k)/dz_cell(k)
- 5       continue
-
-      call periodic(v)
-
-      do 10 i=2,nx
-         do 10 j=2,ny
-            do 10 k=2,nz
-
-               im = i-1     
-               jm = j-1     
-               km = k-1
-
-c               if (im .lt. 2) then im = 2
-c               if (jm .lt. 2) then jm = 2
-c               if (km .lt. 2) then km = 2
-
-               vc(i,j,k,1) = 0.5*(v(i,j,k,1) + v(im,j,k,1))
-               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
-               vc(i,j,k,3) = zfrc(k)*(v(i,j,k,3) - v(i,j,km,3)) + 
-     x                                v(i,j,km,3)
- 10            continue
-
-      call periodic(vc)
-
-      return
-      end SUBROUTINE face_to_center_2
-c----------------------------------------------------------------------
-
-
       end MODULE grid_interp
