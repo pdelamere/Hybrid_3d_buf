@@ -236,9 +236,9 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(xp, in_bounds,3)
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -257,9 +257,9 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
      x               out_part(:,2)**2 + out_part(:,3)**2
       vsqrd_out(:) = vsqrd_out*(km_to_m)**2
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -274,9 +274,9 @@ c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(vp1, in_bounds, 3)
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -318,9 +318,9 @@ c         wquad(1:Ni_tot_in,m) =
 c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      enddo
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -336,9 +336,9 @@ c    x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(wght, in_bounds, 8)
 
-      call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part_wght, 8*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part_wght, 8*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -352,9 +352,9 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(beta_p, in_bounds, 1)
       
-      call MPI_ISEND(out_beta_p, Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_beta_p, Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -367,9 +367,9 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(tags, in_bounds, 1)
 
-      call MPI_ISEND(out_tags, Ni_out, MPI_REAL, dest, tag,
+      call MPI_ISEND(out_tags, Ni_out, realtype, dest, tag,
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_tags, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_tags, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -381,9 +381,9 @@ c      out_mass(1:Ni_out) =
 c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
 
-c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_mass, Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -401,9 +401,9 @@ c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
      x                       (beta*out_beta_p(:)))
 
-      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_mass, Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1438,9 +1438,9 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      write(*,*) 'finished xp pack...'
                 
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1450,9 +1450,9 @@ c      write(*,*) 'finished xp pack...'
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_SEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_RECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, stat, ierr)
             
       xp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
@@ -1470,18 +1470,18 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
       vsqrd_out(:) = vsqrd_out*(km_to_m)**2
 
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_SEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_RECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, stat, ierr)
       
       vp(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
@@ -1494,18 +1494,18 @@ c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(vp1, in_bounds, 3)
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_SEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_RECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, stat, ierr)
       
        vp1(Ni_tot_in+1:Ni_tot_in+Ni_in,:) = in_part(:,:)
@@ -1554,18 +1554,18 @@ c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
 c      
 c      call MPI_WAITALL(2, reqs, stats, ierr)
 
 cc      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-cc      call MPI_SEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+cc      call MPI_SEND(out_part, 3*Ni_out, realtype, dest, tag, 
 cc     x     cartcomm, ierr)
-cc      call MPI_RECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+cc      call MPI_RECV(in_part, 3*Ni_in, realtype, source, tag,
 cc     x     cartcomm, stat, ierr)
       
       
@@ -1581,18 +1581,18 @@ c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(wght, in_bounds, 8)
 
-      call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part_wght, 8*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part_wght, 8*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
 
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      call MPI_SEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_SEND(out_part_wght, 8*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, ierr)
-c      call MPI_RECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
+c      call MPI_RECV(in_part_wght, 8*Ni_in, realtype, source, tag,
 c     x     cartcomm, stat, ierr)
       
       
@@ -1607,9 +1607,9 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(beta_p, in_bounds, 1)
 
-      call MPI_ISEND(out_beta_p, Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_beta_p, Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1623,9 +1623,9 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(tags, in_bounds, 1)
 
-      call MPI_ISEND(out_tags, Ni_out, MPI_REAL, dest, tag,
+      call MPI_ISEND(out_tags, Ni_out, realtype, dest, tag,
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_tags, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_tags, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1636,9 +1636,9 @@ c      out_mass(1:Ni_out) =
 c     x     pack(m_arr(1:Ni_tot), .not.in_bounds(1:Ni_tot))
 c      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
 
-c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_mass, Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1658,18 +1658,18 @@ c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
      x                        (beta*out_beta_p(:)))
 
 
-      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_mass, Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
       
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-c      call MPI_SEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_SEND(out_mass, Ni_out, realtype, dest, tag, 
 c     x     cartcomm, ierr)
-c      call MPI_RECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c      call MPI_RECV(in_mass, Ni_in, realtype, source, tag,
 c     x     cartcomm, stat, ierr)
       
 
@@ -1774,9 +1774,9 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(xp, in_bounds, 3)
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1795,9 +1795,9 @@ c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
      x               out_part(:,2)**2 + out_part(:,3)**2
       vsqrd_out(:) = vsqrd_out*(km_to_m)**2
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1812,9 +1812,9 @@ c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(vp1, in_bounds, 3)
 
-      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1856,9 +1856,9 @@ c         wquad(1:Ni_tot_in,m) =
 c     x          pack(wquad(1:Ni_tot,m), in_bounds(1:Ni_tot))
 c      enddo
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1874,9 +1874,9 @@ c     x          pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(wght, in_bounds, 8)
 
-      call MPI_ISEND(out_part_wght, 8*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part_wght, 8*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part_wght, 8*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part_wght, 8*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1892,9 +1892,9 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(beta_p, in_bounds, 1)
 
-      call MPI_ISEND(out_beta_p, Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_beta_p, Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1907,9 +1907,9 @@ c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
 
       call pack_pd(tags, in_bounds, 1)
 
-      call MPI_ISEND(out_tags, Ni_out, MPI_REAL, dest, tag,
+      call MPI_ISEND(out_tags, Ni_out, realtype, dest, tag,
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_tags, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_tags, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1925,9 +1925,9 @@ c      ! remove energy of outgoing particles
 c      input_E = input_E - sum(0.5*out_mass(:)*vsqrd_out(:)/
 c     x                        (beta*out_beta_p(:)))
 
-c      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_mass, Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1945,9 +1945,9 @@ c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
       input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
      x                        (beta*out_beta_p(:)))
 
-      call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_mass, Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_mass, Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_mass, Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -2587,9 +2587,9 @@ c use for periodic boundary conditions
 
       dest = up_proc
       source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -2630,9 +2630,9 @@ c      include 'incurv.h'
 
       dest = up_proc
       source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -2645,9 +2645,9 @@ c      out_buf_z(:,:) = np(:,:,2)
 
 c      dest = nbrs(n_down)
 c      source = nbrs(n_up)
-c      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
 
 c      call MPI_WAITALL(2, reqs, stats, ierr)

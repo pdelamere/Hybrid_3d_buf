@@ -42,9 +42,9 @@ c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
 
       call pack_pd(xp, in_bounds, dim)
 
-      call MPI_ISEND(out_part, dim*Ni_out, MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_part, dim*Ni_out, realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_part, dim*Ni_in, MPI_REAL, source, tag,
+      call MPI_IRECV(in_part, dim*Ni_in, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)

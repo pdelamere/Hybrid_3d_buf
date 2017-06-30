@@ -54,9 +54,9 @@ c z direction periodic, but has domain decomp
       
       dest = up_proc
       source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
       
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -67,9 +67,9 @@ c z direction periodic, but has domain decomp
       
       dest = down_proc
       source = up_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -122,9 +122,9 @@ c z surfaces
 
       dest = up_proc
       source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
@@ -134,9 +134,9 @@ c z surfaces
 
       dest = down_proc
       source = up_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+      call MPI_ISEND(out_buf_z, cnt_buf_z , realtype, dest, tag, 
      x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+      call MPI_IRECV(in_buf_z, cnt_buf_z, realtype, source, tag,
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)

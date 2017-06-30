@@ -966,9 +966,9 @@ c      enddo
 
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -985,9 +985,9 @@ c     x        ib_out_buf(1:Ni_tot_out_buf))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1004,9 +1004,9 @@ c     x        ib_out_buf(1:Ni_tot_out_buf))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1023,9 +1023,9 @@ c     x        ib_out_buf(1:Ni_tot_out_buf))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1041,9 +1041,9 @@ c     x     pack(m_arr_out_buf(1:Ni_tot_out_buf),
 c     x     ib_out_buf(1:Ni_tot_out_buf))
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1059,9 +1059,9 @@ c     x     pack(mrat_out_buf(1:Ni_tot_out_buf),
 c     x     ib_out_buf(1:Ni_tot_out_buf))
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1127,9 +1127,9 @@ c      enddo
 
 cc      write(*,*) 'out_part...',out_part(1:Ni_out,1)
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1146,9 +1146,9 @@ c     x        ib_out_buf(1:Ni_tot_out_buf))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1165,9 +1165,9 @@ c     x        ib_out_buf(1:Ni_tot_out_buf))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1184,9 +1184,9 @@ c     x        ib_out_buf(1:Ni_tot_out_buf))
 c      enddo
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1202,9 +1202,9 @@ c     x     pack(m_arr_out_buf(1:Ni_tot_out_buf),
 c     x     ib_out_buf(1:Ni_tot_out_buf))
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)
@@ -1220,9 +1220,9 @@ c     x     pack(mrat_out_buf(1:Ni_tot_out_buf),
 c     x     ib_out_buf(1:Ni_tot_out_buf))
 
 
-c      call MPI_ISEND(out_part, 3*Ni_out, MPI_REAL, dest, tag, 
+c      call MPI_ISEND(out_part, 3*Ni_out, realtype, dest, tag, 
 c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_part, 3*Ni_in, MPI_REAL, source, tag,
+c      call MPI_IRECV(in_part, 3*Ni_in, realtype, source, tag,
 c     x     cartcomm, reqs(2), ierr)
       
 c      call MPI_WAITALL(2, reqs, stats, ierr)

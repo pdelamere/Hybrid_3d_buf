@@ -46,9 +46,9 @@ c is used to dimension the particle arrays.
 
 
 c misc constants
-      real*8 mu0,epsilon,pi,rtod,mO,mBa,km_to_m,kboltz,melec
-      real*8 tempf0,m_pu
-      real*8 mproton, eoverm, O_to_Ba
+      real mu0,epsilon0,pi,rtod,mO,mBa,km_to_m,kboltz,melec
+      real tempf0,m_pu
+      real mproton, eoverm, O_to_Ba
       PARAMETER (pi = 3.14159)
       PARAMETER (rtod = 180.0/pi)    !radians to degreesc
       PARAMETER (mu0 = pi*4.0e-7)    !magnetic permeability of free space
@@ -77,7 +77,7 @@ c electron ion collision frequency
 
 c density scaling parameter, alpha, and ion particle array dims
        
-      real*8 alpha, beta_pu  
+      real alpha, beta_pu  
       PARAMETER (beta_pu = 0.1)
 
 
@@ -121,6 +121,9 @@ c solar wind composition
       real surf_field
       real imf_theta
       real imf_phi
+
+      integer realtype
+      parameter (realtype = MPI_REAL)
       CONTAINS
 
 c----------------------------------------------------------------      
@@ -244,7 +247,7 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------      
       integer :: my_rank
 
-      real*8 ak, btot, a1, a2, womega, phi, deltat
+      real ak, btot, a1, a2, womega, phi, deltat
 
       !check input parameters
 

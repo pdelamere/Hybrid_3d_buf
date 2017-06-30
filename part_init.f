@@ -92,19 +92,19 @@ c      write(*,*) 'Energy diag 2...',Ni_tot,m_arr(2000000)
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
       call MPI_ALLREDUCE(Evp,recvbuf,count,
-     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
+     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       S_Evp = recvbuf
 
 c      write(*,*) 'recvbuf...',recvbuf,Evp
 
       call MPI_ALLREDUCE(input_E,recvbuf,count,
-     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
+     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       S_input_E = recvbuf
 
       call MPI_ALLREDUCE(bndry_Eflux,recvbuf,count,
-     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
+     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       S_bndry_Eflux = recvbuf
 
