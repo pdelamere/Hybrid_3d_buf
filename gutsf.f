@@ -1643,7 +1643,7 @@ c                  pup(m) = pup(m) + npave(m)*vol*mBa*up(i,j,k,m)
                   pup(m) = pup(m) + np(i,j,k)*vol*mBa*up(i,j,k,m)
 c                  puf(m) = puf(m) + nfave(m)*vol*mO*uf(i,j,k,m)
                   puf(m) = puf(m) + nf(i,j,k)*vol*mO*uf(i,j,k,m)
-                  peb(m) = peb(m) + epsilon*1e3*exb(i,j,k,m)*vol*(mO/q)
+                  peb(m) = peb(m) + epsilon0*1e3*exb(i,j,k,m)*vol*(mO/q)
  10               continue
 
 c      write(*,*) 'Momentum conservation...'

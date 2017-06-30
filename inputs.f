@@ -52,7 +52,7 @@ c misc constants
       PARAMETER (pi = 3.14159)
       PARAMETER (rtod = 180.0/pi)    !radians to degreesc
       PARAMETER (mu0 = pi*4.0e-7)    !magnetic permeability of free space
-      PARAMETER (epsilon = 8.85e-12) !dielectric constant
+      PARAMETER (epsilon0 = 8.85e-12) !dielectric constant
 
 c      PARAMETER (m_pu = 64.0)
       PARAMETER (mproton = 1.67e-27)
@@ -282,7 +282,7 @@ c----------------------------------------------------------------
 
       write(*,*) 'Thermal gyroradius..',m_bottom*vth_bottom/(q*b0_init),
      x            m_bottom*vth_bottom/(q*b0_init)/dx
-      cwpi = 3e8/sqrt((np_bottom/1e9)*q*q/(epsilon*m_bottom))
+      cwpi = 3e8/sqrt((np_bottom/1e9)*q*q/(epsilon0*m_bottom))
       write(*,*) 'Ion inertial length...',cwpi/1e3,cwpi/1e3/dx
 
 c      write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*nz)
@@ -298,7 +298,7 @@ c      write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*nz)
 
       write(*,*) 'Thermal gyroradius....',m_top*vth_top/(q*b0_init),
      x            m_top*vth_top/(q*b0_init)/dx
-      cwpi = 3e8/sqrt((np_top/1e9)*q*q/(epsilon*m_top))
+      cwpi = 3e8/sqrt((np_top/1e9)*q*q/(epsilon0*m_top))
       write(*,*) 'Ion inertial length...',cwpi/1e3,cwpi/1e3/dx
 
 

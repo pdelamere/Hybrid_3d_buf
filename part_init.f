@@ -72,7 +72,7 @@ c                  EB1 = EB1 +
 c     x              (vol/(2.0*mu0))*(mO_q*(b1(i,j,k,m)-b0(i,j,k,m)))**2
                   EB1 = EB1 + 
      x              (vol/(2.0*mu0))*(mO_q*b1(i,j,k,m))**2
-                  EE = EE + (epsilon*vol/2.0)*
+                  EE = EE + (epsilon0*vol/2.0)*
      x                      (mO_q*E(i,j,k,m)*km_to_m)**2
  10               continue
 
