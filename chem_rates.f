@@ -66,13 +66,11 @@ c      include 'incurv.h'
       real vp1(Ni_max,3)
 
       real cx,cy,cz,r,vrel
-      real nn0,nn !,neutral_density
+      real nn !,neutral_density
       real chex_tau,chex_prob
 
       real sigma_chex
       PARAMETER (sigma_chex = 1e-25)  !10 A^2 in units of km^2
-
-      nn0 = Ncol*(pwl+1)/RIo
 
       call Neut_Center(cx,cy,cz)
       

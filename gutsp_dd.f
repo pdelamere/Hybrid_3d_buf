@@ -514,25 +514,6 @@ c      call face_to_center(gradP,gradPc)
          jp = j+1
          kp = k+1
 
-            
-c         if (ip .ge. nx) ip = 2      !periodic boundary conditions
-c         if (jp .ge. ny) jp = 2      !periodic boundary conditions
-c         if (kp .ge. nz) kp = 2      !periodic boundary conditions
-
-c         np_at_Ba = np(i,j,k)*wght(l,1) + np(ip,j,k)*wght(l,2) + 
-c     x              np(i,j,kp)*wght(l,3) + np(ip,j,kp)*wght(l,4) + 
-c     x              np(i,jp,k)*wght(l,5) + np(ip,jp,k)*wght(l,6) +
-c     x              np(i,jp,kp)*wght(l,7) + np(ip,jp,kp)*wght(l,8)
-
-c         nf_at_Ba = nf(i,j,k)*wght(l,1) + nf(ip,j,k)*wght(l,2) + 
-c     x              nf(i,j,kp)*wght(l,3) + nf(ip,j,kp)*wght(l,4) + 
-c     x              nf(i,jp,k)*wght(l,5) + nf(ip,jp,k)*wght(l,6) +
-c     x              nf(i,jp,kp)*wght(l,7) + nf(ip,jp,kp)*wght(l,8)
-
-c         ntot = nf_at_Ba + np_at_Ba
-c         fnf = nf_at_Ba/ntot
-c         fnp = np_at_Ba/ntot
-
          do 15 m=1,3 
             aj3(m) = ajc(i,j,k,m)*wght(l,1) + ajc(ip,j,k,m)*wght(l,2) 
      x          + ajc(i,j,kp,m)*wght(l,3) + ajc(ip,j,kp,m)*wght(l,4)
@@ -544,11 +525,6 @@ c         fnp = np_at_Ba/ntot
      x          + up(i,jp,k,m)*wght(l,5) + up(ip,jp,k,m)*wght(l,6)
      x          + up(i,jp,kp,m)*wght(l,7) + up(ip,jp,kp,m)*wght(l,8)
 
-c            uf3(m) = ufc(i,j,k,m)*wght(l,1) + ufc(ip,j,k,m)*wght(l,2) 
-c     x          + ufc(i,j,kp,m)*wght(l,3) + ufc(ip,j,kp,m)*wght(l,4)
-c     x          + ufc(i,jp,k,m)*wght(l,5) + ufc(ip,jp,k,m)*wght(l,6)
-c     x          + ufc(i,jp,kp,m)*wght(l,7) + ufc(ip,jp,kp,m)*wght(l,8)
-
             btc3(m) = btc(i,j,k,m)*wght(l,1) 
      x               + btc(ip,j,k,m)*wght(l,2) 
      x               + btc(i,j,kp,m)*wght(l,3) 
@@ -558,20 +534,9 @@ c     x          + ufc(i,jp,kp,m)*wght(l,7) + ufc(ip,jp,kp,m)*wght(l,8)
      x               + btc(i,jp,kp,m)*wght(l,7) 
      x               + btc(ip,jp,kp,m)*wght(l,8)
 
-c            gradP3(m) = gradPc(i,j,k,m)*wght(l,1) 
-c     x                + gradPc(ip,j,k,m)*wght(l,2) 
-c     x                + gradPc(i,j,kp,m)*wght(l,3) 
-c     x                + gradPc(ip,j,kp,m)*wght(l,4)
-c     x                + gradPc(i,jp,k,m)*wght(l,5) 
-c     x                + gradPc(ip,jp,k,m)*wght(l,6)
-c     x                + gradPc(i,jp,kp,m)*wght(l,7) 
-c     x                + gradPc(ip,jp,kp,m)*wght(l,8)
-
  15         continue
 
          do 20 m=1,3
-c            aa(m) = aj3(m) - fnp*up3(m)  
-c     x                     - fnf*uf3(m)
             aa(m) = aj3(m) - up3(m)
             bb(m) = btc3(m)                   
 
@@ -583,10 +548,6 @@ c     x                     - fnf*uf3(m)
 
          do 30 m=1,3
             Ep(l,m) = cc(m) 
-c     x                + nu(i,j,k)*fnf*(uf3(m)-up3(m)) 
-c     x                - gradP3(m) 
-c     x                + nuei*aj3(m) 
-c                     + etar(i,j,k,m)*aj3(m)
             Ep(l,m) = Ep(l,m)*mrat(l) !O_to_Ba
 
  30         continue
@@ -602,8 +563,6 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_vplus_vminus(Ep,btc,vp,vplus,vminus)
 c----------------------------------------------------------------------
-
-c      include 'incurv.h'
 
       real Ep(Ni_max,3),
      x     btc(nx,ny,nz,3),   !bt at cell center
@@ -626,58 +585,15 @@ c      include 'incurv.h'
             vminus(l,m) = vp(l,m) + 0.5*dt*Ep(l,m)
  10         continue
 
-c      do 20 l=1,Ni_tot
-
-c         i = ijkp(l,1)+wquad(l,1)
-c         j = ijkp(l,2)+wquad(l,2)
-c         k = ijkp(l,3)+wquad(l,3)
-         
-c         ip=i+1
-c         jp=j+1
-c         kp=k+1
-
-c         if (ip .ge. nx) ip = 2      !periodic boundary conditions
-c         if (jp .ge. ny) jp = 2      !periodic boundary conditions
-c         if (kp .ge. nz) kp = 2      !periodic boundary conditions
-
-c         do 25 m=1,3    !interpolate to particle position
-c            btc3(l,m) = btc(i,j,k,m)*wght(l,1) 
-c     x               + btc(ip,j,k,m)*wght(l,2) 
-c     x               + btc(i,j,kp,m)*wght(l,3) 
-c     x               + btc(ip,j,kp,m)*wght(l,4)
-c     x               + btc(i,jp,k,m)*wght(l,5) 
-c     x               + btc(ip,jp,k,m)*wght(l,6)
-c     x               + btc(i,jp,kp,m)*wght(l,7) 
-c     x               + btc(ip,jp,kp,m)*wght(l,8)
-c 25         continue
-
-c         vminus_x_B(l,1) = vminus(l,2)*btc3(l,3)*mrat(l) - !O_to_Ba - 
-c     x                     vminus(l,3)*btc3(l,2)*mrat(l)   !O_to_Ba
-c         vminus_x_B(l,2) = vminus(l,3)*btc3(l,1)*mrat(l) - !O_to_Ba - 
-c     x                     vminus(l,1)*btc3(l,3)*mrat(l)   !O_to_Ba
-c         vminus_x_B(l,3) = vminus(l,1)*btc3(l,2)*mrat(l) - !O_to_Ba -
-c     x                     vminus(l,2)*btc3(l,1)*mrat(l)   !O_to_Ba
-
-c         vminus_dot_B(l) = vminus(l,1)*btc3(l,1)*mrat(l) + !O_to_Ba +
-c     x                     vminus(l,2)*btc3(l,2)*mrat(l) + !O_to_Ba +
-c     x                     vminus(l,3)*btc3(l,3)*mrat(l)   !O_to_Ba
-
-c 20   continue
-   
       do 30 l=1,Ni_tot 
 
-         i = ijkp(l,1)!+wquad(l,1)
-         j = ijkp(l,2)!+wquad(l,2)
-         k = ijkp(l,3)!+wquad(l,3)
+         i = ijkp(l,1)
+         j = ijkp(l,2)
+         k = ijkp(l,3)
    
          ip = i+1
          jp = j+1
          kp = k+1
-
-
-c         if (ip .ge. nx) ip = 2 !periodic boundary conditions
-c         if (jp .ge. ny) jp = 2 !periodic boundary conditions
-c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
 
          do 35 m=1,3
             btc3(m) = btc(i,j,k,m)*wght(l,1) 
@@ -691,20 +607,20 @@ c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
             
  35      continue
 
-         vminus_x_B(1) = vminus(l,2)*btc3(3)*mrat(l) - !O_to_Ba - 
-     x                     vminus(l,3)*btc3(2)*mrat(l)   !O_to_Ba
-         vminus_x_B(2) = vminus(l,3)*btc3(1)*mrat(l) - !O_to_Ba - 
-     x                     vminus(l,1)*btc3(3)*mrat(l)   !O_to_Ba
-         vminus_x_B(3) = vminus(l,1)*btc3(2)*mrat(l) - !O_to_Ba -
-     x                     vminus(l,2)*btc3(1)*mrat(l)   !O_to_Ba
+         vminus_x_B(1) = vminus(l,2)*btc3(3)*mrat(l) -
+     x                     vminus(l,3)*btc3(2)*mrat(l)
+         vminus_x_B(2) = vminus(l,3)*btc3(1)*mrat(l) -
+     x                     vminus(l,1)*btc3(3)*mrat(l)
+         vminus_x_B(3) = vminus(l,1)*btc3(2)*mrat(l) -
+     x                     vminus(l,2)*btc3(1)*mrat(l)
 
-         vminus_dot_B = vminus(l,1)*btc3(1)*mrat(l) + !O_to_Ba +
-     x                     vminus(l,2)*btc3(2)*mrat(l) + !O_to_Ba +
-     x                     vminus(l,3)*btc3(3)*mrat(l)   !O_to_Ba
+         vminus_dot_B = vminus(l,1)*btc3(1)*mrat(l) +
+     x                     vminus(l,2)*btc3(2)*mrat(l) +
+     x                     vminus(l,3)*btc3(3)*mrat(l)
 
-         Bx = btc3(1)*mrat(l) !O_to_Ba
-         By = btc3(2)*mrat(l) !O_to_Ba
-         Bz = btc3(3)*mrat(l) !O_to_Ba
+         Bx = btc3(1)*mrat(l)
+         By = btc3(2)*mrat(l)
+         Bz = btc3(3)*mrat(l)
       
          B2 = Bx**2 + By**2 + Bz**2
          dt2 = dt**2
@@ -716,7 +632,7 @@ c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
 
          do 40 m=1,3
             vplus(l,m) = a1*vminus(l,m) + a2*vminus_x_B(m) + 
-     x           a3*vminus_dot_B*btc3(m)*mrat(l) !O_to_Ba
+     x           a3*vminus_dot_B*btc3(m)*mrat(l)
  40      continue
 
  30   continue
