@@ -19,25 +19,10 @@ c      include 'incurv.h'
      x     b1p2(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
      x     b0(nx,ny,nz,3)
-c     x     bdp(nx,ny,nz,3)
 
-      do 10 i=1,nx
-         do 10 j=1,ny
-            do 10 k=1,nz
-               bt(i,j,k,1) = b1p2(i,j,k,1) + b0(i,j,k,1)
-               bt(i,j,k,2) = b1p2(i,j,k,2) + b0(i,j,k,2)
-               bt(i,j,k,3) = b1p2(i,j,k,3) + b0(i,j,k,3) 
-               do 10 m=1,3
-c     uf2(i,j,k,m) = uf(i,j,k,m)
-                  b12(i,j,k,m) = b1(i,j,k,m)
-                  b1(i,j,k,m) = b1p2(i,j,k,m)
- 10            continue
-               
-c               call obstacle_boundary_B(b0,bt)
-c               call obstacle_boundary_B(b0,b12)
-c               call obstacle_boundary_B(b0,b1)
-
-      
+      bt = b1p2 + b0
+      b12 = b1
+      b1 = b1p2
       return
       end SUBROUTINE f_update_tlev
 c----------------------------------------------------------------------
@@ -85,7 +70,7 @@ c about the grid points.
 
  60            continue
 
-      call boundaries(cc, ct(1,:,:,:))
+      call boundaries(cc, ct(nx,:,:,:))
 
       return
       end SUBROUTINE crossf2
@@ -109,8 +94,8 @@ c     x     nf(nx,ny,nz),
      x     aj(nx,ny,nz,3)
       real us(ny,nz,3)
 
-      real curl_B(3)      !dummy for holding curl vector
-      real ntot(3)        !total density, np + nf
+      real curl_B(nx,ny,nz,3)      !dummy for holding curl vector
+      real ntot(nx,ny,nz,3)        !total density, np + nf
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
@@ -120,44 +105,45 @@ cc     call fix_normal_b(b1)
 
       do 10 k=2,nz-1   
          do 10 j=2,ny-1
+            us(j,k,1) = 0.5*(np(nx,j,k)+nf_init)
+            us(j,k,2) = 0.5*(np(nx,j,k)+np(nx,jp,k))
+            us(j,k,3) = 0.5*(np(nx,j,k)+np(nx,j,kp))
             do 10 i=2,nx-1
 
                ip = i+1
                jp = j+1
                kp = k+1
+               ntot(i,j,k,1) = 0.5*(np(i,j,k)+np(ip,j,k))
+               ntot(i,j,k,2) = 0.5*(np(i,j,k)+np(i,jp,k))
+               ntot(i,j,k,3) = 0.5*(np(i,j,k)+np(i,j,kp))
+ 10    continue
+      call boundaries(ntot, us)
 
-c               if (ip .gt. nx) then ip = nx
-c               if (jp .gt. ny) then jp = ny
-c               if (kp .gt. nz) then kp = nz
-
-c               ntot(1) = 0.5*(nf(i,j,k)+nf(ip,j,k))
-c     x                 + 0.5*(np(i,j,k)+np(ip,j,k))
-c               ntot(2) = 0.5*(nf(i,j,k)+nf(i,jp,k))
-c     x                 + 0.5*(np(i,j,k)+np(i,jp,k))
-c               ntot(3) = 0.5*(nf(i,j,k)+nf(i,j,kp))
-c     x                 + 0.5*(np(i,j,k)+np(i,j,kp))
-
-
-               ntot(1) = 0.5*(np(i,j,k)+np(ip,j,k))
-               ntot(2) = 0.5*(np(i,j,k)+np(i,jp,k))
-               ntot(3) = 0.5*(np(i,j,k)+np(i,j,kp))
-
-               curl_B(1) = (b1(i,j,k,3) - 
+      do 20 k=2,nz-1   
+         do 20 j=2,ny-1
+            us(j,k,1) = (b1(nx,j,k,3) - 
+     x              b1(nx,j-1,k,3))/dy_cell(j) +
+     x              (b1(nx,j,k-1,2) - b1(nx,j,k,2))/dz_cell(k)
+            us(j,k,2) = (b1(nx,j,k,1) - 
+     x              b1(nx,j,k-1,1))/dz_cell(k) +
+     x              (b1(nx-1,j,k,3) - b1(nx,j,k,3))/dx_cell(nx)
+            us(j,k,3) = (b1(nx,j,k,2) - 
+     x              b1(nx-1,j,k,2))/dx_cell(nx) + 
+     x              (b1(nx,j-1,k,1) - b1(nx,j,k,1))/dy_cell(j)
+            do 20 i=2,nx-1
+               curl_B(i,j,k,1) = (b1(i,j,k,3) - 
      x              b1(i,j-1,k,3))/dy_cell(j) +
      x              (b1(i,j,k-1,2) - b1(i,j,k,2))/dz_cell(k)
-               curl_B(2) = (b1(i,j,k,1) - 
+               curl_B(i,j,k,2) = (b1(i,j,k,1) - 
      x              b1(i,j,k-1,1))/dz_cell(k) +
      x              (b1(i-1,j,k,3) - b1(i,j,k,3))/dx_cell(i)
-               curl_B(3) = (b1(i,j,k,2) - 
+               curl_B(i,j,k,3) = (b1(i,j,k,2) - 
      x              b1(i-1,j,k,2))/dx_cell(i) + 
      x              (b1(i,j-1,k,1) - b1(i,j,k,1))/dy_cell(j)
+ 20            continue
+      call boundaries(curl_B, us)
 
-
-               do 10 m=1,3
-                  aj(i,j,k,m) = curl_B(m)/(ntot(m)*alpha)
- 10            continue
-
-c      call periodic(aj)
+      aj = curl_B/(ntot*alpha)
 
       return
       end SUBROUTINE curlB
@@ -970,13 +956,13 @@ c----------------------------------------------------------------------
       real aa(nx,ny,nz,3)
       real us(ny,nz,3)
 
-      us = 0.0 !not always the correct us value
+      us = 0.0 ! only correct when b upstream is constant
       call face_to_center(aj,aa,us)
 
       a = aa - up
 
-      aus = a(1,:,:,:)
-      bus = b0(1,:,:,:)
+      aus = a(nx,:,:,:)
+      bus = b0(nx,:,:,:)
       call edge_to_center(bt,btc, bus)
       call crossf2(a,btc,aus,bus,c)
 
@@ -1041,7 +1027,7 @@ c     x                 2.0*dtsub*curl_E(i,j,k,m)
 
 c      call boundaries(b1p2)
 c      call damp(b1p2)
-      bus = b0(1,:,:,:)
+      bus = 0.0
       call boundaries(b1p2,bus)
 c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
@@ -1100,8 +1086,8 @@ c----------------------------------------------------------------------
       call face_to_center(aj,aa,aus)
       a = aa - up
 
-      aus = a(1,:,:,:)!not always correct
-      bus = b0(1,:,:,:)
+      aus = a(nx,:,:,:)!not always correct
+      bus = b0(nx,:,:,:)
 
       call edge_to_center(btp1,btc,bus)
 
@@ -1164,7 +1150,7 @@ c     x                 dtsub*curl_E(i,j,k,m)
 
 c      call boundaries(b1p2)
 c      call damp(b1p2)
-      bus = b0(1,:,:,:)
+      bus = 0.0
       call boundaries(b1p2, bus)
 c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)

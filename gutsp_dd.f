@@ -500,9 +500,7 @@ c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
       real nf_at_Ba
 
       us = 0.0
-      call face_to_center(aj,ajc,us)!not always correct
-c      call face_to_center(uf,ufc)
-c      call face_to_center(gradP,gradPc)
+      call face_to_center(aj,ajc,us)! only if upstream B is const
 
       do 10 l=1,Ni_tot
 

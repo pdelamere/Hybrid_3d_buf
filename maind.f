@@ -525,7 +525,7 @@ c======================================================================
 
          call curlB(b1,np,aj)
          
-         call edge_to_center(bt,btc,b0(1,:,:,:))
+         call edge_to_center(bt,btc,b0(nx,:,:,:))
 
          call extrapol_up(up,vp,vp1,np)
          call get_Ep(Ep,aj,np,up,btc,nu)

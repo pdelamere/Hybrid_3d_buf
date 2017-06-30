@@ -11,9 +11,9 @@ c---------------------------------------------------------------------
       real b(nx,ny,nz,3)
       real us(ny,nz,3) ! upstream condition
 c upstream is fixed
-      b(1,:,:,:) = us
+      b(nx,:,:,:) = us
 c downstream is extrap
-      b(nx,:,:,:) = b(nx-1,:,:,:)
+      b(1,:,:,:) = b(2,:,:,:)
       end SUBROUTINE
 c---------------------------------------------------------------------
       SUBROUTINE boundaries(b, us)
@@ -86,9 +86,9 @@ c---------------------------------------------------------------------
       real b(nx,ny,nz)
       real us(ny,nz) ! upstream condition
 c upstream is fixed
-      b(1,:,:) = us
+      b(nx,:,:) = us
 c downstream is extrap
-      b(nx,:,:) = b(nx-1,:,:)
+      b(1,:,:) = b(2,:,:)
       end SUBROUTINE
 c---------------------------------------------------------------------
       SUBROUTINE boundary_scalar(b, us)
