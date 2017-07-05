@@ -579,7 +579,7 @@ call MPI_Barrier(MPI_COMM_WORLD,ierr)
          count = 1
 
          call MPI_ALLREDUCE(ntf,recvbuf,count,
-     x        realtype,MPI_MAX,MPI_COMM_WORLD,ierr)
+     x        MPI_REAL,MPI_MAX,MPI_COMM_WORLD,ierr)
 
          ntf = recvbuf
 

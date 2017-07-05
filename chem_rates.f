@@ -168,7 +168,7 @@ c     x                       sin(theta)
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
       call MPI_ALLREDUCE(ndot_intgl,recvbuf,count,
-     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
+     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       write(*,*) 'ndot_intgl_global....',recvbuf,my_rank
 
@@ -207,7 +207,7 @@ c      enddo
 c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
 c      call MPI_ALLREDUCE(ndot_intgl,recvbuf,count,
-c     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
+c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
 c      write(*,*) 'ndot_intgl_global....',recvbuf,my_rank
 
@@ -274,7 +274,7 @@ c      include 'incurv.h'
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
       call MPI_ALLREDUCE(ndot_intgl,recvbuf,count,
-     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
+     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       write(*,*) 'ndot_intgl_global....',recvbuf,my_rank
 
@@ -355,7 +355,7 @@ c                   ndot(i,j,k)= 5.e6*(r/Rio)**(-3.5)*1.e15/(25.*3600.)  ! no pw
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
       call MPI_ALLREDUCE(ndot_intgl,recvbuf,count,
-     x     realtype,MPI_SUM,MPI_COMM_WORLD,ierr)
+     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       if(my_rank.eq.0) then
       write(*,*) '   TOTAL XIANZHE (6 Rio) ndot_intgl_global ',
