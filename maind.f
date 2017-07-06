@@ -588,7 +588,7 @@ call MPI_Barrier(MPI_COMM_WORLD,ierr)
       do 2 n = 1, int(ntf)
 
          !convert main cell covarient bt to main cell contravarient
-         call curlB(b1,np,aj)     
+         call curlB(b1,np,aj)
 
 
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 

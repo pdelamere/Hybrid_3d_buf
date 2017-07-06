@@ -92,7 +92,7 @@ c      PARAMETER (N_o = 5e34)     !Steady state neutral particle constant
       PARAMETER (tau_photo = 1.5e9)
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
-      PARAMETER (S_radius = 200*Rpluto)
+      PARAMETER (S_radius = 50*Rpluto)
 
 c domain decompostion parameters
 
@@ -192,7 +192,7 @@ c----------------------------------------------------------------
 
       print*, 'dx....',dx
 
-      dx_buf = 11*dx
+      dx_buf = 3*dx
 
 
       dt = dt_frac*mion/(q*b0_init)     !main time step

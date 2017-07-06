@@ -10,9 +10,7 @@
 
 c----------------------------------------------------------------------
       SUBROUTINE f_update_tlev(b1,b12,b1p2,bt,b0)
-c loops run 1 to n since values are only being copied
 c----------------------------------------------------------------------
-c      include 'incurv.h'
       
       real b1(nx,ny,nz,3),
      x     b12(nx,ny,nz,3),
