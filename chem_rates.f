@@ -34,7 +34,7 @@ c      include 'incurv.h'
       real nn0
       real cap_r
 
-      cap_r = 1.6*Rpluto
+      cap_r = 1.4*Rpluto
 
       call Neut_Center(cx,cy,cz)
       x = qx(i)-cx
@@ -421,7 +421,7 @@ c      real neutral_density
       real x,y,z
       real small_beta_r
       real max_r
-      small_beta_r = 1.6*Rpluto
+      small_beta_r = 1.4*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk

@@ -1,8 +1,8 @@
-0.3e-9               !magnetic field (Tesla)
+0.05e-9               !magnetic field (Tesla)
 1                    !atomic mass for reference species
 16                    !mass of pickup ion species
 0.027e15               !density (km^-3)
-0.0025                   !particle time step (fraction of omega_i)
+0.001                   !particle time step (fraction of omega_i)
 30000                  !number of time steps
 100                     !grid data output interval
 1000                    !particle data output interval

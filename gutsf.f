@@ -954,7 +954,7 @@ c----------------------------------------------------------------------
       real aa(nx,ny,nz,3)
       real us(ny,nz,3)
 
-      us = 0.0 ! only correct when b upstream is constant
+      us = 0.0 ! only correct when b upstream is curl-free
       call face_to_center(aj,aa,us)
 
       a = aa - up
