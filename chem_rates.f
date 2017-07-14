@@ -34,7 +34,7 @@ c      include 'incurv.h'
       real nn0
       real cap_r
 
-      cap_r = 1.6*Rpluto
+      cap_r = 1.4*Rpluto
 
       call Neut_Center(cx,cy,cz)
       x = qx(i)-cx
@@ -43,7 +43,12 @@ c      include 'incurv.h'
       rho2 = y**2 + z**2
       r = sqrt(x**2+rho2)
       a = atan2(sqrt(rho2), x)
-      neutral_density=atmosphere(max(r,cap_r)) !neut_corona(a, max(r,cap_r))
+
+      if( r .lt. S_radius ) then
+          neutral_density=atmosphere(max(r,cap_r)) !neut_corona(a, max(r,cap_r))
+      else
+          neutral_density=0
+      endif
 
       neutral_density = neutral_density*1e15
       return
@@ -61,13 +66,11 @@ c      include 'incurv.h'
       real vp1(Ni_max,3)
 
       real cx,cy,cz,r,vrel
-      real nn0,nn !,neutral_density
+      real nn !,neutral_density
       real chex_tau,chex_prob
 
       real sigma_chex
       PARAMETER (sigma_chex = 1e-25)  !10 A^2 in units of km^2
-
-      nn0 = Ncol*(pwl+1)/RIo
 
       call Neut_Center(cx,cy,cz)
       
@@ -367,51 +370,6 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE get_nuin(nuin,nn,uf,nf,ndot)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-
-      real nuin(nx,ny,nz)
-      real nn(nx,ny,nz)
-      real uf(nx,ny,nz,3)
-      real nf(nx,ny,nz)
-      real ndot(nx,ny,nz)
-      real ufc(nx,ny,nz,3) !gather at cell center
-
-c      real sigma_in
-c      parameter (sigma_in = 3.0e-26)
-
-c      call periodic(uf)
-c      call periodic_scalar(nf)
-
-      call face_to_center(uf,ufc)
-
-c      call periodic(ufc)
-      
-      do i = 1,nx
-         do j = 1,ny
-            do k = 1,nz
-c               uf2(1) = 0.5*(uf(i,j,k,1) + uf(i-1,j,k,1)) 
-c               uf2(2) = 0.5*(uf(i,j,k,2) + uf(i,j-1,k,2)) 
-c               uf2(3) = 0.5*(uf(i,j,k,3) + uf(i,j,k-1,3)) 
-c               nuin(i,j,k) = sqrt(uf2(1)**2 + uf2(2)**2 + 
-c     x                       uf2(3)**2)*sigma_in*nn(i,j,k)
-               nuin(i,j,k) = sqrt(ufc(i,j,k,1)**2 + ufc(i,j,k,2)**2 + 
-     x                       ufc(i,j,k,3)**2)*sigma_in*nn(i,j,k)
-c               nuin(i,j,k) = 10.0*ndot(i,j,k)/nf(i,j,k)
-            enddo
-         enddo
-      enddo
-
-      call periodic_scalar(nuin)
-
-      return
-      end SUBROUTINE get_nuin
-c----------------------------------------------------------------------
-
-
-
-c----------------------------------------------------------------------
       SUBROUTINE Ionize_pluto_mp(np,np_2,vp,vp1,xp,m_tstep,input_p,up)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle
 c arrays, np, vp, up (ion particle density, velocity, 
@@ -463,8 +421,7 @@ c      real neutral_density
       real x,y,z
       real small_beta_r
       real max_r
-      small_beta_r = 1.6*Rpluto
-      max_r = 200*Rpluto
+      small_beta_r = 1.4*Rpluto
 
 c      integer*4 ion_cnt(nx,ny,nz)  !keeps running count of ions 
                                    !in cell for calculating the bulk
@@ -495,7 +452,6 @@ c get source density
 c               if ((r .le. dx*S_radius) .and.
 c     x              (np_2(i,j,k) .lt. npmax)) then
 
-                  if (r .gt. max_r) cycle
 
                   if (r .le. small_beta_r) then
                      bpu = 0.01

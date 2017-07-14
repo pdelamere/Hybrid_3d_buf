@@ -92,7 +92,7 @@ c      include 'incurv.h'
 
       den_part = 1/(beta*dx**3)
 
-      minden = nf_init/15.
+      minden = nf_init/30.0
 c      minden = 2.0*den_part
       do i = 2,nx-1
          do j = 2,ny-1
@@ -484,6 +484,7 @@ c     x     uf(nx,ny,nz,3),
      x     btc(nx,ny,nz,3),
      x     nu(nx,ny,nz)
 c     x     gradP(nx,ny,nz,3)
+      real us(ny,nz,3)
 
       real ajc(nx,ny,nz,3),       !aj at cell center
      x     upc(nx,ny,nz,3),       !up at cell center
@@ -498,9 +499,8 @@ c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
       real np_at_Ba               !particle density at particle pos
       real nf_at_Ba
 
-      call face_to_center(aj,ajc)
-c      call face_to_center(uf,ufc)
-c      call face_to_center(gradP,gradPc)
+      us = 0.0
+      call face_to_center(aj,ajc,us)! only if upstream B is const
 
       do 10 l=1,Ni_tot
 
@@ -511,25 +511,6 @@ c      call face_to_center(gradP,gradPc)
          ip = i+1
          jp = j+1
          kp = k+1
-
-            
-c         if (ip .ge. nx) ip = 2      !periodic boundary conditions
-c         if (jp .ge. ny) jp = 2      !periodic boundary conditions
-c         if (kp .ge. nz) kp = 2      !periodic boundary conditions
-
-c         np_at_Ba = np(i,j,k)*wght(l,1) + np(ip,j,k)*wght(l,2) + 
-c     x              np(i,j,kp)*wght(l,3) + np(ip,j,kp)*wght(l,4) + 
-c     x              np(i,jp,k)*wght(l,5) + np(ip,jp,k)*wght(l,6) +
-c     x              np(i,jp,kp)*wght(l,7) + np(ip,jp,kp)*wght(l,8)
-
-c         nf_at_Ba = nf(i,j,k)*wght(l,1) + nf(ip,j,k)*wght(l,2) + 
-c     x              nf(i,j,kp)*wght(l,3) + nf(ip,j,kp)*wght(l,4) + 
-c     x              nf(i,jp,k)*wght(l,5) + nf(ip,jp,k)*wght(l,6) +
-c     x              nf(i,jp,kp)*wght(l,7) + nf(ip,jp,kp)*wght(l,8)
-
-c         ntot = nf_at_Ba + np_at_Ba
-c         fnf = nf_at_Ba/ntot
-c         fnp = np_at_Ba/ntot
 
          do 15 m=1,3 
             aj3(m) = ajc(i,j,k,m)*wght(l,1) + ajc(ip,j,k,m)*wght(l,2) 
@@ -542,11 +523,6 @@ c         fnp = np_at_Ba/ntot
      x          + up(i,jp,k,m)*wght(l,5) + up(ip,jp,k,m)*wght(l,6)
      x          + up(i,jp,kp,m)*wght(l,7) + up(ip,jp,kp,m)*wght(l,8)
 
-c            uf3(m) = ufc(i,j,k,m)*wght(l,1) + ufc(ip,j,k,m)*wght(l,2) 
-c     x          + ufc(i,j,kp,m)*wght(l,3) + ufc(ip,j,kp,m)*wght(l,4)
-c     x          + ufc(i,jp,k,m)*wght(l,5) + ufc(ip,jp,k,m)*wght(l,6)
-c     x          + ufc(i,jp,kp,m)*wght(l,7) + ufc(ip,jp,kp,m)*wght(l,8)
-
             btc3(m) = btc(i,j,k,m)*wght(l,1) 
      x               + btc(ip,j,k,m)*wght(l,2) 
      x               + btc(i,j,kp,m)*wght(l,3) 
@@ -556,20 +532,9 @@ c     x          + ufc(i,jp,kp,m)*wght(l,7) + ufc(ip,jp,kp,m)*wght(l,8)
      x               + btc(i,jp,kp,m)*wght(l,7) 
      x               + btc(ip,jp,kp,m)*wght(l,8)
 
-c            gradP3(m) = gradPc(i,j,k,m)*wght(l,1) 
-c     x                + gradPc(ip,j,k,m)*wght(l,2) 
-c     x                + gradPc(i,j,kp,m)*wght(l,3) 
-c     x                + gradPc(ip,j,kp,m)*wght(l,4)
-c     x                + gradPc(i,jp,k,m)*wght(l,5) 
-c     x                + gradPc(ip,jp,k,m)*wght(l,6)
-c     x                + gradPc(i,jp,kp,m)*wght(l,7) 
-c     x                + gradPc(ip,jp,kp,m)*wght(l,8)
-
  15         continue
 
          do 20 m=1,3
-c            aa(m) = aj3(m) - fnp*up3(m)  
-c     x                     - fnf*uf3(m)
             aa(m) = aj3(m) - up3(m)
             bb(m) = btc3(m)                   
 
@@ -581,10 +546,6 @@ c     x                     - fnf*uf3(m)
 
          do 30 m=1,3
             Ep(l,m) = cc(m) 
-c     x                + nu(i,j,k)*fnf*(uf3(m)-up3(m)) 
-c     x                - gradP3(m) 
-c     x                + nuei*aj3(m) 
-c                     + etar(i,j,k,m)*aj3(m)
             Ep(l,m) = Ep(l,m)*mrat(l) !O_to_Ba
 
  30         continue
@@ -600,8 +561,6 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_vplus_vminus(Ep,btc,vp,vplus,vminus)
 c----------------------------------------------------------------------
-
-c      include 'incurv.h'
 
       real Ep(Ni_max,3),
      x     btc(nx,ny,nz,3),   !bt at cell center
@@ -624,58 +583,15 @@ c      include 'incurv.h'
             vminus(l,m) = vp(l,m) + 0.5*dt*Ep(l,m)
  10         continue
 
-c      do 20 l=1,Ni_tot
-
-c         i = ijkp(l,1)+wquad(l,1)
-c         j = ijkp(l,2)+wquad(l,2)
-c         k = ijkp(l,3)+wquad(l,3)
-         
-c         ip=i+1
-c         jp=j+1
-c         kp=k+1
-
-c         if (ip .ge. nx) ip = 2      !periodic boundary conditions
-c         if (jp .ge. ny) jp = 2      !periodic boundary conditions
-c         if (kp .ge. nz) kp = 2      !periodic boundary conditions
-
-c         do 25 m=1,3    !interpolate to particle position
-c            btc3(l,m) = btc(i,j,k,m)*wght(l,1) 
-c     x               + btc(ip,j,k,m)*wght(l,2) 
-c     x               + btc(i,j,kp,m)*wght(l,3) 
-c     x               + btc(ip,j,kp,m)*wght(l,4)
-c     x               + btc(i,jp,k,m)*wght(l,5) 
-c     x               + btc(ip,jp,k,m)*wght(l,6)
-c     x               + btc(i,jp,kp,m)*wght(l,7) 
-c     x               + btc(ip,jp,kp,m)*wght(l,8)
-c 25         continue
-
-c         vminus_x_B(l,1) = vminus(l,2)*btc3(l,3)*mrat(l) - !O_to_Ba - 
-c     x                     vminus(l,3)*btc3(l,2)*mrat(l)   !O_to_Ba
-c         vminus_x_B(l,2) = vminus(l,3)*btc3(l,1)*mrat(l) - !O_to_Ba - 
-c     x                     vminus(l,1)*btc3(l,3)*mrat(l)   !O_to_Ba
-c         vminus_x_B(l,3) = vminus(l,1)*btc3(l,2)*mrat(l) - !O_to_Ba -
-c     x                     vminus(l,2)*btc3(l,1)*mrat(l)   !O_to_Ba
-
-c         vminus_dot_B(l) = vminus(l,1)*btc3(l,1)*mrat(l) + !O_to_Ba +
-c     x                     vminus(l,2)*btc3(l,2)*mrat(l) + !O_to_Ba +
-c     x                     vminus(l,3)*btc3(l,3)*mrat(l)   !O_to_Ba
-
-c 20   continue
-   
       do 30 l=1,Ni_tot 
 
-         i = ijkp(l,1)!+wquad(l,1)
-         j = ijkp(l,2)!+wquad(l,2)
-         k = ijkp(l,3)!+wquad(l,3)
+         i = ijkp(l,1)
+         j = ijkp(l,2)
+         k = ijkp(l,3)
    
          ip = i+1
          jp = j+1
          kp = k+1
-
-
-c         if (ip .ge. nx) ip = 2 !periodic boundary conditions
-c         if (jp .ge. ny) jp = 2 !periodic boundary conditions
-c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
 
          do 35 m=1,3
             btc3(m) = btc(i,j,k,m)*wght(l,1) 
@@ -689,20 +605,20 @@ c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
             
  35      continue
 
-         vminus_x_B(1) = vminus(l,2)*btc3(3)*mrat(l) - !O_to_Ba - 
-     x                     vminus(l,3)*btc3(2)*mrat(l)   !O_to_Ba
-         vminus_x_B(2) = vminus(l,3)*btc3(1)*mrat(l) - !O_to_Ba - 
-     x                     vminus(l,1)*btc3(3)*mrat(l)   !O_to_Ba
-         vminus_x_B(3) = vminus(l,1)*btc3(2)*mrat(l) - !O_to_Ba -
-     x                     vminus(l,2)*btc3(1)*mrat(l)   !O_to_Ba
+         vminus_x_B(1) = vminus(l,2)*btc3(3)*mrat(l) -
+     x                     vminus(l,3)*btc3(2)*mrat(l)
+         vminus_x_B(2) = vminus(l,3)*btc3(1)*mrat(l) -
+     x                     vminus(l,1)*btc3(3)*mrat(l)
+         vminus_x_B(3) = vminus(l,1)*btc3(2)*mrat(l) -
+     x                     vminus(l,2)*btc3(1)*mrat(l)
 
-         vminus_dot_B = vminus(l,1)*btc3(1)*mrat(l) + !O_to_Ba +
-     x                     vminus(l,2)*btc3(2)*mrat(l) + !O_to_Ba +
-     x                     vminus(l,3)*btc3(3)*mrat(l)   !O_to_Ba
+         vminus_dot_B = vminus(l,1)*btc3(1)*mrat(l) +
+     x                     vminus(l,2)*btc3(2)*mrat(l) +
+     x                     vminus(l,3)*btc3(3)*mrat(l)
 
-         Bx = btc3(1)*mrat(l) !O_to_Ba
-         By = btc3(2)*mrat(l) !O_to_Ba
-         Bz = btc3(3)*mrat(l) !O_to_Ba
+         Bx = btc3(1)*mrat(l)
+         By = btc3(2)*mrat(l)
+         Bz = btc3(3)*mrat(l)
       
          B2 = Bx**2 + By**2 + Bz**2
          dt2 = dt**2
@@ -714,7 +630,7 @@ c         if (kp .ge. nz) kp = 2 !periodic boundary conditions
 
          do 40 m=1,3
             vplus(l,m) = a1*vminus(l,m) + a2*vminus_x_B(m) + 
-     x           a3*vminus_dot_B*btc3(m)*mrat(l) !O_to_Ba
+     x           a3*vminus_dot_B*btc3(m)*mrat(l)
  40      continue
 
  30   continue
@@ -2374,17 +2290,13 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real np(nx,ny,nz)
+      real us(ny,nz)
 
       real volb              !cell volume times beta
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
 
-c      real recvbuf(nx*ny*nz)
-c      integer count
-c      count = nx*ny*nz
-
-c      real sumnp,vol
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -2425,48 +2337,10 @@ c      real sumnp,vol
       enddo
 
 c use for periodic boundary conditions
-c         np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
          np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
-c         np(:,:,nz-1) = np(:,:,nz-1)+np(:,:,1)
 
-c         call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-
-c         out_buf_z(:,:) = np(:,:,nz)         
-         
-c         dest = nbrs(n_up)
-c         source = nbrs(n_down)
-c         call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-c     x        cartcomm, reqs(1), ierr)
-c         call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-c     x        cartcomm, reqs(2), ierr)
-         
-c         call MPI_WAITALL(2, reqs, stats, ierr)
-c         np(:,:,2) = np(:,:,2) + in_buf_z
-
-c         call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-c         call MPI_ALLREDUCE(np(:,:,:),recvbuf,count,
-c     x        MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-
-c         np(:,:,:) = reshape(recvbuf,(/nx,ny,nz/))
-
-c         write(*,*) 'recvbuf...',recvbuf(nx*ny+1:nx*ny+10)
-c         write(*,*) 'np........',np(1:10,1,2)
-         
-c         write(*,*) 'np ...',np(20,20,20)         
-c         do i = 1,nx
-c            do j = 1,ny
-c               do k = 1,nz
-
-c                  call MPI_ALLREDUCE(np(i,j,k),recvbuf,count,
-c     x                 MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c                  np(i,j,k) = recvbuf
-c               enddo
-c            enddo
-c         enddo
-c         write(*,*) 'np1...',np(20,20,20)
-
-      call periodic_scalar(np)
+      us = nf_init
+      call boundary_scalar(np, us)
 
       return
       end SUBROUTINE update_np
@@ -2480,6 +2354,7 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real np(nx,ny,nz)
+      real us(ny,nz)
       real mr
 
       real volb              !cell volume times beta
@@ -2528,7 +2403,8 @@ c     np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
       np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
 c     np(:,:,nz-1) = np(:,:,nz-1)+np(:,:,1)
       
-      call periodic_scalar(np)
+      us = nf_init
+      call boundary_scalar(np, us)
 
       return
       end SUBROUTINE separate_np
@@ -2560,12 +2436,6 @@ c      include 'incurv.h'
 
       cnt_buf_z = nx*ny*3
 
-c      real recvbuf(nx*ny*nz)
-c      integer count
-c      count = nx*ny*nz
-
-
-     
 
       do 10 m=1,3          !clear out temp variable ct
          do 10 i=1,nx
@@ -2576,15 +2446,8 @@ c      count = nx*ny*nz
  10            continue
                
                cnt(:,:,:) = 0.0
-               
-c      where (ijkp(:,1) .eq. 1)
-c         wquad(:,1) = 0.0
-c      endwhere
-     
-
     
       do 20 l=1,Ni_tot
-
 
          i=ijkp(l,1)!+wquad(l,1)
          j=ijkp(l,2)!+wquad(l,2)
@@ -2593,116 +2456,45 @@ c      endwhere
          ip = i+1
          jp = j+1
          kp = k+1
-
-c         volb = dx*dy*(qz(kp)-qz(k))*beta
-c         volb = dx*dy*dz_cell(k)*beta
-      
-c         np_at_Ba = np(i,j,k)*wght(l,1) + np(ip,j,k)*wght(l,2) + 
-c     x              np(i,j,kp)*wght(l,3) + np(ip,j,kp)*wght(l,4) + 
-c     x              np(i,jp,k)*wght(l,5) + np(ip,jp,k)*wght(l,6) +
-c     x              np(i,jp,kp)*wght(l,7) + np(ip,jp,kp)*wght(l,8)
-
-c         if (sum(wght(l,:)) .gt. 1.01) then 
-c            write(*,*) 'wght error...',sum(wght(l,:)),ijkp(l,:),my_rank
-c         endif
-
-
-c         nvolb = 1.0
-c         if (np(i,j,k) .gt. 0.0) then
-c         nvolb = np(i,j,k)*volb
          cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
          ct(i,j,k,1) = ct(i,j,k,1) + vp(l,1)*wght(l,1)/beta_p(l) 
          ct(i,j,k,2) = ct(i,j,k,2) + vp(l,2)*wght(l,1)/beta_p(l) 
          ct(i,j,k,3) = ct(i,j,k,3) + vp(l,3)*wght(l,1)/beta_p(l) 
          
-c         endif
-
-c         if (np(ip,j,k) .gt. 0.0) then
-c         nvolb = np(ip,j,k)*volb
          cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)
          ct(ip,j,k,1) = ct(ip,j,k,1) + vp(l,1)*wght(l,2)/beta_p(l) 
          ct(ip,j,k,2) = ct(ip,j,k,2) + vp(l,2)*wght(l,2)/beta_p(l)
          ct(ip,j,k,3) = ct(ip,j,k,3) + vp(l,3)*wght(l,2)/beta_p(l) 
-c         endif
-
-c         if (np(i,j,kp) .gt. 0.0) then
-c         nvolb = np(i,j,kp)*volb
          cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
          ct(i,j,kp,1) = ct(i,j,kp,1) + vp(l,1)*wght(l,3)/beta_p(l) 
          ct(i,j,kp,2) = ct(i,j,kp,2) + vp(l,2)*wght(l,3)/beta_p(l) 
          ct(i,j,kp,3) = ct(i,j,kp,3) + vp(l,3)*wght(l,3)/beta_p(l) 
-c         endif
-
-c         if (np(ip,j,kp) .gt. 0.0) then
-c         nvolb = np(ip,j,kp)*volb
          cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l) 
          ct(ip,j,kp,1) = ct(ip,j,kp,1) + vp(l,1)*wght(l,4)/beta_p(l) 
          ct(ip,j,kp,2) = ct(ip,j,kp,2) + vp(l,2)*wght(l,4)/beta_p(l) 
          ct(ip,j,kp,3) = ct(ip,j,kp,3) + vp(l,3)*wght(l,4)/beta_p(l) 
-c         endif
-
-c         if (np(i,jp,k) .gt. 0.0) then
-c         nvolb = np(i,jp,k)*volb
          cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
          ct(i,jp,k,1) = ct(i,jp,k,1) + vp(l,1)*wght(l,5)/beta_p(l) 
          ct(i,jp,k,2) = ct(i,jp,k,2) + vp(l,2)*wght(l,5)/beta_p(l) 
          ct(i,jp,k,3) = ct(i,jp,k,3) + vp(l,3)*wght(l,5)/beta_p(l) 
-c         endif
-
-c         if (np(ip,jp,k) .gt. 0.0) then
-c         nvolb = np(ip,jp,k)*volb
          cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
          ct(ip,jp,k,1) = ct(ip,jp,k,1) + vp(l,1)*wght(l,6)/beta_p(l) 
          ct(ip,jp,k,2) = ct(ip,jp,k,2) + vp(l,2)*wght(l,6)/beta_p(l)
          ct(ip,jp,k,3) = ct(ip,jp,k,3) + vp(l,3)*wght(l,6)/beta_p(l) 
-c         endif
-
-c         if (np(i,jp,kp) .gt. 0.0) then
-c         nvolb = np(i,jp,kp)*volb
          cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
          ct(i,jp,kp,1) = ct(i,jp,kp,1) + vp(l,1)*wght(l,7)/beta_p(l) 
          ct(i,jp,kp,2) = ct(i,jp,kp,2) + vp(l,2)*wght(l,7)/beta_p(l) 
          ct(i,jp,kp,3) = ct(i,jp,kp,3) + vp(l,3)*wght(l,7)/beta_p(l) 
-c         endif
-
-c         if (np(ip,jp,kp) .gt. 0.0) then
-c         nvolb = np(ip,jp,kp)*volb
          cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
          ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + vp(l,1)*wght(l,8)/beta_p(l) 
          ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + vp(l,2)*wght(l,8)/beta_p(l) 
          ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + vp(l,3)*wght(l,8)/beta_p(l) 
-c         endif
 
  20   continue
 
-
-
-
-
 c use for periodic boundary conditions
-c      ct(nx-1,:,:,:) = ct(nx-1,:,:,:)+ct(1,:,:,:)
       ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
       cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
-c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
-
-
-c      do mrnk = 0,procnum-1
-c         if (my_rank .eq. mrnk) then
-c            do i = 1,nx
-c               do j = 1,ny
-c                  do k = 1,nz
-c                     if (cnt(i,j,k) .gt. 0.0) then
-cc                        write(*,*) 'cnt...',cnt(i,j,k),my_rank
-c                        ct(i,j,k,1) = ct(i,j,k,1)/cnt(i,j,k)
-c                        ct(i,j,k,2) = ct(i,j,k,2)/cnt(i,j,k)
-c                        ct(i,j,k,3) = ct(i,j,k,3)/cnt(i,j,k)
-c                     endif
-c                  enddo
-c               enddo
-c            enddo
-cc         endif
-cc      enddo
-cc      stop
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -2723,49 +2515,12 @@ cc      stop
      x     cartcomm, reqs(2), ierr)
 
       call MPI_WAITALL(2, reqs, stats, ierr)
-c      up(:,:,2,:) = (up(:,:,2,:) + in_buf_z)/2
       ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
 
-      call periodic(ct)
+      up = ct
 
 
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-         
-c      call MPI_ALLREDUCE(ct(:,:,:,1),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,1) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,2),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,2) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,3),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
-      
-
-      do 30 i=1,nx-1      !interpolate back to contravarient positions
-         do 30 j=1,ny-1
-            do 30 k=1,nz-1
-               up(i,j,k,1) = ct(i,j,k,1)
-               up(i,j,k,2) = ct(i,j,k,2)
-               up(i,j,k,3) = ct(i,j,k,3)
- 30            continue
-
-
-      call periodic(up)
-
-
-c must add density contribution from processor below at qz(nz) to 
-c density at qz(2)
-
-
-c      write(*,*) 'up...',up(20,20,21,1),up(20,20,21,2),up(20,20,21,3)
-
-c      up(nx,:,:,1) = -vsw
-c      up(nx,:,:,2) = 0.0
-c      up(nx,:,:,3) = 0.0
-
+      call boundaries(up, spread(spread((/-vsw,0.0,0.0/),1,ny),2,nz))
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -2780,6 +2535,7 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real np(nx,ny,nz)
+      real us(ny,nz)
 
       integer dest, source
       real out_buf_z(nx,ny)
@@ -2804,7 +2560,8 @@ c      include 'incurv.h'
       call MPI_WAITALL(2, reqs, stats, ierr)
       np(:,:,2) = np(:,:,2) + in_buf_z
  
-      call periodic_scalar(np)
+      us = nf_init
+      call boundary_scalar(np, us)
      
 c      out_buf_z(:,:) = np(:,:,2)         
 
@@ -2821,631 +2578,6 @@ c      np(:,:,nz) = np(:,:,nz) + in_buf_z
 
       return 
       end SUBROUTINE update_np_boundary
-c----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE get_temperature(xp,vp,np,temp_p)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-      
-      real xp(Ni_max,3),
-     x     vp(Ni_max,3),
-     x     np(nx,ny,nz),
-     x     up_ave(nx,ny,nz,3),
-     x     up2(nx,ny,nz,3),
-     x     temp_p(nx,ny,nz)
-
-      integer dest, source
-      real out_buf_z(nx,ny,3)
-      real in_buf_z(nx,ny,3)
-      integer cnt_buf_z
-      integer reqs(2)
-      integer stats(MPI_STATUS_SIZE,2)
-
-      real cnt(nx,ny,nz)
-
-      real mvp(Ni_max,3)
-
-      real volb,nvolb      !np times vol times beta
-
-
-c      real recvbuf(nx*ny*nz)
-c      integer count
-c      count = nx*ny*nz
-
-      cnt_buf_z = nx*ny*3
-
-      cnt(:,:,:) = 0.0
-
-c      do 10 m=1,3          !clear out temp variable ct
-c         do 10 i=1,nx
-c            do 10 j=1,ny
-c               do 10 k=1,nz
-c                  up2(i,j,k,m)=0.0
-c                  ct(i,j,k,m)=0.0
-c 10               continue
-      up2(:,:,:,:) = 0.0
-      up_ave(:,:,:,:) = 0.0
-      ct(:,:,:,:) = 0.0
-
-
-      do m = 1,3 
-         mvp(:,m) = vp(:,m)/sqrt(mrat(:))
-      enddo
-
-
-c      do m = 1,3 
-c         mvp(:,m) = vp(:,m)/mrat(:)
-c      enddo
-
-
-      do 20 l=1,Ni_tot
-
-
-         i=ijkp(l,1)!+wquad(l,1)
-         j=ijkp(l,2)!+wquad(l,2)
-         k=ijkp(l,3)!+wquad(l,3)
-
-         ip = i+1
-         jp = j+1
-         kp = k+1
-
-c         volb = dx*dy*dz_cell(k)*beta
-      
-c         if (np(i,j,k) .gt. 1e15) then
-c         nvolb = np(i,j,k)*volb
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
-         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)**2*wght(l,1)/beta_p(l)
-         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)**2*wght(l,1)/beta_p(l)
-         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)**2*wght(l,1)/beta_p(l)
-c         endif
-
-c         if (np(ip,j,k) .gt. 1e15) then
-c         nvolb = np(ip,j,k)*volb
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)         
-         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)**2*wght(l,2)/beta_p(l)
-         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)**2*wght(l,2)/beta_p(l)
-         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)**2*wght(l,2)/beta_p(l)
-c         endif
-
-c         if (np(i,j,kp) .gt. 1e15) then
-c         nvolb = np(i,j,kp)*volb
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)**2*wght(l,3)/beta_p(l)
-         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)**2*wght(l,3)/beta_p(l)
-         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)**2*wght(l,3)/beta_p(l)
-c         endif
-
-c        if (np(ip,j,kp) .gt. 1e15) then
-c         nvolb = np(ip,j,kp)*volb
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l)
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)**2*wght(l,4)/beta_p(l)
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)**2*wght(l,4)/beta_p(l)
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)**2*wght(l,4)/beta_p(l)
-c         endif
-
-c         if (np(i,jp,k) .gt. 1e15) then
-c         nvolb = np(i,jp,k)*volb
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)**2*wght(l,5)/beta_p(l)
-         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)**2*wght(l,5)/beta_p(l)
-         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)**2*wght(l,5)/beta_p(l)
-c         endif
-
-c         if (np(ip,jp,k) .gt. 1e15) then
-c         nvolb = np(ip,jp,k)*volb
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)**2*wght(l,6)/beta_p(l)
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)**2*wght(l,6)/beta_p(l)
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)**2*wght(l,6)/beta_p(l)
-c        endif
-
-c         if (np(i,jp,kp) .gt. 1e15) then
-c         nvolb = np(i,jp,kp)*volb
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)**2*wght(l,7)/beta_p(l)
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)**2*wght(l,7)/beta_p(l)
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)**2*wght(l,7)/beta_p(l)
-c         endif
-
-c         if (np(ip,jp,kp) .gt. 1e15) then
-c         nvolb = np(ip,jp,kp)*volb
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1)+mvp(l,1)**2*wght(l,8)/beta_p(l)
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2)+mvp(l,2)**2*wght(l,8)/beta_p(l)
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3)+mvp(l,3)**2*wght(l,8)/beta_p(l)
-c         endif
-
-
- 20   continue
-
-c use for periodic boundary conditions
-c      ct(nx-1,:,:,:) = ct(nx-1,:,:,:)+ct(1,:,:,:)
-      ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
-      cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
-c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
-
-
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-
-      where (cnt(:,:,:) .gt. 0.0)
-         ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
-         ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)
-         ct(:,:,:,3) = ct(:,:,:,3)/cnt(:,:,:)
-      endwhere
-
-
-      out_buf_z(:,:,:) = ct(:,:,nz,:)         
-
-      dest = up_proc
-      source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
-
-      call MPI_WAITALL(2, reqs, stats, ierr)
-      ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
-
-      call periodic(ct)
-      
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-         
-c      call MPI_ALLREDUCE(ct(:,:,:,1),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,1) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,2),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,2) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,3),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
-      
-
-      do 30 i=1,nx-1      !interpolate back to contravarient positions
-         do 30 j=1,ny-1
-            do 30 k=1,nz-1
-
-               up2(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
-               up2(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
-               up2(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
-
- 30            continue
-
-
-      call periodic(up2)
-
-
-      ct(:,:,:,:) = 0.0
-      cnt(:,:,:) = 0.0
-
-
-      do 40 l=1,Ni_tot
-
-         i=ijkp(l,1)!+wquad(l,1)
-         j=ijkp(l,2)!+wquad(l,2)
-         k=ijkp(l,3)!+wquad(l,3)
-
-         ip = i+1
-         jp = j+1
-         kp = k+1
-
-c         volb = dx*dy*dz_cell(k)*beta
-      
-c         if (np(i,j,k) .gt. 1e15) then
-c         nvolb = np(i,j,k)*volb
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
-         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)*wght(l,1)/beta_p(l)
-         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)*wght(l,1)/beta_p(l)
-         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)*wght(l,1)/beta_p(l)
-c         endif
-
-c         if (np(ip,j,k) .gt. 1e15) then
-c         nvolb = np(ip,j,k)*volb
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)
-         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)*wght(l,2)/beta_p(l)
-         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)*wght(l,2)/beta_p(l)
-         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)*wght(l,2)/beta_p(l)
-c         endif
-
-c         if (np(i,j,kp) .gt. 1e15) then
-c         nvolb = np(i,j,kp)*volb
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)*wght(l,3)/beta_p(l)
-         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)*wght(l,3)/beta_p(l)
-         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)*wght(l,3)/beta_p(l)
-c         endif
-
-c         if (np(ip,j,kp) .gt. 1e15) then
-c         nvolb = np(ip,j,kp)*volb
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l)
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)*wght(l,4)/beta_p(l)
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)*wght(l,4)/beta_p(l)
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)*wght(l,4)/beta_p(l)
-c         endif
-
-c         if (np(i,jp,k) .gt. 1e15) then
-c         nvolb = np(i,jp,k)*volb
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)*wght(l,5)/beta_p(l)
-         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)*wght(l,5)/beta_p(l)
-         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)*wght(l,5)/beta_p(l)
-c         endif
-
-c         if (np(ip,jp,k) .gt. 1e15) then
-c         nvolb = np(ip,jp,k)*volb
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)*wght(l,6)/beta_p(l)
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)*wght(l,6)/beta_p(l)
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)*wght(l,6)/beta_p(l)
-c         endif
-
-c         if (np(i,jp,kp) .gt. 1e15) then
-c         nvolb = np(i,jp,kp)*volb
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)*wght(l,7)/beta_p(l)
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)*wght(l,7)/beta_p(l)
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)*wght(l,7)/beta_p(l)
-c         endif
-
-c         if (np(ip,jp,kp) .gt. 1e15) then
-c         nvolb = np(ip,jp,kp)*volb
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)*wght(l,8)/beta_p(l)
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)*wght(l,8)/beta_p(l)
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)*wght(l,8)/beta_p(l)
-c         endif
-
-
- 40   continue
-
-c use for periodic boundary conditions
-c      ct(nx-1,:,:,:) = ct(nx-1,:,:,:)+ct(1,:,:,:)
-      ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
-      cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
-c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
-
-
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-      where (cnt(:,:,:) .gt. 0.0)
-         ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
-         ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)
-         ct(:,:,:,3) = ct(:,:,:,3)/cnt(:,:,:)
-      endwhere
-
-
-      out_buf_z(:,:,:) = ct(:,:,nz,:)         
-
-      dest = up_proc
-      source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
-
-      call MPI_WAITALL(2, reqs, stats, ierr)
-      ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
-
-      call periodic(ct)
-
-c      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-         
-c      call MPI_ALLREDUCE(ct(:,:,:,1),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,1) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,2),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,2) = reshape(recvbuf,(/nx,ny,nz/))
-      
-c      call MPI_ALLREDUCE(ct(:,:,:,3),recvbuf,count,
-c     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
-c      ct(:,:,:,3) = reshape(recvbuf,(/nx,ny,nz/))
-      
-
-      do 50 i=1,nx-1      !interpolate back to contravarient positions
-         do 50 j=1,ny-1
-            do 50 k=1,nz-1
-
-               up_ave(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
-               up_ave(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
-               up_ave(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
-
- 50            continue
-
-
-      call periodic(up_ave)
-
-
-      do i = 1,nx
-         do j = 1,ny
-            do k = 1,nz
-               temp_p(i,j,k) = (1./3.)*1e6*mproton*(up2(i,j,k,1)+
-     x                              up2(i,j,k,2) + 
-     x                              up2(i,j,k,3) - up_ave(i,j,k,1)**2 -
-     x                              up_ave(i,j,k,2)**2 -
-     x                              up_ave(i,j,k,3)**2)
-            enddo
-         enddo
-      enddo
-      
-
-      call periodic_scalar(temp_p)
-
-
-      return
-      end SUBROUTINE get_temperature
-c----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE separate_temp(vp,temp_p,mr)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-      
-      real vp(Ni_max,3)
-      real temp_p(nx,ny,nz)
-      real mr
-      real up_ave(nx,ny,nz,3),
-     x     up2(nx,ny,nz,3)
-
-
-      integer dest, source
-      real out_buf_z(nx,ny,3)
-      real in_buf_z(nx,ny,3)
-      integer cnt_buf_z
-      integer reqs(2)
-      integer stats(MPI_STATUS_SIZE,2)
-
-      real cnt(nx,ny,nz)
-
-      real mvp(Ni_max,3)
-
-      cnt_buf_z = nx*ny*3
-
-      cnt(:,:,:) = 0.0
-
-      up2(:,:,:,:) = 0.0
-      up_ave(:,:,:,:) = 0.0
-      ct(:,:,:,:) = 0.0
-
-
-      do m = 1,3 
-         mvp(:,m) = vp(:,m)/sqrt(mrat(:))
-      enddo
-
-
-      do 20 l=1,Ni_tot
-
-         if (mrat(l) .eq. mr) then
-
-         i=ijkp(l,1)!+wquad(l,1)
-         j=ijkp(l,2)!+wquad(l,2)
-         k=ijkp(l,3)!+wquad(l,3)
-
-         ip = i+1
-         jp = j+1
-         kp = k+1
-
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)
-         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)**2*wght(l,1)
-         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)**2*wght(l,1)
-         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)**2*wght(l,1)
-
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)         
-         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)**2*wght(l,2)
-         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)**2*wght(l,2)
-         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)**2*wght(l,2)
-
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)**2*wght(l,3)
-         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)**2*wght(l,3)
-         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)**2*wght(l,3)
-
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)**2*wght(l,4)
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)**2*wght(l,4)
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)**2*wght(l,4)
-
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)**2*wght(l,5)
-         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)**2*wght(l,5)
-         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)**2*wght(l,5)
-
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)**2*wght(l,6)
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)**2*wght(l,6)
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)**2*wght(l,6)
-
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)**2*wght(l,7)
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)**2*wght(l,7)
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)**2*wght(l,7)
-
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)**2*wght(l,8)
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)**2*wght(l,8)
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)**2*wght(l,8)
-
-         endif
-
- 20   continue
-
-c use for periodic boundary conditions
-c      ct(nx-1,:,:,:) = ct(nx-1,:,:,:)+ct(1,:,:,:)
-      ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
-      cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
-c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
-
-
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-
-      where (cnt(:,:,:) .gt. 0.0)
-         ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
-         ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)
-         ct(:,:,:,3) = ct(:,:,:,3)/cnt(:,:,:)
-      endwhere
-
-
-      out_buf_z(:,:,:) = ct(:,:,nz,:)         
-
-      dest = up_proc
-      source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
-
-      call MPI_WAITALL(2, reqs, stats, ierr)
-      ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
-
-      call periodic(ct)
-      
-
-      do 30 i=1,nx-1      !interpolate back to contravarient positions
-         do 30 j=1,ny-1
-            do 30 k=1,nz-1
-
-               up2(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
-               up2(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
-               up2(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
-
- 30            continue
-
-
-      call periodic(up2)
-
-
-      ct(:,:,:,:) = 0.0
-      cnt(:,:,:) = 0.0
-
-
-      do 40 l=1,Ni_tot
-
-         if (mrat(l) .eq. mr) then
-
-         i=ijkp(l,1)!+wquad(l,1)
-         j=ijkp(l,2)!+wquad(l,2)
-         k=ijkp(l,3)!+wquad(l,3)
-
-         ip = i+1
-         jp = j+1
-         kp = k+1
-
-         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)
-         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)*wght(l,1)
-         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)*wght(l,1)
-         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)*wght(l,1)
-
-         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)
-         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)*wght(l,2)
-         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)*wght(l,2)
-         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)*wght(l,2)
-
-         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)
-         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)*wght(l,3)
-         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)*wght(l,3)
-         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)*wght(l,3)
-
-         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)
-         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)*wght(l,4)
-         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)*wght(l,4)
-         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)*wght(l,4)
-
-         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)
-         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)*wght(l,5)
-         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)*wght(l,5)
-         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)*wght(l,5)
-
-         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)
-         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)*wght(l,6)
-         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)*wght(l,6)
-         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)*wght(l,6)
-
-         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)
-         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)*wght(l,7)
-         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)*wght(l,7)
-         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)*wght(l,7)
-
-         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)
-         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)*wght(l,8)
-         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)*wght(l,8)
-         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)*wght(l,8)
-
-         endif
-
- 40   continue
-
-c use for periodic boundary conditions
-c      ct(nx-1,:,:,:) = ct(nx-1,:,:,:)+ct(1,:,:,:)
-      ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
-      cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
-c      ct(:,:,nz-1,:) = ct(:,:,nz-1,:)+ct(:,:,1,:)
-
-
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-      where (cnt(:,:,:) .gt. 0.0)
-         ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
-         ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)
-         ct(:,:,:,3) = ct(:,:,:,3)/cnt(:,:,:)
-      endwhere
-
-
-      out_buf_z(:,:,:) = ct(:,:,nz,:)         
-
-      dest = up_proc
-      source = down_proc
-      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-     x     cartcomm, reqs(1), ierr)
-      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-     x     cartcomm, reqs(2), ierr)
-
-      call MPI_WAITALL(2, reqs, stats, ierr)
-      ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
-
-      call periodic(ct)
-
-      
-      do 50 i=1,nx-1      !interpolate back to contravarient positions
-         do 50 j=1,ny-1
-            do 50 k=1,nz-1
-
-               up_ave(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
-               up_ave(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
-               up_ave(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
-
- 50            continue
-
-
-      call periodic(up_ave)
-
-
-      do i = 1,nx
-         do j = 1,ny
-            do k = 1,nz
-               temp_p(i,j,k) = (1./3.)*1e6*mproton*(up2(i,j,k,1)+
-     x                              up2(i,j,k,2) + 
-     x                              up2(i,j,k,3) - up_ave(i,j,k,1)**2 -
-     x                              up_ave(i,j,k,2)**2 -
-     x                              up_ave(i,j,k,3)**2)
-            enddo
-         enddo
-      enddo
-      
-
-      call periodic_scalar(temp_p)
-
-
-      return
-      end SUBROUTINE separate_temp
 c----------------------------------------------------------------------
 
 

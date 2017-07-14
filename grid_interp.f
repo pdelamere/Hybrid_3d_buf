@@ -7,10 +7,11 @@
       contains
 
 c----------------------------------------------------------------------
-      SUBROUTINE edge_to_center(bt,btc)
+      SUBROUTINE edge_to_center(bt,btc, us)
 c----------------------------------------------------------------------
       real bt(nx,ny,nz,3),   !main cell edge
      x     btc(nx,ny,nz,3)   !main cell center
+      real us(ny,nz,3)       !vector upstream main cell edge
 
 c      real zrat           !ratio for doing linear interpolation
 c                          !to grid point position.
@@ -18,12 +19,12 @@ c                          !to grid point position.
       real b1,b2
       real btmf(nx,ny,nz,3)
 
-      call periodic(bt)
+      call boundaries(bt, us)
 
-      call edge_to_face(bt,btmf)
-      call face_to_center(btmf,btc)
+      call edge_to_face(bt,btmf,us)
+      call face_to_center(btmf,btc, us)
 
-      call periodic(btc)
+      call boundaries(btc, us)
       
       return
       end SUBROUTINE edge_to_center
@@ -31,18 +32,19 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE edge_to_face(bt,btmf)
+      SUBROUTINE edge_to_face(bt,btmf, us)
 c----------------------------------------------------------------------
       real bt(nx,ny,nz,3),   !main cell edge
      x     btmf(nx,ny,nz,3)
       real btc(nx,ny,nz,3)  !main cell center
+      real us(ny,nz,3)       !vector upstream main cell edge
 
 c      real zrat           !ratio for doing linear interpolation
 c                          !to grid point position.
       real zplus, zminus  !position of main cell edges up and down
       real b1,b2
 
-      call periodic(bt)
+      call boundaries(bt, us)
 
       do 10 k=2,nz
          do 10 j=2,ny
@@ -81,7 +83,7 @@ c     x              bt(im,jm,k,3) + bt(i,jm,k,3))
       
  10         continue
 
-      call periodic(btc)
+      call boundaries(btc, us)
 
       do 20 k=2,nz-1
          do 20 j=2,ny-1
@@ -100,19 +102,21 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE face_to_center(v,vc)
+      SUBROUTINE face_to_center(v,vc, us)
 c----------------------------------------------------------------------
       !!include 'incurv.h'
 
       real v(nx,ny,nz,3)        !vector at contravarient position
       real vc(nx,ny,nz,3)       !vector at cell center
+      real us(ny,nz,3)       !vector upstream
+      real usc(ny,nz,3)       !vector upstream at cell center
 c      real zfrc(nz)             !0.5*dz_grid(k)/dz_cell(k)
 
 c      do 5 k=1,nz
 c         zfrc(k) = 0.5*dz_grid(k)/dz_cell(k)
 c 5       continue
 
-      call periodic(v)
+      call boundaries(v, us)
 
       do 10 i=2,nx
          do 10 j=2,ny
@@ -137,50 +141,10 @@ c               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
      x                                v(i,j,km,3)
  10            continue
 
-      call periodic(vc)
+      call boundaries(vc, us)
 
       return
       end SUBROUTINE face_to_center
 c----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-      SUBROUTINE face_to_center_2(v,vc)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-
-      real v(nx,ny,nz,3)        !vector at contravarient position
-      real vc(nx,ny,nz,3)       !vector at cell center
-      real zfrc(nz)             !0.5*dz_grid(k)/dz_cell(k)
-
-      do 5 k=1,nz
-         zfrc(k) = 0.5*dz_grid(k)/dz_cell(k)
- 5       continue
-
-      call periodic(v)
-
-      do 10 i=2,nx
-         do 10 j=2,ny
-            do 10 k=2,nz
-
-               im = i-1     
-               jm = j-1     
-               km = k-1
-
-c               if (im .lt. 2) then im = 2
-c               if (jm .lt. 2) then jm = 2
-c               if (km .lt. 2) then km = 2
-
-               vc(i,j,k,1) = 0.5*(v(i,j,k,1) + v(im,j,k,1))
-               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
-               vc(i,j,k,3) = zfrc(k)*(v(i,j,k,3) - v(i,j,km,3)) + 
-     x                                v(i,j,km,3)
- 10            continue
-
-      call periodic(vc)
-
-      return
-      end SUBROUTINE face_to_center_2
-c----------------------------------------------------------------------
-
 
       end MODULE grid_interp

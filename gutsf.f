@@ -10,136 +10,23 @@
 
 c----------------------------------------------------------------------
       SUBROUTINE f_update_tlev(b1,b12,b1p2,bt,b0)
-c loops run 1 to n since values are only being copied
 c----------------------------------------------------------------------
-c      include 'incurv.h'
       
       real b1(nx,ny,nz,3),
      x     b12(nx,ny,nz,3),
      x     b1p2(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
      x     b0(nx,ny,nz,3)
-c     x     bdp(nx,ny,nz,3)
 
-      do 10 i=1,nx
-         do 10 j=1,ny
-            do 10 k=1,nz
-               bt(i,j,k,1) = b1p2(i,j,k,1) + b0(i,j,k,1)
-               bt(i,j,k,2) = b1p2(i,j,k,2) + b0(i,j,k,2)
-               bt(i,j,k,3) = b1p2(i,j,k,3) + b0(i,j,k,3) 
-               do 10 m=1,3
-c     uf2(i,j,k,m) = uf(i,j,k,m)
-                  b12(i,j,k,m) = b1(i,j,k,m)
-                  b1(i,j,k,m) = b1p2(i,j,k,m)
- 10            continue
-               
-c               call obstacle_boundary_B(b0,bt)
-c               call obstacle_boundary_B(b0,b12)
-c               call obstacle_boundary_B(b0,b1)
-
-      
+      bt = b1p2 + b0
+      b12 = b1
+      b1 = b1p2
       return
       end SUBROUTINE f_update_tlev
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
-      SUBROUTINE crossf(aa,bbmf,cc)
-c The cross product is formed at the main cell center.  a is assumed
-c be main cell contravarient (cell face) and b is assumed to be
-c main cell covarient (cell edge).  The result is main cell
-c contravarient (cell face).
-
-c Can only center vectors on main cell for loops 3 to n...and can
-c only extrapolate back for loops 2 to n-1.  Must handle other cases
-c separately.
-
-c The magnetic field does not require extrapolation to cell centers
-c on boundaries since dB/dx = 0 is the boundary condition.  That is
-c just copy the interior values to the boundary.
-c----------------------------------------------------------------------
-CVD$R VECTOR
-
-c      include 'incurv.h'
-
-      real aa(nx,ny,nz,3)        !main cell contravarient vector 
-      real bbmf(nx,ny,nz,3)      !main cell contravarient vector
-      real cc(nx,ny,nz,3)        !cross product result, main cell
-                                 !contravarient (cell face)
-
-      real ax,ay,az,bx,by,bz    !dummy vars
-      real temp                 !used to vectorize loop
-      real zfrc(nz)             !0.5*dz_grid(k)/dz_cell(k)
-c      real ct(nx,ny,nz,3)       !temp main cell center cross product
-      real aac(3),bbc(3)
-
-
-c extrapolate(/interpolate) to main cell center and do cross product
-
-
-      call periodic(aa)
-      call periodic(bbmf)
-
-
-      do 5 k=1,nz
-         zfrc(k) = 0.5*dz_grid(k)/dz_cell(k)
- 5       continue
-
-
-
-      do 10 k=2,nz-1      
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
-
-               im = i-1         !assume daa/dxyz = 0 at boundary
-               jm = j-1         !bbmf is given on boundary
-               km = k-1
-
-               ax = 0.5*(aa(i,j,k,1) + aa(im,j,k,1))
-               bx = 0.5*(bbmf(i,j,k,1) + bbmf(im,j,k,1))
-
-               ay = 0.5*(aa(i,j,k,2) + aa(i,jm,k,2))
-               by = 0.5*(bbmf(i,j,k,2) + bbmf(i,jm,k,2))
-
-               az = zfrc(k)*(aa(i,j,k,3) - aa(i,j,km,3)) + aa(i,j,km,3)
-               bz = zfrc(k)*(bbmf(i,j,k,3) - bbmf(i,j,km,3))
-     x                     + bbmf(i,j,km,3)
-
-               ct(i,j,k,1) = ay*bz - az*by
-               ct(i,j,k,2) = az*bx - ax*bz
-               ct(i,j,k,3) = ax*by - ay*bx
-
- 10            continue
-
-       call periodic(ct)
-
-c extrapolate back to main cell contravarient positions.
-c ...just average across cells since cell edges are centered
-c about the grid points.
-      
-      do 60 k=2,nz-1
-         do 60 j=2,ny-1
-            do 60 i=2,nx-1
-
-               ip = i+1
-               jp = j+1
-               kp = k+1
-
-               cc(i,j,k,1) = 0.5*(ct(i,j,k,1) + ct(ip,j,k,1))
-               cc(i,j,k,2) = 0.5*(ct(i,j,k,2) + ct(i,jp,k,2))
-               cc(i,j,k,3) = 0.5*(ct(i,j,k,3) + ct(i,j,kp,3))
-
- 60            continue
-
-      call periodic(cc)
-
-
-      return
-      end SUBROUTINE crossf
-c----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE crossf2(aa,btc,cc)
+      SUBROUTINE crossf2(aa, btc, aus, bus, cc)
 c The cross product is formed at the main cell center.  aa and btc must
 c be given already extrapolated to the main cell center.
 c----------------------------------------------------------------------
@@ -149,37 +36,19 @@ c----------------------------------------------------------------------
       real btc(nx,ny,nz,3)      !main cell contravarient vector
       real cc(nx,ny,nz,3)        !cross product result, main cell
                                  !contravarient (cell face)
+      real aus(ny,nz,3)
+      real bus(ny,nz,3)
 
       real ax,ay,az,bx,by,bz    !dummy vars
 
 
-      call periodic(aa)
-      call periodic(btc)
+      call boundaries(aa, aus)
+      call boundaries(btc, bus)
 
-      do 10 k=2,nz-1      
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
+      ct(:,:,:,1) = aa(:,:,:,2)*btc(:,:,:,3) - aa(:,:,:,3)*btc(:,:,:,2)
+      ct(:,:,:,2) = aa(:,:,:,3)*btc(:,:,:,1) - aa(:,:,:,1)*btc(:,:,:,3)
+      ct(:,:,:,3) = aa(:,:,:,1)*btc(:,:,:,2) - aa(:,:,:,2)*btc(:,:,:,1)
 
-               im = i-1    
-               jm = j-1    
-               km = k-1
-
-               ax = aa(i,j,k,1) 
-               bx = btc(i,j,k,1)
-
-               ay = aa(i,j,k,2)
-               by = btc(i,j,k,2)
-
-               az = aa(i,j,k,3)
-               bz = btc(i,j,k,3)
-
-               ct(i,j,k,1) = ay*bz - az*by
-               ct(i,j,k,2) = az*bx - ax*bz
-               ct(i,j,k,3) = ax*by - ay*bx
-
- 10            continue
-
-       call periodic(ct)
 
 c extrapolate back to main cell contravarient positions.
 c ...just average across cells since cell edges are centered
@@ -199,172 +68,11 @@ c about the grid points.
 
  60            continue
 
-      call periodic(cc)
-
+      call boundaries(cc, ct(nx,:,:,:))
 
       return
       end SUBROUTINE crossf2
 c----------------------------------------------------------------------
-
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE cov_to_contra(bt,btmf)
-c Converts total magnetic field from main cell covarient positions
-c to main cell contravarient positions.  This is then used in the
-c fluid velocity update routines.  This routine assumes that cell 
-c edges and cell centers are "topologically centered".  So the grid
-c points do not reside at the cell centers...rather they are offset
-c a little so that the cell edges are equidistant from the k and k-1
-c grid points.  In extrapolating the coventient vectors to the 
-c contravarient vector positions, this assymetry is accounted for
-c using a linear interpolation of the k and k-1 values to the grid
-c point location.
-c----------------------------------------------------------------------
-CVD$R VECTOR
-c      include 'incurv.h'
-
-      real bt(nx,ny,nz,3),   !main cell covarient
-     x     btmf(nx,ny,nz,3)  !main cell contravarient
-
-      real bx1, bx2, by1, by2, bz1, bz2  !main cell center fields
-      real zrat           !ratio for doing linear interpolation
-                          !to grid point position.
-      real zplus, zminus  !position of main cell edges up and down
-      real b_j, b_jm, b_i, b_im !intermediate step in average process
-
-      do 10 k=2,nz-1
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
-
-               ip = i+1
-               jp = j+1
-               kp = k+1
-               im = i-1
-               jm = j-1
-               km = k-1
-
-c The x component of B resides at the k and k-1 edges, so this
-c requires the non-uniform grid interpolation
-
-               zplus = (qz(k+1) + qz(k))/2.0
-               zminus = (qz(k) + qz(k-1))/2.0
-               zrat = (qz(k) - zminus)/(zplus - zminus)
-   
-               b_j = bt(i,j,km,1) 
-     x               + zrat*(bt(i,j,k,1) - bt(i,j,km,1)) 
-               b_jm = bt(i,jm,km,1)
-     x                + zrat*(bt(i,jm,k,1) - bt(i,jm,km,1))
-               bx1 = (b_j + b_jm)/2.0
-
-               b_j = bt(ip,j,km,1) 
-     x               + zrat*(bt(ip,j,k,1) - bt(ip,j,km,1)) 
-               b_jm = bt(ip,jm,km,1)
-     x                + zrat*(bt(ip,jm,k,1) - bt(ip,jm,km,1))
-               bx2 = (b_j + b_jm)/2.0
-
-               
-               b_i = bt(i,j,km,2) 
-     x               + zrat*(bt(i,j,k,2) - bt(i,j,km,2)) 
-               b_im = bt(im,j,km,2)
-     x                + zrat*(bt(im,j,k,2) - bt(im,j,km,2))           
-               by1 = (b_i + b_im)/2.0
-
-               b_i = bt(i,jp,km,2) 
-     x               + zrat*(bt(i,jp,k,2) - bt(i,jp,km,2)) 
-               b_im = bt(im,jp,km,2)
-     x                + zrat*(bt(im,jp,k,2) - bt(im,jp,km,2))
-               by2 = (b_i + b_im)/2.0
-
-
-               bz1 = 0.25*(bt(i,j,k,3) + bt(i,jm,k,3) +
-     x                     bt(im,jm,k,3) + bt(im,j,k,3))
-               bz2 = 0.25*(bt(i,j,kp,3) + bt(i,jm,kp,3) +
-     x                     bt(im,jm,kp,3) + bt(im,j,kp,3))
-
-               btmf(i,j,k,1) = 0.5*(bx1+bx2)
-               btmf(i,j,k,2) = 0.5*(by1+by2)
-               btmf(i,j,k,3) = 0.5*(bz1+bz2)
-
- 10            continue
-
-c      call boundaries(btmf)
-      call periodic(btmf)
-
-      return
-      end SUBROUTINE cov_to_contra
-c----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-      SUBROUTINE curlB2(b1,np,aj)
-c Calculates curl B / n*alpha.  The resulting "current" is called aj
-c which is used in several other places in the code.  This curl is 
-c performed on the main cell where B is covarient.  The resulting
-c current is main cell contravarient.  Note that dz_cell is used for
-c the cell dimensions since dz_grid is not equal to dz_cell on non-
-c uniform grid.
-c----------------------------------------------------------------------
-CVD$R VECTOR
-c      include 'incurv.h'
-
-      real b1(nx,ny,nz,3),
-c     x     nf(nx,ny,nz),
-     x     np(nx,ny,nz),
-     x     aj(nx,ny,nz,3)
-
-      real curl_B(3)      !dummy for holding curl vector
-      real ntot(3)        !total density, np + nf
-
-c      call periodic_scalar(np)
-c      call periodic_scalar(nf)
-      call periodic(b1)
-cc     call fix_normal_b(b1)
-
-      do 10 k=2,nz-1   
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
-
-               ip = i+1
-               jp = j+1
-               kp = k+1
-
-c               if (ip .gt. nx) then ip = nx
-c               if (jp .gt. ny) then jp = ny
-c               if (kp .gt. nz) then kp = nz
-
-c               ntot(1) = 0.5*(nf(i,j,k)+nf(ip,j,k))
-c     x                 + 0.5*(np(i,j,k)+np(ip,j,k))
-c               ntot(2) = 0.5*(nf(i,j,k)+nf(i,jp,k))
-c     x                 + 0.5*(np(i,j,k)+np(i,jp,k))
-c               ntot(3) = 0.5*(nf(i,j,k)+nf(i,j,kp))
-c     x                 + 0.5*(np(i,j,k)+np(i,j,kp))
-
-
-               ntot(1) = 0.5*(np(i,j,k)+np(ip,j,k))
-               ntot(2) = 0.5*(np(i,j,k)+np(i,jp,k))
-               ntot(3) = 0.5*(np(i,j,k)+np(i,j,kp))
-
-               curl_B(1) = (b1(i,j,k,3)/dy) - (b1(i,j-1,k,3)/dy) 
-     x                    + (b1(i,j,k-1,2)/dz_cell(k))  
-     x                    - (b1(i,j,k,2)/dz_cell(k))
-               curl_B(2) = (b1(i,j,k,1)/dz_cell(k)) 
-     x                     - (b1(i,j,k-1,1)/dz_cell(k))
-     x                     - (b1(i,j,k,3)/dx) + (b1(i-1,j,k,3)/dx)
-               curl_B(3) = (b1(i,j,k,2)/dx) - (b1(i-1,j,k,2)/dx) 
-     x                     + (b1(i,j-1,k,1)/dy) - (b1(i,j,k,1)/dy)
-
-               do 10 m=1,3
-                  aj(i,j,k,m) = curl_B(m)/(ntot(m)*alpha)
-
- 10            continue
-
-c      call periodic(aj)
-
-      return
-      end SUBROUTINE curlB2
-c----------------------------------------------------------------------
-
 
 c----------------------------------------------------------------------
       SUBROUTINE curlB(b1,np,aj)
@@ -382,55 +90,58 @@ CVD$R VECTOR
 c     x     nf(nx,ny,nz),
      x     np(nx,ny,nz),
      x     aj(nx,ny,nz,3)
+      real us(ny,nz,3)
 
-      real curl_B(3)      !dummy for holding curl vector
-      real ntot(3)        !total density, np + nf
+      real curl_B(nx,ny,nz,3)      !dummy for holding curl vector
+      real ntot(nx,ny,nz,3)        !total density, np + nf
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
-      call periodic(b1)
+      us = 0.0
+      call boundaries(b1,us)
 cc     call fix_normal_b(b1)
 
       do 10 k=2,nz-1   
          do 10 j=2,ny-1
+            us(j,k,1) = 0.5*(np(nx,j,k)+nf_init)
+            us(j,k,2) = 0.5*(np(nx,j,k)+np(nx,jp,k))
+            us(j,k,3) = 0.5*(np(nx,j,k)+np(nx,j,kp))
             do 10 i=2,nx-1
 
                ip = i+1
                jp = j+1
                kp = k+1
+               ntot(i,j,k,1) = 0.5*(np(i,j,k)+np(ip,j,k))
+               ntot(i,j,k,2) = 0.5*(np(i,j,k)+np(i,jp,k))
+               ntot(i,j,k,3) = 0.5*(np(i,j,k)+np(i,j,kp))
+ 10    continue
+      call boundaries(ntot, us)
 
-c               if (ip .gt. nx) then ip = nx
-c               if (jp .gt. ny) then jp = ny
-c               if (kp .gt. nz) then kp = nz
-
-c               ntot(1) = 0.5*(nf(i,j,k)+nf(ip,j,k))
-c     x                 + 0.5*(np(i,j,k)+np(ip,j,k))
-c               ntot(2) = 0.5*(nf(i,j,k)+nf(i,jp,k))
-c     x                 + 0.5*(np(i,j,k)+np(i,jp,k))
-c               ntot(3) = 0.5*(nf(i,j,k)+nf(i,j,kp))
-c     x                 + 0.5*(np(i,j,k)+np(i,j,kp))
-
-
-               ntot(1) = 0.5*(np(i,j,k)+np(ip,j,k))
-               ntot(2) = 0.5*(np(i,j,k)+np(i,jp,k))
-               ntot(3) = 0.5*(np(i,j,k)+np(i,j,kp))
-
-               curl_B(1) = (b1(i,j,k,3) - 
+      do 20 k=2,nz-1   
+         do 20 j=2,ny-1
+            us(j,k,1) = (b1(nx,j,k,3) - 
+     x              b1(nx,j-1,k,3))/dy_cell(j) +
+     x              (b1(nx,j,k-1,2) - b1(nx,j,k,2))/dz_cell(k)
+            us(j,k,2) = (b1(nx,j,k,1) - 
+     x              b1(nx,j,k-1,1))/dz_cell(k) +
+     x              (b1(nx-1,j,k,3) - b1(nx,j,k,3))/dx_cell(nx)
+            us(j,k,3) = (b1(nx,j,k,2) - 
+     x              b1(nx-1,j,k,2))/dx_cell(nx) + 
+     x              (b1(nx,j-1,k,1) - b1(nx,j,k,1))/dy_cell(j)
+            do 20 i=2,nx-1
+               curl_B(i,j,k,1) = (b1(i,j,k,3) - 
      x              b1(i,j-1,k,3))/dy_cell(j) +
      x              (b1(i,j,k-1,2) - b1(i,j,k,2))/dz_cell(k)
-               curl_B(2) = (b1(i,j,k,1) - 
+               curl_B(i,j,k,2) = (b1(i,j,k,1) - 
      x              b1(i,j,k-1,1))/dz_cell(k) +
      x              (b1(i-1,j,k,3) - b1(i,j,k,3))/dx_cell(i)
-               curl_B(3) = (b1(i,j,k,2) - 
+               curl_B(i,j,k,3) = (b1(i,j,k,2) - 
      x              b1(i-1,j,k,2))/dx_cell(i) + 
      x              (b1(i,j-1,k,1) - b1(i,j,k,1))/dy_cell(j)
+ 20            continue
+      call boundaries(curl_B, us)
 
-
-               do 10 m=1,3
-                  aj(i,j,k,m) = curl_B(m)/(ntot(m)*alpha)
- 10            continue
-
-c      call periodic(aj)
+      aj = curl_B/(ntot*alpha)
 
       return
       end SUBROUTINE curlB
@@ -1226,120 +937,34 @@ cc----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE get_E(E,b0,bt,aj,up,np,nu)
-c E must be at time level m. We have uf at levels m-1/2 and m+1/2, so
-c the average value is used for uf in the calculation of ui.
-c----------------------------------------------------------------------
-CVD$R VECTOR
-c      include 'incurv.h'
-
       real E(nx,ny,nz,3),
      x     b0(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
-c     x     btmf(nx,ny,nz,3),
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
-c     x     uf(nx,ny,nz,3),
-c     x     uf2(nx,ny,nz,3),
      x     np(nx,ny,nz),
-c     x     nf(nx,ny,nz),
      x     nu(nx,ny,nz)
-c     x     gradP(nx,ny,nz,3)
 
       real btc(nx,ny,nz,3)
+      real aus(ny,nz,3)
+      real bus(ny,nz,3)
 
-      real ntot(3)         !total density np + nf
-      real fnp(3),fnf(3)   !fraction np and nf of n
-      real npave(3)
 
-c      real a(nx,ny,nz,3), 
-c     x     c(nx,ny,nz,3)  !dummy vars for doing cross product
 
       real aa(nx,ny,nz,3)
+      real us(ny,nz,3)
 
-c      call periodic_scalar(np)
-c      call periodic_scalar(nf)
-      call face_to_center(aj,aa)
+      us = 0.0 ! only correct when b upstream is curl-free
+      call face_to_center(aj,aa,us)
 
-      do 10 k=2,nz-1    
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
+      a = aa - up
 
-c               ip = i+1
-c               jp = j+1
-c               kp = k+1
+      aus = a(nx,:,:,:)
+      bus = b0(nx,:,:,:)
+      call edge_to_center(bt,btc, bus)
+      call crossf2(a,btc,aus,bus,c)
 
-c               if (ip .gt. nx) then ip = nx
-c               if (jp .gt. ny) then jp = ny
-c               if (kp .gt. nz) then kp = nz
-
-c               npave(1) = 0.5*(np(i,j,k)+np(ip,j,k))
-c               npave(2) = 0.5*(np(i,j,k)+np(i,jp,k))
-c               npave(3) = 0.5*(np(i,j,k)+np(i,j,kp))
-
-c               ntot(1) = npave(1) + 0.5*(nf(i,j,k)+nf(ip,j,k))
-c               ntot(2) = npave(2) + 0.5*(nf(i,j,k)+nf(i,jp,k))
-c               ntot(3) = npave(3) + 0.5*(nf(i,j,k)+nf(i,j,kp))
-               
-c               fnp(1) = npave(1)/ntot(1)
-c               fnp(2) = npave(2)/ntot(2)
-c               fnp(3) = npave(3)/ntot(3)
-
-c               fnf(1) = 0.5*(nf(i,j,k)+nf(ip,j,k))/ntot(1)
-c               fnf(2) = 0.5*(nf(i,j,k)+nf(i,jp,k))/ntot(2)
-c               fnf(3) = 0.5*(nf(i,j,k)+nf(i,j,kp))/ntot(3)
-
-c               ntot = np(i,j,k) + nf(i,j,k)
-c               fnp = np(i,j,k)/ntot
-c               fnf = nf(i,j,k)/ntot
-
-               do 10 m=1,3
-                  a(i,j,k,m) = aa(i,j,k,m) - up(i,j,k,m)
-c                  a(i,j,k,m) = aj(i,j,k,m) - fnp(m)*up(i,j,k,m) - 
-c     x                         fnf(m)*0.5*(uf2(i,j,k,m)+uf(i,j,k,m))
-c                  a(i,j,k,m) = - fnp(m)*up(i,j,k,m) - 
-c     x                         fnf(m)*0.5*(uf2(i,j,k,m)+uf(i,j,k,m))
- 10               continue
-
-
-
-
-c      call crossf(a,btmf,c)
-      call edge_to_center(bt,btc)
-      call crossf2(a,btc,c)
-
-
-      do 20 k=2,nz-1      
-         do 20 j=2,ny-1   
-            do 20 i=2,nx-1
-               do 20 m=1,3 
-                  E(i,j,k,m) = c(i,j,k,m) + nu(i,j,k)*aj(i,j,k,m)
-c     x                         + nuei*aj(i,j,k,m) !- gradP(i,j,k,m)
-c     x                         + etar(i,j,k,m)*aj(i,j,k,m)
- 20               continue
-
-
-c      call fix_tangential_E(E)
-      call periodic(E)
-
-c      call obstacle_boundary(E)
-
-c      call fix_tangential_E(E)
-
-c      E(nx-1:nx,:,:,3) = -vsw*b0(nx-1:nx,:,:,2)
-c      E(nx-1:nx,:,:,2) = -vsw*b0(nx-1:nx,:,:,3)
-c      E(:,:,nz,2) = 0.0
-c      E(:,:,nz,1) = 0.0
-
-c      E(:,:,1,3) = -vsw*q*b0(:,:,1,2)/mO
-c      E(:,:,1,2) = -vsw*q*b0(:,:,1,3)/mO
-c      E(:,:,1,2) = 0.0
-c      E(:,:,1,1) = 0.0
-
-
-c      E(nx-1:nx,:,:,3) = vsw*q*b0_init/mO
-
-c      E(nx-1:nx,:,:,2) = 0.0
-cc      E(nx-1:nx,:,:,1) = 0.0
+      E = c + spread(nu, 4, 3)*aj
 
       return
       end SUBROUTINE get_E
@@ -1370,6 +995,7 @@ c     x     nf(nx,ny,nz),
 c     x     gradP(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)   !curl of E
+      real bus(ny,nz,3)
 
 c      call cov_to_contra(bt,btmf) 
 c      call edge_to_center(bt,btc)
@@ -1399,7 +1025,8 @@ c     x                 2.0*dtsub*curl_E(i,j,k,m)
 
 c      call boundaries(b1p2)
 c      call damp(b1p2)
-      call periodic(b1p2)
+      bus = 0.0
+      call boundaries(b1p2,bus)
 c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
 
@@ -1415,8 +1042,6 @@ c m + 1/2.  That means that we need B at m + 1/2.  So b1p1 is
 c calculated as 0.5*(b1 + b1p2).  uf and np are already at time level
 c m + 1/2, so they are used as is. 
 c----------------------------------------------------------------------
-CVD$R VECTOR
-c      include 'incurv.h'
 
       real E(nx,ny,nz,3),
      x     b0(nx,ny,nz,3),
@@ -1424,27 +1049,21 @@ c      include 'incurv.h'
      x     b1p2(nx,ny,nz,3),
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
-c     x     uf(nx,ny,nz,3),
      x     np(nx,ny,nz),
-c     x     nf(nx,ny,nz),
      x     nu(nx,ny,nz)
-c     x     gradP(nx,ny,nz,3),
-c     x     bdp(nx,ny,nz,3)
 
       real b1p1(nx,ny,nz,3)   !b1 at time level m + 1/2
       real btp1(nx,ny,nz,3)   !bt at time level m + 1/2
       real btp1mf(nx,ny,nz,3) !btp1 at contravarient position
       real btc(nx,ny,nz,3) 
       real aa(nx,ny,nz,3) 
+      real aus(ny,nz,3)
+      real bus(ny,nz,3)
     
 
       real ntot(3)            !total density np + nf
       real fnp(3),fnf(3)      !fraction np and nf of n
       real npave(3)
-
-c      real a(nx,ny,nz,3),
-c     x     c(nx,ny,nz,3)    !dummy vars for doing cross product
-
 
       do 5 k=1,nz
          do 5 j=1,ny
@@ -1461,85 +1080,18 @@ c     x     c(nx,ny,nz,3)    !dummy vars for doing cross product
  5             continue
 
       call curlB(b1p1,np,aj)
-c      call obstacle_boundary_B(b0,b1p1)
+      aus = 0.0!not always correct
+      call face_to_center(aj,aa,aus)
+      a = aa - up
 
-c      call periodic_scalar(np)
-c      call periodic_scalar(nf)
+      aus = a(nx,:,:,:)!not always correct
+      bus = b0(nx,:,:,:)
 
-      call face_to_center(aj,aa)
-      do 10 k=2,nz-1       
-         do 10 j=2,ny-1
-            do 10 i=2,nx-1
+      call edge_to_center(btp1,btc,bus)
 
-c               ip = i+1
-c               jp = j+1
-c               kp = k+1
-
-c               if (ip .gt. nx) then ip = nx
-c               if (jp .gt. ny) then jp = ny
-c               if (kp .gt. nz) then kp = nz
-
-c               npave(1) = 0.5*(np(i,j,k)+np(ip,j,k))
-c               npave(2) = 0.5*(np(i,j,k)+np(i,jp,k))
-c               npave(3) = 0.5*(np(i,j,k)+np(i,j,kp))
-
-c               ntot(1) = npave(1) + 0.5*(nf(i,j,k)+nf(ip,j,k))
-c               ntot(2) = npave(2) + 0.5*(nf(i,j,k)+nf(i,jp,k))
-c               ntot(3) = npave(3) + 0.5*(nf(i,j,k)+nf(i,j,kp))
-               
-c               fnp(1) = npave(1)/ntot(1)
-c               fnp(2) = npave(2)/ntot(2)
-c               fnp(3) = npave(3)/ntot(3)
-
-c               fnf(1) = 0.5*(nf(i,j,k)+nf(ip,j,k))/ntot(1)
-c               fnf(2) = 0.5*(nf(i,j,k)+nf(i,jp,k))/ntot(2)
-c               fnf(3) = 0.5*(nf(i,j,k)+nf(i,j,kp))/ntot(3)
-
-c               ntot = np(i,j,k) + nf(i,j,k)
-c               fnp = np(i,j,k)/ntot
-c               fnf = nf(i,j,k)/ntot
-
-               do 10 m=1,3
-c                  a(i,j,k,m) = aj(i,j,k,m) - fnp(m)*up(i,j,k,m) - 
-c     x                                       fnf(m)*uf(i,j,k,m)
-                  a(i,j,k,m) = aa(i,j,k,m) - up(i,j,k,m)
-c                  a(i,j,k,m) = - fnp(m)*up(i,j,k,m) - 
-c     x                           fnf(m)*uf(i,j,k,m)
- 10               continue
-
-c      call cov_to_contra(btp1,btp1mf)
-      call edge_to_center(btp1,btc)
-c      call face_to_center(btp1mf,btc)
-
-c       call crossf(a,btp1mf,c)
-      call crossf2(a,btc,c)
+      call crossf2(a,btc,aus,bus,c)
        
-      do 20 k=2,nz-1       
-         do 20 j=2,ny-1     
-            do 20 i=2,nx-1  
-               do 20 m=1,3 
-                  E(i,j,k,m) = c(i,j,k,m) + nu(i,j,k)*aj(i,j,k,m)
-c     x                         + nuei*aj(i,j,k,m) !- gradP(i,j,k,m)
-c     x                         + etar(i,j,k,m)*aj(i,j,k,m)
- 20               continue
-
-c      call fix_tangential_E(E)
-      call periodic(E)
-c      call obstacle_boundary(E)
-c      call fix_tangential_E(E)
-
-c      E(nx-1:nx,:,:,3) = -vsw*b0(nx-1:nx,:,:,2)
-c      E(nx-1:nx,:,:,2) = -vsw*b0(nx-1:nx,:,:,3)
-
-c      E(:,:,nz,1) = 0.0
-
-c      E(:,:,1,3) = -vsw*q*b0(:,:,1,2)/mO
-c      E(:,:,1,2) = 0.0
-c      E(:,:,1,1) = 0.0
-
-c      E(nx-1:nx,:,:,3) = vsw*q*b0_init/mO
-c      E(nx-1:nx,:,:,2) = 0.0
-cc      E(nx-1:nx,:,:,1) = 0.0
+      E = c + spread(nu,4,3)*aj
 
       return
       end SUBROUTINE get_Ep1
@@ -1567,6 +1119,7 @@ c     x     gradP(nx,ny,nz,3),
 c     x     bdp(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)            !curl of E
+      real bus(ny,nz,3)
 
       call get_Ep1(E,b0,b1,b1p2,aj,up,np,nu)  
                                                    !E at time level m 
@@ -1595,7 +1148,8 @@ c     x                 dtsub*curl_E(i,j,k,m)
 
 c      call boundaries(b1p2)
 c      call damp(b1p2)
-      call periodic(b1p2)
+      bus = 0.0
+      call boundaries(b1p2, bus)
 c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
 
@@ -2033,13 +1587,18 @@ c      include 'incurv.h'
      x     peb(3),
      x     input_p(3)
 
+      real Eus(ny,nz,3)
+      real bus(ny,nz,3)
+
       real vol
       real mom_flux
       real exb(nx,ny,nz,3)
       real npave(3),nfave(3)
 
 
-      call crossf2(E,b1,exb)
+      Eus = 0.0
+      bus = 0.0
+      call crossf2(E,b1,Eus,bus,exb)
 
       do 5 m=1,3
          pup(m) = 0
@@ -2068,7 +1627,7 @@ c                  pup(m) = pup(m) + npave(m)*vol*mBa*up(i,j,k,m)
                   pup(m) = pup(m) + np(i,j,k)*vol*mBa*up(i,j,k,m)
 c                  puf(m) = puf(m) + nfave(m)*vol*mO*uf(i,j,k,m)
                   puf(m) = puf(m) + nf(i,j,k)*vol*mO*uf(i,j,k,m)
-                  peb(m) = peb(m) + epsilon*1e3*exb(i,j,k,m)*vol*(mO/q)
+                  peb(m) = peb(m) + epsilon0*1e3*exb(i,j,k,m)*vol*(mO/q)
  10               continue
 
 c      write(*,*) 'Momentum conservation...'

@@ -52,7 +52,7 @@ c misc constants
       PARAMETER (pi = 3.14159)
       PARAMETER (rtod = 180.0/pi)    !radians to degreesc
       PARAMETER (mu0 = pi*4.0e-7)    !magnetic permeability of free space
-      PARAMETER (epsilon = 8.85e-12) !dielectric constant
+      PARAMETER (epsilon0 = 8.85e-12) !dielectric constant
 
 c      PARAMETER (m_pu = 64.0)
       PARAMETER (mproton = 1.67e-27)
@@ -82,7 +82,7 @@ c density scaling parameter, alpha, and ion particle array dims
 
 
       real Qo, vrad, N_o, RIo, Rpluto, tau_photo, k_rec, ri0
-      integer S_radius
+      real S_radius
       PARAMETER (Qo = 3e27)       !neutral source rate
       PARAMETER (vrad = 0.05)     !escape velocity
 c      PARAMETER (N_o = 5e34)     !Steady state neutral particle constant
@@ -92,7 +92,7 @@ c      PARAMETER (N_o = 5e34)     !Steady state neutral particle constant
       PARAMETER (tau_photo = 1.5e9)
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 c      PARAMETER (dNi = 2500)
-      PARAMETER (S_radius = 200)    !units of dx
+      PARAMETER (S_radius = 50*Rpluto)
 
 c domain decompostion parameters
 
@@ -192,7 +192,7 @@ c----------------------------------------------------------------
 
       print*, 'dx....',dx
 
-      dx_buf = 11*dx
+      dx_buf = 3*dx
 
 
       dt = dt_frac*mion/(q*b0_init)     !main time step
@@ -279,7 +279,7 @@ c----------------------------------------------------------------
 
       write(*,*) 'Thermal gyroradius..',m_bottom*vth_bottom/(q*b0_init),
      x            m_bottom*vth_bottom/(q*b0_init)/dx
-      cwpi = 3e8/sqrt((np_bottom/1e9)*q*q/(epsilon*m_bottom))
+      cwpi = 3e8/sqrt((np_bottom/1e9)*q*q/(epsilon0*m_bottom))
       write(*,*) 'Ion inertial length...',cwpi/1e3,cwpi/1e3/dx
 
 c      write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*nz)
@@ -295,7 +295,7 @@ c      write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*nz)
 
       write(*,*) 'Thermal gyroradius....',m_top*vth_top/(q*b0_init),
      x            m_top*vth_top/(q*b0_init)/dx
-      cwpi = 3e8/sqrt((np_top/1e9)*q*q/(epsilon*m_top))
+      cwpi = 3e8/sqrt((np_top/1e9)*q*q/(epsilon0*m_top))
       write(*,*) 'Ion inertial length...',cwpi/1e3,cwpi/1e3/dx
 
 
