@@ -1728,6 +1728,7 @@ c----------------------------------------------------------------
       
       real bt(nx,ny,nz,3)
       real np(nx,ny,nz)
+      integer error_file
 
       do i = 1,nx
          do j = 1,ny
@@ -1745,10 +1746,10 @@ c----------------------------------------------------------------
                   write(error_file) my_rank
                   write(error_file) i,j,k
                   write(error_file) qx(i),qy(j),qz(k)
-                  write(error_file) np(i,j,k)
-                  write(error_file) b0(i,j,k,:)
-                  write(error_file) b1(i,j,k,:)
-                  write(error_file) bt(i,j,k,:)
+                  write(error_file) np
+                  write(error_file) b0
+                  write(error_file) b1
+                  write(error_file) bt
 
                   dtsub = dtsub/2.0
                   ntf = ntf*2.0
