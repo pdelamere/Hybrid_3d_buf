@@ -484,6 +484,11 @@ c----------------------------------------------------------------------
      x     status=stat, access= acc,
      x     form='unformatted')
 
+      open(9000,file=trim(out_dir)//'particle/'//
+     x     'c.outflowing_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+
 c----------------------------------------------------------------------
 
 
@@ -545,7 +550,7 @@ c======================================================================
          call exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf)
          call exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
      x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf)
+     x        B_out_buf,mrat_out_buf, 9000)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
@@ -609,7 +614,7 @@ c**********************************************************************
          call exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf)
          call exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
      x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf)
+     x        B_out_buf,mrat_out_buf,9000)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 

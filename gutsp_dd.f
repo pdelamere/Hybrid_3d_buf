@@ -850,7 +850,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
      x     E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x     B_out_buf,mrat_out_buf) 
+     x     B_out_buf,mrat_out_buf, save_unit) 
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -880,10 +880,12 @@ c      real, dimension(:), allocatable :: out_m_arr
       integer, dimension(:,:), allocatable :: out_ijkp
       integer Ni_tot_in, Ni_out
       integer :: cnt
+      integer :: save_unit
 
 
       in_bounds(1:Ni_tot) = .true.
       in_bounds(Ni_tot+1:) = .false.
+
       
 c     where(xp(Ni_tot_sw+1:Ni_tot,1) .le. qx(1)) 
 c     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
@@ -891,6 +893,8 @@ c     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
       where(xp(1:Ni_tot,1) .le. qx(1))
      X     in_bounds(1:Ni_tot) = .false.
 c      endwhere         
+
+
       Ni_tot_in = count(in_bounds)
       Ni_out = count(.not.in_bounds(1:Ni_tot))
       
@@ -953,6 +957,11 @@ c     x     .not.in_bounds(1:Ni_tot))
      x     .not.in_bounds(1:Ni_tot))
       out_tags(1:Ni_out) = pack(tags(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
+
+      ! Save heavy ions that are leaving
+      write(save_unit) pack(out_mrat,   out_mrat<0.1)
+      write(save_unit) pack(out_beta_p, out_mrat<0.1)
+      write(save_unit) pack(out_tags,   out_mrat<0.1)
       
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
