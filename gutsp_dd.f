@@ -958,9 +958,10 @@ c     x     .not.in_bounds(1:Ni_tot))
       out_tags(1:Ni_out) = pack(tags(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
 
-      write(save_unit) out_mrat
-      write(save_unit) out_beta_p
-      write(save_unit) out_tags
+      ! Save heavy ions that are leaving
+      write(save_unit) pack(out_mrat,   out_mrat<0.1)
+      write(save_unit) pack(out_beta_p, out_mrat<0.1)
+      write(save_unit) pack(out_tags,   out_mrat<0.1)
       
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
