@@ -489,6 +489,11 @@ c----------------------------------------------------------------------
      x     status=stat, access= acc,
      x     form='unformatted')
 
+      open(9900,file=trim(out_dir)//
+     x     'c.time_stepping_error_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+
 c----------------------------------------------------------------------
 
 
@@ -579,7 +584,7 @@ c**********************************************************************
          ntf = ntsub
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
          
-         call check_time_step(bt,np)
+         call check_time_step(bt,np,9900)
 
          count = 1
 

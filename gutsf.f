@@ -1723,7 +1723,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------      
-      SUBROUTINE check_time_step(bt,np)
+      SUBROUTINE check_time_step(bt,np,error_file)
 c----------------------------------------------------------------      
       
       real bt(nx,ny,nz,3)
@@ -1741,26 +1741,19 @@ c----------------------------------------------------------------
                phi = womega/ak
                deltat = dx/phi
                if(deltat .le. 2.0*dtsub) then 
-                  write(*,*) 'time stepping error...',i,j,k
+                  write(*,*) 'time stepping error...',qx(i),qy(j),gz(k)
+                  write(error_file) my_rank
+                  write(error_file) i,j,k
+                  write(error_file) qx(i),qy(j),qz(k)
+                  write(error_file) np(i,j,k)
+                  write(error_file) b0(i,j,k,:)
+                  write(error_file) b1(i,j,k,:)
+                  write(error_file) bt(i,j,k,:)
+
                   dtsub = dtsub/2.0
                   ntf = ntf*2.0
-c     if (mindt .gt. deltat) then
-c     deltat = mindt
-c     write(*,*) 'mindt...',mindt
-c     endif
-c     do while (2.0*dtsub .gt. deltat)
-c     dtsub = dtsub/2.0
-c     ntf = ntf*2.0
-c     write(*,*) 'Changing subcycle time step...',dtsub,deltat,ntf
-c     enddo
                endif
-               
-c     if(deltat .gt. 2.0*dtsub) then 
-c     write(*,*) 'time stepping error...'
-c     dtsub = 2.0*dtsub
-c     ntf = ntf/2.0
-c     write(*,*) 'subcycle time steps...',ntf,dtsub/dt
-c     endif
+
             enddo
          enddo
       enddo
@@ -1769,9 +1762,6 @@ c     endif
          ntf = 100
       endif
       
-c      write(*,*) 'subcycle time steps...',ntf,dtsub
-      
-
       return
       end subroutine check_time_step
 c----------------------------------------------------------------      
