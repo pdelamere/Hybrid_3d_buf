@@ -102,14 +102,13 @@ c      include 'incurv.h'
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
-      SUBROUTINE Ionize_pluto_mp(np,np_2,vp,vp1,xp,m_tstep,input_p,up)
+      SUBROUTINE Ionize_pluto_mp(np,vp,vp1,xp,m_tstep,input_p,up)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle
 c arrays, np, vp, up (ion particle density, velocity, 
 c and bulk velocity).   
 c----------------------------------------------------------------------
 
       real np(nx,ny,nz),
-     x     np_2(nx,ny,nz),
      x     vp(Ni_max,3),
      x     vp1(Ni_max,3),
      x     xp(Ni_max,3),

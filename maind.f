@@ -503,7 +503,7 @@ c======================================================================
 
       if (Ni_tot .lt. 0.95*Ni_max) then
         do i=1,100
-         call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
+         call Ionize_pluto_mp(np,vp,vp1,xp,m,input_p,up)
         enddo
       endif
       do 1 m = mstart+1, nt
@@ -519,7 +519,7 @@ c======================================================================
 
          mr = 1.0/m_pu
          if (Ni_tot .lt. 0.80*Ni_max) then
-            call Ionize_pluto_mp(np,np_2,vp,vp1,xp,m,input_p,up)
+            call Ionize_pluto_mp(np,vp,vp1,xp,m,input_p,up)
          endif
 
          call get_interp_weights(xp)
