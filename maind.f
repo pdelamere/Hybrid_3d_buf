@@ -42,9 +42,10 @@ c----------------------------------------------------------------------
      x     b1p2(nx,ny,nz,3),  !temporary b1 at time level m+1
      x     bt(nx,ny,nz,3),    !total magnetic field..mc covarient
      x     btc(nx,ny,nz,3),   !btmf at cell center for particle move
-     x     np(nx,ny,nz),      !particle ion den at time level n, n+1/2
-     x     np_1(nx,ny,nz),
-     x     np_2(nx,ny,nz),
+     x     np(nx,ny,nz),      !total ion number density at time level n, n+1/2
+     x     np_H(nx,ny,nz),    !proton number density at time level n, n+1/2
+     x     np_He(nx,ny,nz),   !He++ number density at time level n, n+1/2
+     x     np_CH4(nx,ny,nz),  !CH4+ number density at time level n, n+1/2
      x     vp(Ni_max,3),      !particle velocity at t level n+1/2
      x     vp1(Ni_max,3),     !particle velocity at t level n
      x     vplus(Ni_max,3),   !v+ used in velocity update
@@ -398,10 +399,13 @@ c----------------------------------------------------------------------
      x     status=stat,form='unformatted')
 
       open(115,file=trim(out_dir)//'grid/'//
-     x     'c.np_3d_1_'//filenum//'.dat', access= acc,
+     x     'c.np_H_3d'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
       open(116,file=trim(out_dir)//'grid/'//
-     x     'c.np_3d_2_'//filenum//'.dat', access= acc,
+     x     'c.np_He_3d'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(117,file=trim(out_dir)//'grid/'//
+     x     'c.np_CH4_3d'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
       open(130,file=trim(out_dir)//'grid/'//
@@ -566,13 +570,6 @@ c======================================================================
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          ndiag = ndiag + 1
-c         if (ndiag .eq. nout) then         
-c            call get_temperature(xp,vp,np,temp_p)
-c            mr = 1.0
-c            call separate_np(np_1,mr)
-c            mr = 1.0/m_pu
-c            call separate_np(np_2,mr)
-c         endif
          call update_np_boundary(np)
 
          
@@ -643,18 +640,25 @@ c----------------------------------------------------------------------
 
          ndiag_part = ndiag_part + 1
          if (ndiag .eq. nout) then
+               !call get_temperature(xp,vp,np,temp_p)
+               call separate_np(np_H, 1.0)
+               call separate_np(np_He, 2.0/4.0)
+               call separate_np(np_CH4, 1.0/16.0)
 
 
-            nproc_2rio = nint(100*rio/(delz*nz))
+               nproc_2rio = nint(100*rio/(delz*nz))
 
-            call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 c save 3d arrays------------------------
                write(111) m
                write(111) np
-c               write(115) m
-c               write(115) np_1
-c               write(116) m
-c               write(116) np_2
+
+               write(115) m
+               write(115) np_H
+               write(116) m
+               write(116) np_He
+               write(117) m
+               write(117) np_CH4
+
                write(131) m
                write(131) b1
                write(132) m
@@ -691,10 +695,6 @@ c               write(331) temp_p_2/1.6e-19
 c save 2d arrays----------------------
 c               write(110) m
 c               write(110) np(:,ny/2,:),np(:,:,2)
-c               write(115) m
-c               write(115) np_1(:,ny/2,:),np_1(:,:,2)
-c               write(116) m
-c               write(116) np_2(:,ny/2,:),np_2(:,:,2)
 c               write(130) m
 c               write(130) bt(:,ny/2,:,:),bt(:,:,2,:)
 c               write(140) m
@@ -764,6 +764,7 @@ c======================================================================
           close(110)
           close(115)
           close(116)
+          close(117)
           close(120)
           close(130)
           close(140)
