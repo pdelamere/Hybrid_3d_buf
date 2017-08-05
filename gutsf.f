@@ -1723,12 +1723,15 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------      
-      SUBROUTINE check_time_step(bt,np,error_file)
+      SUBROUTINE check_time_step(b0,b1,bt,np,step,error_file)
 c----------------------------------------------------------------      
       
+      real b0(nx,ny,nz,3)
+      real b1(nx,ny,nz,3)
       real bt(nx,ny,nz,3)
       real np(nx,ny,nz)
       integer error_file
+      integer step
 
       do i = 1,nx
          do j = 1,ny
@@ -1742,10 +1745,12 @@ c----------------------------------------------------------------
                phi = womega/ak
                deltat = dx/phi
                if(deltat .le. 2.0*dtsub) then 
-                  write(*,*) 'time stepping error...',qx(i),qy(j),gz(k)
-                  write(error_file) my_rank
+                   ! rank plus 1 is proc number
+                  write(*,*) 'time stepping error...', my_rank+1
+                  write(error_file) step
+                  write(error_file) my_rank+1
                   write(error_file) i,j,k
-                  write(error_file) qx(i),qy(j),qz(k)
+                  write(error_file) qx(i),qy(j),qz(k),gz(k)
                   write(error_file) np
                   write(error_file) b0
                   write(error_file) b1

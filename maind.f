@@ -584,7 +584,7 @@ c**********************************************************************
          ntf = ntsub
 call MPI_Barrier(MPI_COMM_WORLD,ierr)
          
-         call check_time_step(bt,np,9900)
+         call check_time_step(b0,b1,bt,np,m,9900)
 
          count = 1
 
