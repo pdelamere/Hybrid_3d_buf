@@ -55,6 +55,8 @@ c      include 'incurv.h'
       end FUNCTION neutral_density
 c----------------------------------------------------------------------
 
+      SUBROUTINE Ionization(np,vp,vp1,xp,up)
+      end SUBROUTINE Ionization
 
 c----------------------------------------------------------------------
       SUBROUTINE res_chex(xp,vp,vp1)
