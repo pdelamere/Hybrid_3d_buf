@@ -26,7 +26,7 @@ c grid parameters
       real dx,dy, delz, dx_buf, dt, dtsub_init
 
 c time stepping parameters
-      PARAMETER (ntsub = 15.0)        !number of subcycle time steps
+      PARAMETER (ntsub = 10.0)        !number of subcycle time steps
 
 c output directory
       character(50) out_dir

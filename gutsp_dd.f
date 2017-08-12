@@ -92,7 +92,7 @@ c      include 'incurv.h'
 
       den_part = 1/(beta*dx**3)
 
-      minden = nf_init/30.0
+      minden = nf_init/10.0
 c      minden = 2.0*den_part
       do i = 2,nx-1
          do j = 2,ny-1
