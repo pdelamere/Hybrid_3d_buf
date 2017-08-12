@@ -513,7 +513,6 @@ c      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
          do m=1,3
             input_E = input_E + 
      x         0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /(beta*beta_p(l))
-c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
          enddo
       enddo
 
@@ -799,7 +798,6 @@ c      m_arr(Ni_tot+1:Ni_tot+Ni_out) = out_m_arr(:)
          do m=1,3
             input_E = input_E + 
      x         0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /(beta*beta_p(l))
-c            input_p(m) = input_p(m) + m_arr(l)*vp(l,m) / beta
          enddo
       enddo
 
