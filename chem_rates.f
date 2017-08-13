@@ -104,7 +104,7 @@ c      include 'incurv.h'
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
-      SUBROUTINE Ionize_pluto_mp(np,vp,vp1,xp,m_tstep,input_p,up)
+      SUBROUTINE Ionize_pluto_mp(np,vp,vp1,xp,up)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle
 c arrays, np, vp, up (ion particle density, velocity, 
 c and bulk velocity).   
@@ -114,7 +114,6 @@ c----------------------------------------------------------------------
      x     vp(Ni_max,3),
      x     vp1(Ni_max,3),
      x     xp(Ni_max,3),
-     x     input_p(3),
      x     up(nx,ny,nz,3)
 c     x     gz(nz)
 
@@ -221,8 +220,6 @@ c get source density
                            input_E = input_E + 
      x                      0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x                          (beta*beta_p(l))
-                    input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m)/
-     x                          (beta*beta_p(l))
                         enddo                     
 
                      enddo
@@ -270,8 +267,6 @@ c get source density
                            vp1(l,m) = vp(l,m)
                            input_E = input_E + 
      x                          0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2/
-     x                          (beta*beta_p(l))
-                           input_p(m)=input_p(m)+(mion/mrat(l))*vp(l,m)/
      x                          (beta*beta_p(l))
                         enddo                     
                         

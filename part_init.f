@@ -155,175 +155,6 @@ c 20            continue
       end SUBROUTINE Energy_diag
 c----------------------------------------------------------------------
 
-
-
-cc----------------------------------------------------------------------
-c      SUBROUTINE sw_part_setup(np,vp,vp1,xp,xp1,input_p,up)
-cc----------------------------------------------------------------------
-c      include 'incurv.h'
-
-c      real np(nx,ny,nz)
-c      real vp(Ni_max,3)
-c      real vp1(Ni_max,3)
-c      real xp(Ni_max,3)
-c      real xp1(Ni_max,3)
-c      real input_p(3)
-c      real up(nx,ny,nz,3)
-
-cc      Ni_tot = 120000
-
-c      do 10 l = 1,Ni_tot
-
-c         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
-c         xp(l,2) = qy((ny/2)-8)+(1.0-pad_ranf())*(qy((ny/2)+8)-
-c     x                                        qy((ny/2)-8))
-c         xp(l,3) = qz((nz/2)-8)+(1.0-pad_ranf())*(qz((nz/2)+8)-
-c     x                                        qz((nz/2)-8))
-
-cc         i = nint(nx*pad_ranf())
-cc         j = nint((ny/2) + 16.*(0.5-pad_ranf()))
-cc         k = nint((nz/2) + 16.*(0.5-pad_ranf()))
-ccc         write(*,*) 'l...',l,i,j,k
-
-cc         xp(l,1) = qx(i)+dx*(0.5-pad_ranf())
-cc         xp(l,2) = qy(j)+dy*(0.5-pad_ranf())
-cc         xp(l,3) = qz(k)+dz_grid(k)*(0.5-pad_ranf())
-
-c         vp(l,1) = -vsw
-c         vp(l,2) = 0.0
-c         vp(l,3) = 0.0
-
-
-c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c         ijkp(l,2) = nint(xp(l,2)/dy)
-         
-c         k=1
-c         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c            ijkp(l,3) = k       !grid
-c            k=k+1
-c 50      continue
-c         k=ijkp(l,3)
-c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c            ijkp(l,3) = k+1
-c         endif
-c         do 45 m=1,3
-c            vp1(l,m) = vp(l,m)
-c            input_E = input_E + 
-c     x           0.5*mproton*(vp(l,m)*km_to_m)**2 /beta
-c            input_p(m) = input_p(m) + mproton*vp(l,m) / beta
-c 45      continue
-c 10      continue
-
-        
- 
-c      write(*,*) 'get interp weights...'
-c      call get_interp_weights(xp,xp1)
-c      write(*,*) 'update_np...'
-c      call update_np(np)
-c      write(*,*) 'update_up...'
-c      call update_up(vp,np,up)
-c      write(*,*) 'update_up complete...'
-
-c      return
-c      end
-cc----------------------------------------------------------------------
-
-
-cc----------------------------------------------------------------------
-c      SUBROUTINE sw_part_setup_temp(np,vp,vp1,xp,xp1,input_p,up)
-cc----------------------------------------------------------------------
-c      include 'incurv.h'
-
-c      real np(nx,ny,nz)
-c      real vp(Ni_max,3)
-c      real vp1(Ni_max,3)
-c      real xp(Ni_max,3)
-c      real xp1(Ni_max,3)
-c      real input_p(3)
-c      real up(nx,ny,nz,3)
-c      real phi,theta,rnd,f,v
-c      real rand
-
-cc      Ni_tot = 120000
-
-cc      do n = 0,procnum-1
-cc      if (my_rank .eq. n) then
-c      do 10 l = 1,Ni_tot
-cc         write(*,*) 'procnum, random number...',n,pad_ranf()
-
-c         phi = 2.0*pi*pad_ranf()
-c         flg = 0
-c         do 30 while (flg .eq. 0)
-c            theta = pi*pad_ranf()
-c            f = sin(theta)
-c            rnd = pad_ranf()
-c            if (f .ge. rnd) flg = 1
-c 30      continue
-
-
-c         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx-1)-qx(1))
-c         xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-c         xp(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(1))
-
-
-c         flg = 0
-c         do 40 while (flg .eq. 0)
-c            v = (100*pad_ranf())
-cc            f = (vth**2/exp(1.0))*v**2*exp(-(v)**2 / vth**2)
-c            f = exp(-(v)**2 / vth**2)
-c            rnd = pad_ranf()
-c            if (f .ge. rnd) then 
-c               flg = 1
-c               vp(l,1) = vsw + v*cos(phi)*sin(theta)
-c               vp(l,2) = v*sin(phi)*sin(theta)
-c               vp(l,3) = v*cos(theta)
-c            endif
-
-cc         vp(l,1) = -vsw
-cc         vp(l,2) = 0.0
-cc         vp(l,3) = 0.0
-
-c 40      continue
-
-
-c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c         ijkp(l,2) = nint(xp(l,2)/dy)
-         
-c         k=1
-c         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c            ijkp(l,3) = k       !grid
-c            k=k+1
-c 50      continue
-c         k=ijkp(l,3)
-c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c            ijkp(l,3) = k+1
-c         endif
-c         do 45 m=1,3
-c            vp1(l,m) = vp(l,m)
-c            input_E = input_E + 
-c     x           0.5*mproton*(vp(l,m)*km_to_m)**2 /beta
-c            input_p(m) = input_p(m) + mproton*vp(l,m) / beta
-c 45      continue
-c 10      continue
-cc      endif
-cc      enddo
-
- 
-c      write(*,*) 'get interp weights...'
-c      call get_interp_weights(xp,xp1)
-c      write(*,*) 'update_np...'
-c      call update_np(np)
-c      write(*,*) 'update_up...'
-c      call update_up(vp,np,up)
-c      write(*,*) 'update_up complete...'
-
-   
-
-c      return
-c      end
-cc----------------------------------------------------------------------
-
-
 c----------------------------------------------------------------------
       SUBROUTINE maxwl_init(vthm,vx,vy,vz)
 c----------------------------------------------------------------------
@@ -381,7 +212,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
+      SUBROUTINE sw_part_setup_maxwl(np,vp,vp1,xp,up)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -389,7 +220,6 @@ c      include 'incurv.h'
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
       real xp(Ni_max,3)
-      real input_p(3)
       real up(nx,ny,nz,3)
       real phi,theta,rnd,f,v,tmp
       real rand
@@ -487,8 +317,6 @@ c         m_arr(l) = mpart
             input_E = input_E + 
      x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*bwght)
-            input_p(m) = input_p(m) + mpart*vp(l,m) / 
-     x           (beta*bwght)
  20      continue
                  
  10      continue
@@ -564,8 +392,6 @@ c         m_arr(l) = 2*mproton
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
      x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x           (beta*beta_p(l))
-            input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m) / 
      x           (beta*beta_p(l))
  40      continue
  30   continue
@@ -652,8 +478,6 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
                input_E = input_E + 
      x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x              (beta*b_shl)
-               input_p(m) = input_p(m)+(mion/mrat(l))*vp(l,m)/
-     x              (beta*b_shl)
             enddo
             
 
@@ -676,156 +500,14 @@ c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
       end SUBROUTINE sw_part_setup_maxwl
 c----------------------------------------------------------------------
 
-
-cc----------------------------------------------------------------------
-c      SUBROUTINE sw_part_setup_maxwl_1(np,vp,vp1,xp,xp1,input_p,up,
-c     x     np_t_flg,np_b_flg)
-cc----------------------------------------------------------------------
-c      include 'incurv.h'
-
-c      real np(nx,ny,nz)
-c      real vp(Ni_max,3)
-c      real vp1(Ni_max,3)
-c      real xp(Ni_max,3)
-c      real xp1(Ni_max,3)
-c      real input_p(3)
-c      real up(nx,ny,nz,3)
-c      real phi,theta,rnd,f,v
-c      real rand
-c      real vx,vy,vz
-c      real dvx,dvz,v1
-c      integer np_t_flg(Ni_max)
-c      integer np_b_flg(Ni_max)
-
-c      integer flg
-c      real nprat
-
-c      v1 = 1.0
-
-c      np_t_flg(:) = 0
-c      np_b_flg(:) = 0
-
-
-c      nprat = np_bottom/np_top
-
-cc      Ni_tot = 120000
-
-cc      do n = 0,procnum-1
-cc      if (my_rank .eq. n) then
-c      Ni_tot = Ni_tot + Ni_tot*nint((1/nprat)-1)/2
-
-c      do 10 l = 1,Ni_tot
-cc         write(*,*) 'procnum, random number...',n,pad_ranf()
-
-cc         phi = 2.0*pi*pad_ranf()
-cc         flg = 0
-cc         do 30 while (flg .eq. 0)
-cc            theta = pi*pad_ranf()
-cc            f = sin(theta)
-cc            rnd = pad_ranf()
-cc            if (f .ge. rnd) flg = 1
-cc 30      continue
-
-
-c         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx-1)-qx(1))
-c         xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-
-         
-c         flg = 0
-c         do 20 while (flg .eq. 0)
-c            xp(l,3) = qz(1)+(1.0-pad_ranf())*(qz(nz)-qz(1))
-c             rnd = (1-nprat)* 
-c     x             ((1.0+tanh((xp(l,3)-qz(nz/2))/(Lo)))/2.0) +
-c     x             nprat
-cc            write(*,*) 'rnd...',rnd
-c             if (pad_ranf() .le. rnd) flg = 1
-c             if (xp(l,3) .ge. qz(nz/2)) np_t_flg(l) = 1
-c             if (xp(l,3) .lt. qz(nz/2)) np_b_flg(l) = 1
-
-c 20      continue
-
-c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c         ijkp(l,2) = nint(xp(l,2)/dy)
-         
-c         k=1
-c         do 50 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c            ijkp(l,3) = k       !grid
-c            k=k+1
-c 50      continue
-c         k=ijkp(l,3)
-c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c            ijkp(l,3) = k+1
-c         endif
-
-c         vth = 0.5*(vth_top + vth_bottom) + 
-c     x     0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
-
-c         flg = 0
-c         do 40 while (flg .eq. 0)
-
-c            vy = (400*pad_ranf())-200
-c            vz = (400*pad_ranf())-200
-c            vx = (400*pad_ranf())-200
-            
-c            v = sqrt(vx**2 + vy**2 + vz**2)
-c            f = exp(-(v)**2 / vth**2)
-c            rnd = pad_ranf() 
-c            if (f .gt. rnd) then 
-c               flg = 1
-c            endif
-c 40      continue
-
-c         ii = ijkp(l,1)
-c         kk = ijkp(l,3)
-c         dvx = -2.0*v1*cos(PI*(qx(ii)-qx(nx/2))/qx(nx/2))*
-c     x    tanh((qz(kk)-qz(nz/2))/Lo)*(cosh((qz(kk)-qz(nz/2))/Lo))**(-2)
-c         dvz = v1*sin(PI*(qx(ii)-qx(nx/2))/qx(nx/2))*
-c     x       (cosh((qz(kk)-qz(nz/2))/Lo))**(-2)
-         
-c         vp(l,1) = vsw*(tanh((qz(k)-qz(nz/2))/(Lo))) + vx !+dvx
-c         vp(l,2) = vy 
-c         vp(l,3) = vz !+dvz 
-
-c         if (xp(l,3) .gt. qz(nz/2)) mix_ind(l) = 1
-c         if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
-            
-c         do 45 m=1,3
-c            vp1(l,m) = vp(l,m)
-c            input_E = input_E + 
-c     x           0.5*mproton*(vp(l,m)*km_to_m)**2 /beta
-c            input_p(m) = input_p(m) + mproton*vp(l,m) / beta
-c 45      continue
-c 10      continue
-cc      endif
-cc      enddo
-
-
-
- 
-c      write(*,*) 'get interp weights...'
-c      call get_interp_weights(xp,xp1)
-c      write(*,*) 'update_np...'
-c      call update_np(np)
-c      write(*,*) 'update_up...'
-c      call update_up(vp,np,up)
-c      write(*,*) 'update_up complete...'
-
-   
-
-c      return
-c      end
-cc----------------------------------------------------------------------
-
-
 c----------------------------------------------------------------------
-      SUBROUTINE load_Maxwellian(np,vp,vp1,xp,input_p,up,vth,Ni_tot_1)
+      SUBROUTINE load_Maxwellian(np,vp,vp1,xp,up,vth,Ni_tot_1)
 c----------------------------------------------------------------------
 
       real np(nx,ny,nz)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
       real xp(Ni_max,3)
-      real input_p(3)
       real up(nx,ny,nz,3)
 c      real phi,theta,rnd,f,v
 c      real rand
@@ -899,7 +581,6 @@ c         if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
      x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /beta
-            input_p(m) = input_p(m) + (mion/mrat(l))*vp(l,m) / beta
  45      continue
  10      continue
 

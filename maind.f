@@ -84,7 +84,6 @@ c----------------------------------------------------------------------
       real pup(3),      !total particle momentum
      x     puf(3),      !total fluid momentum
      x     peb(3),      !total momentum carried by E and B fields
-     x     input_p(3)   !input momentum
 
       real mr
 
@@ -214,7 +213,6 @@ c initialize seed for each processor
             do 66 j=1,ny
                do 66 k=1,nz
                   input_E = 0.0
-                  input_p = 0.0
                   input_chex = 0.0
                   input_bill = 0.0
  66               continue
@@ -238,7 +236,7 @@ c initialize seed for each processor
 
 
       if (.not.(restart)) then
-         call sw_part_setup_maxwl(np,vp,vp1,xp,input_p,up)
+         call sw_part_setup_maxwl(np,vp,vp1,xp,up)
 
          call part_setup_buf(xp_buf,vp_buf)
          
@@ -286,7 +284,7 @@ c----------------------------------------------------------------------
           write(*,*) 'reading restart.vars......',filenum
          
           read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
-     x         up,aj,nu,E,input_E,input_p,mstart,input_EeP,
+     x         up,aj,nu,E,input_E,mstart,input_EeP,
      x         prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x         beta_p,beta_p_buf,wght,beta
 
@@ -507,7 +505,7 @@ c======================================================================
 
       if (Ni_tot .lt. 0.95*Ni_max) then
         do i=1,100
-         call Ionize_pluto_mp(np,vp,vp1,xp,m,input_p,up)
+         call Ionize_pluto_mp(np,vp,vp1,xp,m,up)
         enddo
       endif
       do 1 m = mstart+1, nt
@@ -523,7 +521,7 @@ c======================================================================
 
          mr = 1.0/m_pu
          if (Ni_tot .lt. 0.80*Ni_max) then
-            call Ionize_pluto_mp(np,vp,vp1,xp,m,input_p,up)
+            call Ionize_pluto_mp(np,vp,vp1,xp,m,up)
          endif
 
          call get_interp_weights(xp)
@@ -549,15 +547,15 @@ c======================================================================
          call get_vplus_vminus(Ep,btc,vp,vplus,vminus)
          call get_vp_final(Ep,vp,vp1,vplus)
          
-         call move_ion_half(xp,vp,vp1,input_p,Ep)
+         call move_ion_half(xp,vp,vp1,Ep)
 
          call get_Ep_buf(Ep_buf,b0,xp_buf,up)
          call get_vplus_vminus_buf(Ep_buf,vp_buf,vplus_buf,
      x        vminus_buf,b0)
          call get_vp_buf_final(Ep_buf,vp_buf,vplus_buf)
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
-         call exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf)
-         call exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
+         call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
+         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
      x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf, 9000)
 
@@ -609,12 +607,12 @@ call MPI_Barrier(MPI_COMM_WORLD,ierr)
 c**********************************************************************
 
 
-         call move_ion_half(xp,vp,vp1,input_p,Ep)
+         call move_ion_half(xp,vp,vp1,Ep)
 
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          
-         call exchange_ion_in(xp,vp,vp1,input_p,xp_buf,vp_buf)
-         call exchange_ion_out(xp,vp,vp1,input_p,xp_buf,vp_buf,
+         call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
+         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
      x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
      x        B_out_buf,mrat_out_buf,9000)
 
@@ -727,7 +725,7 @@ c----------------------------------------------------------------------
      x              form='unformatted')
          
           write(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
-     x             up,aj,nu,E,input_E,input_p,m,input_EeP,
+     x             up,aj,nu,E,input_E,m,input_EeP,
      x             prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x             beta_p,beta_p_buf,wght,beta
 
