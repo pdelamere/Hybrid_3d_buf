@@ -55,7 +55,9 @@ c      include 'incurv.h'
       end FUNCTION neutral_density
 c----------------------------------------------------------------------
 
-      SUBROUTINE Ionization(np,vp,vp1,xp,up)
+      SUBROUTINE Ionization(np,vp,vp1,xp)
+          call res_chex(xp,vp,vp1)
+          call ionize_pluto_mp(xp,vp,vp1)
       end SUBROUTINE Ionization
 
 c----------------------------------------------------------------------
@@ -104,21 +106,17 @@ c      include 'incurv.h'
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
-      SUBROUTINE Ionize_pluto_mp(np,vp,vp1,xp,up)
+      SUBROUTINE Ionize_pluto_mp(xp,vp,vp1)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle
 c arrays, np, vp, up (ion particle density, velocity, 
 c and bulk velocity).   
 c----------------------------------------------------------------------
 
-      real np(nx,ny,nz),
-     x     vp(Ni_max,3),
-     x     vp1(Ni_max,3),
-     x     xp(Ni_max,3),
-     x     up(nx,ny,nz,3)
-c     x     gz(nz)
+      real xp(Ni_max,3)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
 
       real function ranf      
-      real uptot1(3),uptot2(3)
       real r                !dist of particle to neutral cloud center
       real t                !run time
       real v                !neutral cloud velocity, r/t
