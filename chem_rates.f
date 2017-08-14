@@ -20,6 +20,7 @@ c----------------------------------------------------------------------
       real function atmosphere(r)
           real r
           atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
+          atmosphere = atmosphere*1e15
       end function atmosphere
 
 c---------------------------------------------------------------------
@@ -50,7 +51,6 @@ c      include 'incurv.h'
           neutral_density=0
       endif
 
-      neutral_density = neutral_density*1e15
       return
       end FUNCTION neutral_density
 c----------------------------------------------------------------------
