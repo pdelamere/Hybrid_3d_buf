@@ -17,16 +17,41 @@ debug: $(OBJECTS)
 clean:
 	rm *.o *.mod hybrid 
 
-maind.o:maind.f $(INCLUDE);$(FC) $(FFLAGS) -c maind.f
-gutsf.o:gutsf.f $(INCLUDE);$(FC) $(FFLAGS) -c gutsf.f
-gutsp_dd.o:gutsp_dd.f $(INCLUDE);$(FC) $(FFLAGS) -c gutsp_dd.f
-misc.o:misc.f $(INCLUDE);$(FC) $(FFLAGS) -c misc.f
-boundary.o:boundary.f $(INCLUDE);$(FC) $(FFLAGS) -c boundary.f
-part_init.o:part_init.f $(INCLUDE);$(FC) $(FFLAGS) -c part_init.f
-initial.o:initial.f $(INCLUDE);$(FC) $(FFLAGS) -c initial.f
-gutsp_buf.o:gutsp_buf.f $(INCLUDE);$(FC) $(FFLAGS) -c gutsp_buf.f
-chem_rates.o:chem_rates.f $(INCLUDE);$(FC) $(FFLAGS) -c chem_rates.f
-dimensions.o:dimensions.f $(INCLUDE);$(FC) $(FFLAGS) -c dimensions.f
-inputs.o:inputs.f $(INCLUDE);$(FC) $(FFLAGS) -c inputs.f
-global.o:global.f $(INCLUDE);$(FC) $(FFLAGS) -c global.f
-grid_interp.o:grid_interp.f $(INCLUDE);$(FC) $(FFLAGS) -c grid_interp.f
+maind.o:maind.f global.o dimensions.o inputs.o initial.o misc.o gutsp_dd.o gutsp_buf.o gutsf.o part_init.o grid_interp.o chem_rates.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c maind.f
+
+gutsf.o:gutsf.f global.o boundary.o grid_interp.o  $(INCLUDE)
+	$(FC) $(FFLAGS) -c gutsf.f
+
+gutsp_dd.o:gutsp_dd.f global.o misc.o boundary.o grid_interp.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c gutsp_dd.f
+
+misc.o:misc.f global.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c misc.f
+
+boundary.o:boundary.f global.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c boundary.f
+
+part_init.o:part_init.f global.o dimensions.o misc.o gutsp_dd.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c part_init.f
+
+initial.o:initial.f global.o inputs.o chem_rates.o boundary.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c initial.f
+
+gutsp_buf.o:gutsp_buf.f dimensions.o global.o misc.o part_init.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c gutsp_buf.f
+
+chem_rates.o:chem_rates.f global.o inputs.o gutsp_dd.o grid_interp.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c chem_rates.f
+
+dimensions.o:dimensions.f $(INCLUDE)
+	$(FC) $(FFLAGS) -c dimensions.f
+
+inputs.o:inputs.f dimensions.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c inputs.f
+
+global.o:global.f inputs.o dimensions.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c global.f
+
+grid_interp.o:grid_interp.f global.o dimensions.o boundary.o $(INCLUDE)
+	$(FC) $(FFLAGS) -c grid_interp.f

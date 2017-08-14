@@ -1,12 +1,80 @@
       MODULE initial
 
       USE global
+      USE inputs
+      USE chem_rates
       USE boundary, only: Neut_Center
 c      USE dimensions
 c      USE inputs
 
       contains
 
+c----------------------------------------------------------------      
+      subroutine initparameters()
+c----------------------------------------------------------------      
+
+      mion = ion_amu*1.67e-27
+
+      lambda_i = (3e8/
+     x            sqrt((nf_init/1e9)*q*q/(8.85e-12*mion)))/1e3
+
+      dx = lambda_i*dx_frac 
+      dy = lambda_i*dx_frac   !units in km
+      delz = lambda_i*dx_frac          !dz at release coordinates
+                                       !this is not the final dz
+                                       !d_lamba determines dz
+
+
+      print*, 'dx....',dx
+
+      dx_buf = 3*dx
+
+
+      dt = dt_frac*mion/(q*b0_init)     !main time step
+      dtsub_init = dt/ntsub !subcycle time step 
+
+      print*, 'dt...',dt,dtsub_init
+
+      vtop = vsw
+      vbottom = -vsw
+
+      Ni_tot_0 = Ni_max*Ni_tot_frac
+
+      write(*,*) 'Ni_tot_0...',Ni_tot_0, Ni_max,Ni_tot_frac
+
+      mO = mion    !mass of H (kg)
+
+      mBa = m_pu*mO    !mass of Ba (kg)
+
+      eoverm = q/mO
+
+      m_heavy = 1.0
+      np_top = nf_init
+      np_bottom = nf_init/m_heavy
+      f_proton_top = 0.5       !fraction relative to top
+      b0_top = 1.0*b0_init
+      b0_bottom = b0_init
+      vth_top = vth
+      vth_bottom = vth
+      vth_max = 3*vth
+      m_top = mion
+      m_bottom = mion
+      Lo = 4.0*dx             !gradient scale length of boundary
+
+      nu_init = nu_init_frac*q*b0_init/mion
+
+      alpha = (mu0/1e3)*q*(q/mion) !mH...determines particle scaling
+
+      moment = surf_field * Rpluto**3
+
+      imf_theta = (pi/180)*imf_theta
+      imf_phi = (pi/180)*imf_phi
+
+      max_ion_density = PCE_coef*sqrt(atmosphere(r_thin))
+      write(*,*) 'max_ion_density...', max_ion_density
+
+      end subroutine initparameters
+c----------------------------------------------------------------      
 
 c----------------------------------------------------------------------
       SUBROUTINE grd6_setup(b0,bt,b12,b1,b1p2,nu)

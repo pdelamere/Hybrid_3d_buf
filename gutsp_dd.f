@@ -698,7 +698,7 @@ c      include 'incurv.h'
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
-     x     vp1(Ni_max,3),
+     x     vp1(Ni_max,3)
       real xp_buf(Ni_max_buf,3)
       real vp_buf(Ni_max_buf,3)
 c      real E(nx,ny,nz,3)
@@ -843,7 +843,7 @@ c      include 'incurv.h'
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
-     x     vp1(Ni_max,3),
+     x     vp1(Ni_max,3)
       real xp_buf(Ni_max_buf,3)
       real vp_buf(Ni_max_buf,3)
       real E(nx,ny,nz,3)
@@ -1013,7 +1013,7 @@ c      include 'incurv.h'
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
-     x     vp1(Ni_max,3),
+     x     vp1(Ni_max,3)
       real Ep(Ni_max,3)
       integer zindx(1)
       integer Ni_tot_in

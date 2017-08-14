@@ -83,7 +83,7 @@ c----------------------------------------------------------------------
 
       real pup(3),      !total particle momentum
      x     puf(3),      !total fluid momentum
-     x     peb(3),      !total momentum carried by E and B fields
+     x     peb(3)       !total momentum carried by E and B fields
 
       real mr
 
@@ -397,13 +397,13 @@ c----------------------------------------------------------------------
      x     status=stat,form='unformatted')
 
       open(115,file=trim(out_dir)//'grid/'//
-     x     'c.np_H_3d'//filenum//'.dat', access= acc,
+     x     'c.np_H_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
       open(116,file=trim(out_dir)//'grid/'//
-     x     'c.np_He_3d'//filenum//'.dat', access= acc,
+     x     'c.np_He_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
       open(117,file=trim(out_dir)//'grid/'//
-     x     'c.np_CH4_3d'//filenum//'.dat', access= acc,
+     x     'c.np_CH4_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
       open(130,file=trim(out_dir)//'grid/'//
@@ -521,7 +521,7 @@ c======================================================================
 
          mr = 1.0/m_pu
          if (Ni_tot .lt. 0.80*Ni_max) then
-            call ionization(xp,vp,vp1)
+            call ionization(np,xp,vp,vp1)
          endif
 
          call get_interp_weights(xp)

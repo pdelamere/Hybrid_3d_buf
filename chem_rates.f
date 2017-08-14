@@ -33,9 +33,7 @@ c      include 'incurv.h'
       real cx,cy,cz
       real r,a
       real nn0
-      real cap_r
 
-      cap_r = 1.4*Rpluto
 
       call Neut_Center(cx,cy,cz)
       x = qx(i)-cx
@@ -46,7 +44,7 @@ c      include 'incurv.h'
       a = atan2(sqrt(rho2), x)
 
       if( r .lt. S_radius ) then
-          neutral_density=atmosphere(max(r,cap_r)) !neut_corona(a, max(r,cap_r))
+          neutral_density=atmosphere(r) !neut_corona(a, max(r,cap_r))
       else
           neutral_density=0
       endif
@@ -55,13 +53,17 @@ c      include 'incurv.h'
       end FUNCTION neutral_density
 c----------------------------------------------------------------------
 
-      SUBROUTINE Ionization(np,vp,vp1,xp)
-          call res_chex(xp,vp,vp1)
-          call ionize_pluto_mp(xp,vp,vp1)
+      SUBROUTINE Ionization(np,xp,vp,vp1)
+          real np(nx,ny,nz)
+          real xp(Ni_max,3)
+          real vp(Ni_max,3)
+          real vp1(Ni_max,3)
+          call charge_exchange_ionization(xp,vp,vp1)
+          call photoionization(np,xp,vp,vp1)
       end SUBROUTINE Ionization
 
 c----------------------------------------------------------------------
-      SUBROUTINE res_chex(xp,vp,vp1)
+      SUBROUTINE charge_exchange_ionization(xp,vp,vp1)
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
@@ -102,16 +104,17 @@ c      include 'incurv.h'
       enddo
 
       return
-      end SUBROUTINE res_chex
+      end SUBROUTINE charge_exchange_ionization
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
-      SUBROUTINE Ionize_pluto_mp(xp,vp,vp1)
+      SUBROUTINE photoionization(np,xp,vp,vp1)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle
 c arrays, np, vp, up (ion particle density, velocity, 
 c and bulk velocity).   
 c----------------------------------------------------------------------
 
+      real np(nx,ny,nz)
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
@@ -140,9 +143,6 @@ c----------------------------------------------------------------------
 
       real rho2
       real x,y,z
-      real small_beta_r
-      real max_r
-      small_beta_r = 1.4*Rpluto
 
 
       call Neut_Center(cx,cy,cz)
@@ -166,14 +166,12 @@ c get source density
                npmax = sqrt(neutral_density(i,j,k)/(tau_photo*k_rec))
 
 
-                  if (r .le. small_beta_r) then
-                     bpu = 0.01
+               bpu = 2.0
+                  if (np(i,j,k) .le. max_ion_density) then
                      npofr = vol*beta*bpu*
      x                    neutral_density(i,j,k)*dt/tau_photo
                   else 
-                     bpu = 2.0
-                     npofr = vol*beta*bpu*
-     x                    neutral_density(i,j,k)*dt/tau_photo
+                     npofr = 0
                   endif
 
                   if ((npofr .ge. 1) .and. (npofr+l1 .lt. Ni_max)) then
@@ -290,7 +288,7 @@ c get source density
  60   continue
 
       return
-      end SUBROUTINE Ionize_pluto_mp
+      end SUBROUTINE photoionization
 c----------------------------------------------------------------------
 
       end MODULE chem_rates
