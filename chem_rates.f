@@ -213,6 +213,8 @@ c get source density
                         cnt = cnt + 1
                         do m=1,3
                            vp1(l,m) = vp(l,m)
+                           ! Add the kinetic energy of the particle
+                           ! (often zero)
                            input_E = input_E + 
      x                      0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x                          (beta*beta_p(l))
@@ -261,6 +263,8 @@ c get source density
                         cnt = cnt + 1
                         do m=1,3
                            vp1(l,m) = vp(l,m)
+                           ! Add the kinetic energy of the particle
+                           ! (often zero)
                            input_E = input_E + 
      x                          0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2/
      x                          (beta*beta_p(l))
