@@ -498,11 +498,6 @@ c======================================================================
 c  MAIN LOOP!
 c======================================================================
 
-      if (Ni_tot .lt. 0.95*Ni_max) then
-        do i=1,100
-         call ionization(xp,vp,vp1)
-        enddo
-      endif
       do 1 m = mstart+1, nt
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart
