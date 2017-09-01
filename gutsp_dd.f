@@ -316,9 +316,6 @@ c ---------z exchange down---------------------------------------
 
       call pack_pd(mrat, in_bounds, 1)
 
-      ! remove energy of outgoing particles
-      input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
-     x                       (beta*out_beta_p(:)))
 
       call MPI_ISEND(out_mass, Ni_out, MPI_REAL, dest, tag, 
      x     cartcomm, reqs(1), ierr)
@@ -332,7 +329,11 @@ c ---------z exchange down---------------------------------------
 
       Ni_tot = Ni_tot - Ni_out + Ni_in
 
-      ! add energy back in
+      ! remove energy of outgoing particles
+      input_E = input_E - sum(0.5*(mion/out_mass(:))*vsqrd_out(:)/
+     x                       (beta*out_beta_p(:)))
+
+      ! add energy of incomming particles
       do m = 1,3
          input_E = input_E + sum(0.5*(mion/mrat(Ni_tot_in+1:Ni_tot))*
      x               (vp(Ni_tot_in+1:Ni_tot,m)*km_to_m)**2 
