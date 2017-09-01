@@ -286,6 +286,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 c----------------------------------------------------------------------
+c Exchange ions from the inflow buffer into the main domain.
 
       real xp_buf(Ni_max_buf,3),
      x     vp_buf(Ni_max_buf,3),

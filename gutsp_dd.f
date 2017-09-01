@@ -613,29 +613,19 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf) 
 c----------------------------------------------------------------------
-c      include 'incurv.h'
+c Exchange ions from the main domain into the inflow buffer
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
      x     vp1(Ni_max,3)
       real xp_buf(Ni_max_buf,3)
       real vp_buf(Ni_max_buf,3)
-c      real E(nx,ny,nz,3)
-c      real Bt(nx,ny,nz,3)
-c      real xp_out_buf(Ni_max_buf,3)
-c      real vp_out_buf(Ni_max_buf,3)
-c      real E_out_buf(Ni_max_buf,3)
-c      real B_out_buf(Ni_max_buf,3)
-c      real mrat_out_buf(Ni_max_buf)
-cc      real m_arr_out_buf(Ni_max_buf)
 
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
       real, dimension(:), allocatable :: out_tags
-c      real, dimension(:,:), allocatable :: out_E
-c      real, dimension(:,:), allocatable :: out_B
       integer, dimension(:,:), allocatable :: out_ijkp
       integer Ni_tot_in, Ni_out
       integer :: cnt
@@ -663,22 +653,11 @@ c      real, dimension(:,:), allocatable :: out_B
      x        .not.in_bounds(1:Ni_tot))
          out_vp(1:Ni_out,m) = pack(vp(1:Ni_tot,m), 
      x        .not.in_bounds(1:Ni_tot))
-c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), 
-c     x        in_bounds(1:Ni_tot))
-c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), 
-c     x        in_bounds(1:Ni_tot))
-c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), 
-c     x        in_bounds(1:Ni_tot))
-c         ijkp(1:Ni_tot_in,m) = pack(ijkp(1:Ni_tot,m),
-c     x        in_bounds(1:Ni_tot))
-cc         wquad(1:Ni_tot_in,m) = pack(wquad(1:Ni_tot,m),
-cc     x        in_bounds(1:Ni_tot))
       enddo
  
       call pack_pd(xp, in_bounds, 3)
       call pack_pd(vp, in_bounds, 3)
       call pack_pd(vp1, in_bounds, 3)      
-c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
@@ -689,28 +668,14 @@ c      call pack_pd_3(ijkp, in_bounds)
       enddo
 
      
-c      do m = 1,8
-c         wght(1:Ni_tot_in,m) = pack(wght(1:Ni_tot,m),
-c     x        in_bounds(1:Ni_tot))
-c      enddo
- 
       call pack_pd(wght, in_bounds, 8)
       
-c      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
-c     x     .not.in_bounds(1:Ni_tot))
       out_mrat(1:Ni_out) = pack(mrat(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       out_tags(1:Ni_out) = pack(tags(1:Ni_tot),
      x     .not.in_bounds(1:Ni_tot))
-      
-cc      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), 
-cc     x     in_bounds(1:Ni_tot))
-c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), 
-c     x     in_bounds(1:Ni_tot))
-c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), 
-c     x     in_bounds(1:Ni_tot))
       
       call pack_pd(mrat, in_bounds, 1)
       call pack_pd(beta_p, in_bounds, 1)
@@ -721,7 +686,6 @@ c     x     in_bounds(1:Ni_tot))
          vp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_vp(:,m)
       enddo
       
-c      m_arr_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_m_arr(:)
       mrat_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_mrat(:)
       beta_p_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_beta_p(:)
       tags_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out) = out_tags(:)
@@ -758,7 +722,7 @@ c----------------------------------------------------------------------
      x     E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
      x     B_out_buf,mrat_out_buf, save_unit) 
 c----------------------------------------------------------------------
-c      include 'incurv.h'
+c Exchange ions from the main domain to the outflow buffer (delete them)
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
@@ -772,11 +736,9 @@ c      include 'incurv.h'
       real E_out_buf(Ni_max_buf,3)
       real B_out_buf(Ni_max_buf,3)
       real mrat_out_buf(Ni_max_buf)
-c      real m_arr_out_buf(Ni_max_buf)
 
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
-c      real, dimension(:), allocatable :: out_m_arr
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
       real, dimension(:), allocatable :: out_tags
@@ -792,12 +754,9 @@ c      real, dimension(:), allocatable :: out_m_arr
       in_bounds(Ni_tot+1:) = .false.
 
       
-c     where(xp(Ni_tot_sw+1:Ni_tot,1) .le. qx(1)) 
-c     x            in_bounds(Ni_tot_sw+1:Ni_tot) = .false.
-      
       where(xp(1:Ni_tot,1) .le. qx(1))
-     X     in_bounds(1:Ni_tot) = .false.
-c      endwhere         
+           in_bounds(1:Ni_tot) = .false.
+      endwhere         
 
 
       Ni_tot_in = count(in_bounds)
@@ -808,7 +767,6 @@ c      endwhere
       allocate(out_E(Ni_out,3))
       allocate(out_B(Ni_out,3))
       allocate(out_ijkp(Ni_out,3))
-c      allocate(out_m_arr(Ni_out))
       allocate(out_mrat(Ni_out))
       allocate(out_beta_p(Ni_out))
       allocate(out_tags(Ni_out))
@@ -822,17 +780,11 @@ c      allocate(out_m_arr(Ni_out))
          out_ijkp(1:Ni_out,m) = pack(ijkp(1:Ni_tot,m), 
      x        .not.in_bounds(1:Ni_tot))
          
-c         xp(1:Ni_tot_in,m) = pack(xp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c         vp(1:Ni_tot_in,m) = pack(vp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c         vp1(1:Ni_tot_in,m) = pack(vp1(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c         ijkp(1:Ni_tot_in,m)=pack(ijkp(1:Ni_tot,m), in_bounds(1:Ni_tot))
-cc        wquad(1:Ni_tot_in,m)=pack(wquad(1:Ni_tot,m),in_bounds(1:Ni_tot))
       enddo
 
       call pack_pd(xp, in_bounds, 3)
       call pack_pd(vp, in_bounds, 3)
       call pack_pd(vp1, in_bounds, 3)
-c      call pack_pd_3(ijkp, in_bounds)
 
       cnt = 1
       do l = 1,Ni_tot
@@ -847,15 +799,9 @@ c      call pack_pd_3(ijkp, in_bounds)
          out_B(l,:) = Bt(out_ijkp(l,1),out_ijkp(l,2),out_ijkp(l,3),:)
       enddo
 
-
-c      do m = 1,8
-c         wght(1:Ni_tot_in,m)=pack(wght(1:Ni_tot,m), in_bounds(1:Ni_tot))
-c      enddo
  
       call pack_pd(wght, in_bounds, 8)
      
-c      out_m_arr(1:Ni_out) = pack(m_arr(1:Ni_tot), 
-c     x     .not.in_bounds(1:Ni_tot))
       out_mrat(1:Ni_out) = pack(mrat(1:Ni_tot), 
      x     .not.in_bounds(1:Ni_tot))
       out_beta_p(1:Ni_out) = pack(beta_p(1:Ni_tot), 
@@ -881,17 +827,9 @@ c     x     .not.in_bounds(1:Ni_tot))
      x        out_B(1:Ni_out,m)
       enddo
       
-
-c      m_arr_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
-c     x     out_m_arr(:)
-      
       mrat_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
      x     out_mrat(:)
       
-cc      m_arr(1:Ni_tot_in) = pack(m_arr(1:Ni_tot), in_bounds(1:Ni_tot))
-c      mrat(1:Ni_tot_in) = pack(mrat(1:Ni_tot), in_bounds(1:Ni_tot))
-c      beta_p(1:Ni_tot_in) = pack(beta_p(1:Ni_tot), in_bounds(1:Ni_tot))
-
       call pack_pd(mrat, in_bounds, 1)
       call pack_pd(beta_p, in_bounds, 1)
       call pack_pd(tags, in_bounds, 1)
@@ -911,7 +849,6 @@ c     remove energy
       deallocate(out_E)
       deallocate(out_B)
       deallocate(out_ijkp)
-c      deallocate(out_m_arr)
       deallocate(out_mrat)
       deallocate(out_beta_p)
       deallocate(out_tags)
@@ -1185,7 +1122,7 @@ c -------------------z exchange, up-----------------------------
 
       Ni_tot = Ni_tot - Ni_out + Ni_in
 
-      ! add energy back in
+      ! add energy of incoming particles
       do m = 1,3
          input_E = input_E + sum(0.5*(mion/mrat(Ni_tot_in+1:Ni_tot))*
      x               (vp(Ni_tot_in+1:Ni_tot,m)*km_to_m)**2 /
@@ -1402,7 +1339,7 @@ c ---------z exchange down---------------------------------------
 
       Ni_tot = Ni_tot - Ni_out + Ni_in
 
-      ! add energy back in
+      ! add energy of incoming particles
       do m = 1,3
          input_E = input_E + sum(0.5*(mion/mrat(Ni_tot_in+1:Ni_tot))*
      x               (vp(Ni_tot_in+1:Ni_tot,m)*km_to_m)**2 /
