@@ -135,16 +135,16 @@ c----------------------------------------------------------------------
 
 c Energy flux through boundary faces
 
-cc i = 2 face 
+cc i = 2 face (outflow boundary)
 
       do 20 j=2,ny
          do 20 k=2,nz
             m=1
             i=2
-           exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dy_cell(j)*dz_cell(k)*
+           exb_flux = (mO_q)**2*(1.0/mu0)*dt*dy_cell(j)*dz_cell(k)*
      x           (E(i,j,k,2)*b1(i,j,k,3) - E(i,j,k,3)*b1(i,j,k,2))*
      x            km_to_m**2
-            bndry_Eflux = bndry_Eflux - exb_flux 
+            bndry_Eflux = bndry_Eflux + exb_flux 
                                !+ sign since pos is flux into domain
  20         continue
 
@@ -167,10 +167,10 @@ cc j = 2 face
          do 40 k=2,nz
             m=2
             j=2
-           exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dx_cell(i)*dz_cell(k)*
+           exb_flux = (mO_q)**2*(1.0/mu0)*dt*dx_cell(i)*dz_cell(k)*
      x            (-E(i,j,k,1)*b1(i,j,k,3)+E(i,j,k,3)*b1(i,j,k,1))*
      x            km_to_m**2
-            bndry_Eflux = bndry_Eflux - exb_flux 
+            bndry_Eflux = bndry_Eflux + exb_flux 
                                !+ sign since neg is flux into domain
  40         continue
 
@@ -194,11 +194,11 @@ c k = 2 face
             m=3
 c            k=rk-20
             k=2
-           exb_flux = (mO_q)**2*(1.0/mu0)*dt*(-1)*dx_cell(i)*dy_cell(j)*
+           exb_flux = (mO_q)**2*(1.0/mu0)*dt*dx_cell(i)*dy_cell(j)*
      x             (E(i,j,k,1)*b1(i,j,k,2) - E(i,j,k,2)*b1(i,j,k,1))*
      x             km_to_m**3
-            bndry_Eflux = bndry_Eflux - exb_flux 
-                               !- sign since neg is flux into domain
+            bndry_Eflux = bndry_Eflux + exb_flux 
+                               !+ sign since pos is flux into domain
  60         continue
 
 c k = nz face
