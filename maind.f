@@ -189,7 +189,6 @@ c----------------------------------------------------------------------
 
       ndiag = 0
       ndiag_part = 0
-      prev_Etot = 1.0
       nuei = 0.0
 
 c initialize seed for each processor
@@ -240,10 +239,6 @@ c initialize seed for each processor
 
          call part_setup_buf(xp_buf,vp_buf)
          
-         call part_setup_out_buf(xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,b0)
-                  
-
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
 
@@ -285,7 +280,7 @@ c----------------------------------------------------------------------
          
           read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x         up,aj,nu,E,input_E,mstart,input_EeP,
-     x         prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x         Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x         beta_p,beta_p_buf,wght,beta
 
           close(1000+my_rank)
@@ -532,8 +527,8 @@ c======================================================================
          !energy diagnostics
          
          call get_bndry_Eflux(b1,E)
-         call Energy_diag(vp,b0,b1,E,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,
-     x                    EeP,nu,up,np)
+         call Energy_diag(vp,b0,b1,E,Evp,EB1,EE,
+     x                    nu,up,np)
 
          call curlB(b1,np,aj)
          
@@ -723,7 +718,7 @@ c----------------------------------------------------------------------
          
           write(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x             up,aj,nu,E,input_E,m,input_EeP,
-     x             prev_Etot,Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x             Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x             beta_p,beta_p_buf,wght,beta
 
           close(1000+my_rank)

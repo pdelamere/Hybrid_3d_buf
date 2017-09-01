@@ -11,146 +11,104 @@
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE Energy_diag(vp,b0,b1,E,Evp,Euf,EB1,EB1x,EB1y,EB1z,
-     x                       EE,EeP,nu,up,np)
+      SUBROUTINE Energy_diag(vp,b0,b1,E,Evp,EB1,
+     x                       EE,nu,up,np)
 c----------------------------------------------------------------------
-c      include 'incurv.h'
 
-      real vp(Ni_max,3),
-c     x     uf(nx,ny,nz,3),
-c     x     nf(nx,ny,nz),
-     x     b0(nx,ny,nz,3),
-     x     b1(nx,ny,nz,3),
-     x     E(nx,ny,nz,3),
-c     x     etemp(nx,ny,nz),
-     x     nu(nx,ny,nz),
-     x     up(nx,ny,nz,3),
-     x     np(nx,ny,nz)
-
-      real mO_q
-
-
+      real vp(Ni_max,3)
+      real b0(nx,ny,nz,3)
+      real b1(nx,ny,nz,3)
+      real E(nx,ny,nz,3)
       real Evp                  !kinetic energy of particles
-      real Euf                  !kinetic energy of fluid flow
-      real EB1,EB1x,EB1y,EB1z   !Magnetic field energy 
+      real EB1                  !Magnetic field energy 
       real EE                   !Electric field energy 
-      real EeP                  !Electron pressure energy
+      real nu(nx,ny,nz),
+      real up(nx,ny,nz,3),
+      real np(nx,ny,nz)
+
+
       real total_E              !total energy
       real aveEvp               !average particle energy
-      real norm_E               !normalized energy
       real vol                  !volume of cell
-      real denf                 !fluid density
 
-      real recvbuf
-      integer count
-      count = 1
+      real recvbuf              !buffer for mpi calls
 
+      integer c                 !counter
+      real mO_q                 !proton mass to charge ratio
+      c = 1
       mO_q = mion/q
 
-      Euf = 0.0
+      ! Initialize energies to zero before accumulating
       EB1 = 0.0
-      EB1x = 0.0
-      EB1y = 0.0
-      EB1z = 0.0
       EE = 0.0
-      EeP = 0.0
+      Evp = 0.0
 
-
+      ! First compute field energies
       do 10 i=1,nx-1
-c         j = 2
          do 10 j=1,ny-1
             do 10 k=1,nz-1
                vol = dx_cell(i)*dy_cell(j)*dz_cell(k)*km_to_m**3
-               EB1x = EB1x + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,1))**2 
-               EB1y = EB1y + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,2))**2 
-               EB1z = EB1z + (vol/(2.0*mu0))*(mO_q*b1(i,j,k,3))**2 
-c               EeP = EeP + kboltz*etemp(i,j,k)
                do 10 m=1,3
-                  denf = np(i,j,k)/(km_to_m**3)
-                  Euf = Euf + 0.5*mO*denf*vol*(up(i,j,k,m)*km_to_m)**2
-c                  EB1 = EB1 + 
-c     x              (vol/(2.0*mu0))*(mO_q*(b1(i,j,k,m)-b0(i,j,k,m)))**2
                   EB1 = EB1 + 
      x              (vol/(2.0*mu0))*(mO_q*b1(i,j,k,m))**2
                   EE = EE + (epsilon0*vol/2.0)*
      x                      (mO_q*E(i,j,k,m)*km_to_m)**2
  10               continue
 
-c      input_EeP = input_EeP + EeP
-
-c      write(*,*) 'Energy diag...',Ni_tot,m_arr(2000000)
- 
-      Evp = 0.0
+      ! Then compute particle (kinetic) energy
       do 15 l=1,Ni_tot
          do 15 m=1,3
             Evp = Evp + 0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*beta_p(l))
  15   continue
 
-c      write(*,*) 'Energy diag 2...',Ni_tot,m_arr(2000000)
+      ! Add up global magnetic field energy
+      call MPI_ALLREDUCE(EB1,recvbuf,c,
+     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+      S_EB1 = recvbuf
 
-      call MPI_ALLREDUCE(Evp,recvbuf,count,
+
+      ! Add up global electric field energy
+      call MPI_ALLREDUCE(EE,recvbuf,c,
+     x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
+
+      S_EE = recvbuf
+
+
+      ! Add up global particle energy
+      call MPI_ALLREDUCE(Evp,recvbuf,c,
      x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       S_Evp = recvbuf
 
-c      write(*,*) 'recvbuf...',recvbuf,Evp
 
-      call MPI_ALLREDUCE(input_E,recvbuf,count,
+      ! Add up global input energy
+      call MPI_ALLREDUCE(input_E,recvbuf,c,
      x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       S_input_E = recvbuf
 
-      call MPI_ALLREDUCE(bndry_Eflux,recvbuf,count,
+
+      ! Add up boundary energy flux
+      call MPI_ALLREDUCE(bndry_Eflux,recvbuf,c,
      x     MPI_REAL,MPI_SUM,MPI_COMM_WORLD,ierr)
 
       S_bndry_Eflux = recvbuf
 
-c      total_E = S_Evp+EE+EB1
       total_E = S_Evp+EB1
       aveEvp = S_Evp/S_input_E
       
       if (my_rank .eq. 0) then
 
-c      write(*,*) 'Input energy (J).............',S_input_E
-cc      write(*,*) 'Input EeP energy (J).........',input_EeP
-c      write(*,*) 'Total vp energy (J)..........',S_Evp
-c      write(*,*) 'Total up energy (J)..........',Euf
-c      write(*,*) 'Total B energy (J)...........',EB1/S_input_E
-c      write(*,*) 'Total E energy (J)...........',EE/S_input_E
-cc      write(*,*) 'Total EeP energy (J).........',EeP
-c      write(*,*) 'Total energy (J).............',total_E
-cc      write(*,*) 'Total energy w/ eP (J).......',total_E+EeP
-c      write(*,*) 'Energy thru boundaries.......',bndry_Eflux/S_input_E
       write(*,*) 'Normalized particle energy...',aveEvp
       write(*,*) 'Normalized energy............',total_E/S_input_E,
      x   my_rank
       write(*,*) 'Normalized energy (bndry)....',
-c     x                S_bndry_Eflux/total_E
      x                (total_E)/(S_input_E+S_bndry_Eflux)
-c      write(*,*) 'Normalized energy (no b1z)...',(S_Evp+Euf+EE+EB1x+
-c     x                                            EB1y)/S_input_E
-cc      write(*,*) 'Normalized energy (w/ eP)....',
-cc     x                             (total_E+EeP)/(input_E + input_EeP)
-c      write(*,*) ' '
 
       endif
       
-      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-
-      norm_E = total_E/S_input_E
-
-c      if (prev_Etot .eq. 0.0) then prev_Etot = norm_E
-c      do 20 i=1,nx 
-c         do 20 j=1,ny
-c            do 20 k=1,nz
-c               nu(i,j,k) = nu(i,j,k) + 
-c     x                 nu(i,j,k)*2.0*((norm_E - prev_Etot)/norm_E)
-c 20            continue
-      prev_Etot = norm_E
-
       return
       end SUBROUTINE Energy_diag
 c----------------------------------------------------------------------
