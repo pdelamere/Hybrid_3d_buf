@@ -27,8 +27,8 @@ c----------------------------------------------------------------------
       real np(nx,ny,nz)
 
 
-      real total_E              !total energy
-      real aveEvp               !average particle energy
+      real actual_E
+      real supposed_E
       real vol                  !volume of cell
 
       real recvbuf              !buffer for mpi calls
@@ -96,16 +96,19 @@ c----------------------------------------------------------------------
 
       S_bndry_Eflux = recvbuf
 
-      total_E = S_Evp+EB1
-      aveEvp = S_Evp/S_input_E
-      
+      ! Total energy that exists in the simulation on this step
+      ! (kinetic + magnetic + electric)
+      actual_E = S_Evp + S_EB1 + S_EE
+
+      ! Total energy that should exist in the simulation
+      ! based on what was put in and taken out.
+      ! (kinetic + electromagnetic)
+      supposed_E = S_input_E + S_bndry_Eflux
+
       if (my_rank .eq. 0) then
 
-      write(*,*) 'Normalized particle energy...',aveEvp
-      write(*,*) 'Normalized energy............',total_E/S_input_E,
-     x   my_rank
-      write(*,*) 'Normalized energy (bndry)....',
-     x                (total_E)/(S_input_E+S_bndry_Eflux)
+      write(*,*) 'Normalized particle energy...',S_Evp/S_input_E
+      write(*,*) 'Normalized total energy......',actual_E/supposed_E
 
       endif
       
