@@ -46,7 +46,7 @@ c is used to dimension the particle arrays.
 
 
 c misc constants
-      real*8 mu0,epsilon,pi,rtod,mO,mBa,km_to_m,kboltz,melec
+      real*8 mu0,epsilon0,pi,rtod,mO,mBa,km_to_m,kboltz,melec
       real*8 tempf0,m_pu
       real*8 mproton, eoverm, O_to_Ba
       PARAMETER (pi = 3.14159)
