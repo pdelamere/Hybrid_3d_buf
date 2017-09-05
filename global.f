@@ -61,7 +61,8 @@ c variable for particle scale
       real beta, beta_p(Ni_max), dNi, dNi_sw
 
 c mass array for multi-ion species
-      real mrat,mrat_buf,beta_p_buf 
+      real mrat(Ni_max), mrat_buf(Ni_max_buf)
+      real beta_p_buf(Ni_max_buf)
 
 c mixing array
       real mixed(nx,ny,nz)
