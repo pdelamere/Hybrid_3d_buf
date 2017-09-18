@@ -12,9 +12,7 @@ c----------------------------------------------------------------------
       SUBROUTINE remove_ion(xp,vp,vp1,ion_l)
 c Removes particles from simulation that have gone out of bounds
 c----------------------------------------------------------------------
-CVD$R VECTOR
 
-c      include 'incurv.h'
 
       real xp(Ni_max,3)
       real vp(Ni_max,3)
