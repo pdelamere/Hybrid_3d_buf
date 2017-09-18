@@ -22,8 +22,8 @@ c----------------------------------------------------------------------
       real Evp                  !kinetic energy of particles
       real EB1                  !Magnetic field energy 
       real EE                   !Electric field energy 
-      real nu(nx,ny,nz),
-      real up(nx,ny,nz,3),
+      real nu(nx,ny,nz)
+      real up(nx,ny,nz,3)
       real np(nx,ny,nz)
 
 
