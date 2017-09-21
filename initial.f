@@ -12,6 +12,9 @@ c      USE inputs
 c----------------------------------------------------------------      
       subroutine initparameters()
 c----------------------------------------------------------------      
+      integer*4 getpid, pid
+      pid = getpid()
+      write(*,*) 'PID....', pid
 
       mion = ion_amu*1.67e-27
 
