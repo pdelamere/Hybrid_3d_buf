@@ -296,8 +296,7 @@ c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
 c            ijkp(l,3) = k+1
 c         endif
 
-         vth = 0.5*(vth_top + vth_bottom) + 
-     x     0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
+         vth = vth_top
 
          call maxwl_init(vth,vx,vy,vz)
 
