@@ -126,46 +126,9 @@ c      include 'incurv.h'
       real v,vx,vy,vz
       real rnd,f
 
-c      vx = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
-c      vy = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
-c      vz = vthm*sqrt(-2*alog(1.0-pad_ranf()))*cos(2*PI*pad_ranf())
-
-
       vx = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
       vy = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
       vz = vthm*sqrt(-alog(1.0-pad_ranf()))*cos(PI*pad_ranf())
-
-
-c      flg = 0
-c      do 40 while (flg .eq. 0)
-c         v = (2*vth_max*pad_ranf())-vth_max
-c         f = exp(-(v)**2 / vthm**2)
-c         rnd = pad_ranf()
-c         if (f .ge. rnd) then 
-c            flg = 1
-c            vx = v
-c         endif
-c 40   continue
-c      flg = 0
-c      do 42 while (flg .eq. 0)
-c         v = (2*vth_max*pad_ranf())-vth_max
-c         f = exp(-(v)**2 / vthm**2)
-c         rnd = pad_ranf()
-c         if (f .ge. rnd) then 
-c            flg = 1
-c            vy = v
-c         endif
-c 42   continue
-c      flg = 0
-c      do 44 while (flg .eq. 0)
-c         v = (2*vth_max*pad_ranf())-vth_max
-c         f = exp(-(v)**2 / vthm**2)
-c         rnd = pad_ranf() 
-c         if (f .ge. rnd) then 
-c            flg = 1
-c            vz = v
-c         endif
-c 44   continue
 
       return
       end SUBROUTINE maxwl_init
