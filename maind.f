@@ -625,7 +625,7 @@ c----------------------------------------------------------------------
 
          ndiag_part = ndiag_part + 1
          if (ndiag .eq. nout) then
-               !call get_temperature(xp,vp,np,temp_p)
+               call get_temperature(xp,vp,np,temp_p)
                call separate_np(np_H, 1.0)
                call separate_np(np_He, 2.0/4.0)
                call separate_np(np_CH4, 1.0/16.0)
@@ -656,8 +656,8 @@ c               write(150) m
 c               write(150) E
                write(181) m
                write(181) up
-c               write(301) m
-c               write(301) temp_p/1.6e-19
+               write(301) m
+               write(301) temp_p/1.6e-19
                if ( ndiag_part .eq. part_nout ) then
                    write(305) m
                    write(305) xp
