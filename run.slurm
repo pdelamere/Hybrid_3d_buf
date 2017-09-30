@@ -31,7 +31,9 @@ echo "Generate machinefile"
 srun -l /bin/hostname | sort -n | awk '{print $2}' > ./nodes.$SLURM_JOB_ID
 echo "Start Hybrid Code"
 mpirun -np $SLURM_NTASKS --machinefile ./nodes.$SLURM_JOB_ID "${HYBRID}/hybrid" > output 2> error
+RESULT=$?
 echo "Remove machinefile"
 rm ./nodes.$SLURM_JOB_ID
 
 echo "Finish batch script"
+exit $RESULT
