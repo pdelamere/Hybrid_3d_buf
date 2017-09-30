@@ -1746,12 +1746,11 @@ c----------------------------------------------------------------------
       SUBROUTINE update_np(xp, vp, vp1, np)
 c Weight density to eight nearest grid points.
 c----------------------------------------------------------------------
-c      include 'incurv.h'
 
       real np(nx,ny,nz)
       real us(ny,nz)
 
-      real volb              !cell volume times beta
+      real volb
       real xp(Ni_max,3)
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
@@ -1767,9 +1766,9 @@ c      include 'incurv.h'
 
       do l=1,Ni_tot
 
-         i=ijkp(l,1)!+wquad(l,1)
-         j=ijkp(l,2)!+wquad(l,2)
-         k=ijkp(l,3)!+wquad(l,3)
+         i=ijkp(l,1)
+         j=ijkp(l,2)
+         k=ijkp(l,3)
 
          ip = i+1
          jp = j+1
@@ -1810,13 +1809,12 @@ c----------------------------------------------------------------------
       SUBROUTINE separate_np(np,mr)
 c Weight density to eight nearest grid points.
 c----------------------------------------------------------------------
-c      include 'incurv.h'
 
       real np(nx,ny,nz)
       real us(ny,nz)
       real mr
 
-      real volb              !cell volume times beta
+      real volb
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       
@@ -1832,15 +1830,13 @@ c      include 'incurv.h'
          if (mrat(l) .eq. mr) then 
             
 
-            i=ijkp(l,1)!+wquad(l,1)
-            j=ijkp(l,2)!+wquad(l,2)
-            k=ijkp(l,3)!+wquad(l,3)
+            i=ijkp(l,1)
+            j=ijkp(l,2)
+            k=ijkp(l,3)
             
             ip = i+1
             jp = j+1
             kp = k+1
-            
-c            volb = dx*dy*dz_cell(k)*beta*beta_p(l)
 
             volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta*beta_p(l))
             
@@ -1858,9 +1854,7 @@ c            volb = dx*dy*dz_cell(k)*beta*beta_p(l)
  20   continue
       
 c     use for periodic boundary conditions
-c     np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
       np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
-c     np(:,:,nz-1) = np(:,:,nz-1)+np(:,:,1)
       
       us = nf_init
       call boundary_scalar(np, us)
@@ -2022,19 +2016,6 @@ c      include 'incurv.h'
       us = nf_init
       call boundary_scalar(np, us)
      
-c      out_buf_z(:,:) = np(:,:,2)         
-
-c      dest = nbrs(n_down)
-c      source = nbrs(n_up)
-c      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
-c     x     cartcomm, reqs(1), ierr)
-c      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
-c     x     cartcomm, reqs(2), ierr)
-
-c      call MPI_WAITALL(2, reqs, stats, ierr)
-c      np(:,:,nz) = np(:,:,nz) + in_buf_z
-
-
       return 
       end SUBROUTINE update_np_boundary
 c----------------------------------------------------------------------
