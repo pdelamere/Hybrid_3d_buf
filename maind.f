@@ -185,8 +185,8 @@ c----------------------------------------------------------------------
       endif
          
 
-      ndiag = 0
-      ndiag_part = 0
+      ndiag = nout-1
+      ndiag_part = part_nout-1
       nuei = 0.0
 
 c initialize seed for each processor
@@ -497,6 +497,10 @@ c  MAIN LOOP!
 c======================================================================
 
       do 1 m = mstart+1, nt
+
+         ndiag = ndiag + 1
+         ndiag_part = ndiag_part + 1
+
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart
          endif
@@ -555,7 +559,6 @@ c======================================================================
          call get_interp_weights(xp)
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
-         ndiag = ndiag + 1
          call update_np_boundary(np)
 
          
@@ -620,7 +623,6 @@ c----------------------------------------------------------------------
 
 
 
-         ndiag_part = ndiag_part + 1
          if (ndiag .eq. nout) then
                call get_temperature(xp,vp,np,temp_p)
                call separate_np(np_H, 1.0)
