@@ -2002,7 +2002,6 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE update_np_boundary(np)
 c----------------------------------------------------------------------
-c      include 'incurv.h'
 
       real np(nx,ny,nz)
       real us(ny,nz)
@@ -2013,8 +2012,6 @@ c      include 'incurv.h'
       integer cnt_buf_z
       integer reqs(2)
       integer stats(MPI_STATUS_SIZE,2)
-
-      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       cnt_buf_z = nx*ny
 
