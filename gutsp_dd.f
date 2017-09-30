@@ -1876,6 +1876,8 @@ c     use for periodic boundary conditions
       us = nf_init
       call boundary_scalar(np, us)
 
+      call update_np_boundary(np)
+
       return
       end SUBROUTINE separate_np
 c----------------------------------------------------------------------
