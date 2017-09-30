@@ -560,6 +560,14 @@ c======================================================================
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          call update_np_boundary(np)
+         ! These variables do not impact the simulation and only need
+         ! to be updated on the output step
+         if (ndiag .eq. nout) then
+               call get_temperature(xp,vp,np,temp_p)
+               call separate_np(np_H, 1.0)
+               call separate_np(np_He, 2.0/4.0)
+               call separate_np(np_CH4, 1.0/16.0)
+         endif
 
          
 c**********************************************************************
@@ -624,12 +632,6 @@ c----------------------------------------------------------------------
 
 
          if (ndiag .eq. nout) then
-               call get_temperature(xp,vp,np,temp_p)
-               call separate_np(np_H, 1.0)
-               call separate_np(np_He, 2.0/4.0)
-               call separate_np(np_CH4, 1.0/16.0)
-
-
 
 c save 3d arrays------------------------
                write(111) m
