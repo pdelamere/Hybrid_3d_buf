@@ -1,0 +1,70 @@
+#!/usr/local/pkg/python-anaconda/anaconda3/bin/python
+
+import os
+import re
+import sys
+import time
+import shutil
+import argparse
+from subprocess import call, check_output
+
+def make_next_directory(path):
+    max_num = 0
+    for name in os.listdir(path):
+        match = re.match('pluto-(\d+)', name)
+        if match:
+            if int(match.group(1)) > max_num:
+                max_num = int(match.group(1))
+
+    ret = os.path.join(path,'pluto-{}'.format(max_num+1))
+    os.mkdir(ret)
+    return ret
+
+def get_command_line():
+    return ' '.join(sys.argv)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--ignore', dest='ignore', action='store_true', 
+        help='Ignore the fact that the changes are not commited')
+parser.add_argument('--no-compile', dest='compile', action='store_false', 
+        help='Disable recompiling he program')
+parser.add_argument('-s', '--scratch', dest='scratch', required=True,
+        help='Set the scratch folder to output data to')
+parser.add_argument('-m', '--message', dest='message',
+        help='Provide a message to be saved with the output')
+
+args = parser.parse_args()
+
+# Check if working directory is clean unless we ignore it.
+if not args.ignore:
+    if call('git diff-index --quiet HEAD --', shell=True):
+        raise RuntimeError("There are uncommited changes in the working directory. Commit them and try again.")
+
+# Make sure the program is rebuilt correctly.
+if args.compile:
+    check_output('make FC=mpifort', shell=True)
+
+# If it doesn't exist already, make a folder for today's runs.
+date_today = time.strftime("%Y-%a-%b-%d")
+if not os.path.exists(os.path.join(args.scratch, date_today)):
+    os.mkdir(os.path.join(args.scratch, date_today))
+
+# Now make a new subfolder to put this run into.
+data_folder = make_next_directory(os.path.join(args.scratch, date_today))
+
+# Copy the needed files over
+shutil.copy('hybrid', data_folder)
+shutil.copy('inputs.dat', data_folder)
+shutil.copy('fileShrinker.py', data_folder)
+shutil.copy('restart.sh', data_folder)
+
+with open(os.path.join(data_folder, 'invocation'), mode='w') as f:
+    f.write(get_command_line())
+with open(os.path.join(data_folder, 'message'), mode='w') as f:
+    f.write(args.message)
+
+if not args.ignore:
+    with open(os.path.join(data_folder, 'commit'), mode='w') as f:
+        f.write(check_output('git show --quiet --pretty=fuller HEAD', shell=True))
+
+print(data_folder)

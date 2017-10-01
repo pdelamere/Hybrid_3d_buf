@@ -73,7 +73,6 @@ c----------------------------------------------------------------------
       real temp_p(nx,ny,nz)
 
       real Evp,       !total particle kinetic energy
-     x     Euf,       !total fluid kinetic energy
      x     EB1,       !total magnetic field energy
      x     EB1x,      !total b1x energy
      x     EB1y,      !total b1y energy
@@ -82,7 +81,6 @@ c----------------------------------------------------------------------
      x     EeP        !total electron pressure energy
 
       real pup(3),      !total particle momentum
-     x     puf(3),      !total fluid momentum
      x     peb(3)       !total momentum carried by E and B fields
 
       real mr
@@ -187,8 +185,8 @@ c----------------------------------------------------------------------
       endif
          
 
-      ndiag = 0
-      ndiag_part = 0
+      ndiag = nout-1
+      ndiag_part = part_nout-1
       nuei = 0.0
 
 c initialize seed for each processor
@@ -280,7 +278,7 @@ c----------------------------------------------------------------------
          
           read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x         up,aj,nu,E,input_E,mstart,input_EeP,
-     x         Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x         Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x         beta_p,beta_p_buf,wght,beta
 
           close(1000+my_rank)
@@ -499,6 +497,10 @@ c  MAIN LOOP!
 c======================================================================
 
       do 1 m = mstart+1, nt
+
+         ndiag = ndiag + 1
+         ndiag_part = ndiag_part + 1
+
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart
          endif
@@ -557,8 +559,15 @@ c======================================================================
          call get_interp_weights(xp)
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
-         ndiag = ndiag + 1
          call update_np_boundary(np)
+         ! These variables do not impact the simulation and only need
+         ! to be updated on the output step
+         if (ndiag .eq. nout) then
+               call get_temperature(xp,vp,np,temp_p)
+               call separate_np(np_H, 1.0)
+               call separate_np(np_He, 2.0/4.0)
+               call separate_np(np_CH4, 1.0/16.0)
+         endif
 
          
 c**********************************************************************
@@ -567,7 +576,6 @@ c**********************************************************************
 
          dtsub = dtsub_init
          ntf = ntsub
-call MPI_Barrier(MPI_COMM_WORLD,ierr)
          
          call check_time_step(b0,b1,bt,np,m,9900)
 
@@ -623,15 +631,7 @@ c----------------------------------------------------------------------
 
 
 
-         ndiag_part = ndiag_part + 1
          if (ndiag .eq. nout) then
-               call get_temperature(xp,vp,np,temp_p)
-               call separate_np(np_H, 1.0)
-               call separate_np(np_He, 2.0/4.0)
-               call separate_np(np_CH4, 1.0/16.0)
-
-
-               nproc_2rio = nint(100*rio/(delz*nz))
 
 c save 3d arrays------------------------
                write(111) m
@@ -671,26 +671,6 @@ c               write(150) E
                    write(320) mrat
                    ndiag_part = 0
                 endif
-c               write(330) m 
-c               write(330) temp_p_1/1.6e-19
-c               write(331) m 
-c               write(331) temp_p_2/1.6e-19
-
-
-c save 2d arrays----------------------
-c               write(110) m
-c               write(110) np(:,ny/2,:),np(:,:,2)
-c               write(130) m
-c               write(130) bt(:,ny/2,:,:),bt(:,:,2,:)
-c               write(140) m
-c               write(140) aj
-c               write(150) m
-c               write(150) E
-c               write(180) m
-c               write(180) up(:,ny/2,:,:),up(:,:,2,:)
-c               write(300) m
-c               write(300) temp_p(:,ny/2,:)/1.6e-19,
-c     x                    temp_p(:,:,2)/1.6e-19
                ndiag = 0
 
          endif
@@ -713,7 +693,7 @@ c----------------------------------------------------------------------
          
           write(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
      x             up,aj,nu,E,input_E,m,input_EeP,
-     x             Evp,Euf,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x             Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x             beta_p,beta_p_buf,wght,beta
 
           close(1000+my_rank)
