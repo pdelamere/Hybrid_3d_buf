@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --partition=debug
-#SBATCH --ntasks=15
+#SBATCH --ntasks=31
 #SBATCH --mail-user=npbarnes@alaska.edu
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
@@ -16,7 +16,7 @@ module load PrgEnv-intel/2016
 module load python/anaconda3-2.5.0
 
 echo "Running chinook_setup script"
-HYBRID="$(python chinook_setup -i -s $CENTER1/hybrid_data -m "$1")"
+HYBRID="$(python chinook_setup -s $CENTER1/hybrid_data -m "$1")"
 if [ $? -ne 0 ]
 then
     echo "Chinook_setup failed."
