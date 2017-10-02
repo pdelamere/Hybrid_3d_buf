@@ -7,6 +7,11 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 
+echo "Setting ulimits"
+ulimit -s unlimited
+ulimit -f unlimited
+ulimit -l unlimited
+
 echo "Setting up modules"
 module purge
 module load slurm
