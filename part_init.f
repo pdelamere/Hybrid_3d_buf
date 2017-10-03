@@ -149,8 +149,6 @@ c      include 'incurv.h'
       real rand
       real vx,vy,vz
       real dvx,dvz,v1
-c      integer np_t_flg(Ni_max)
-c      integer np_b_flg(Ni_max)
 
       integer flg
       real nprat
@@ -159,19 +157,12 @@ c      integer np_b_flg(Ni_max)
 
       v1 = 1.0
 
-c      np_t_flg(:) = 0
-c      np_b_flg(:) = 0
-
 
       nprat = np_bottom/np_top
-
-c      Ni_tot_O = Ni_tot*(2./3.)
-c      Ni_tot_S = Ni_tot*(1./3.)
 
       Ni_tot = Ni_tot + Ni_tot*nint((1/nprat)-1)/2
 
 c initialize protons
-
 
       bwght = 1.0
       vth = vth_top
@@ -192,8 +183,6 @@ c initialize protons
          ijkp(l,1)= i
 
 
-c         ijkp(l,2) = floor(xp(l,2)/dy) 
-
          j=0
  13      continue
          j = j + 1
@@ -210,19 +199,6 @@ c         ijkp(l,2) = floor(xp(l,2)/dy)
          ijkp(l,3)= k
 
 
-c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c         ijkp(l,2) = nint(xp(l,2)/dy)
-         
-c         k=1
-c         do 12 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c            ijkp(l,3) = k       !grid
-c            k=k+1
-c 12      continue
-c         k=ijkp(l,3)
-c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c            ijkp(l,3) = k+1
-c         endif
-
          call maxwl_init(vth,vx,vy,vz)
 
          ii = ijkp(l,1)
@@ -232,7 +208,6 @@ c         endif
          vp(l,2) = vy 
          vp(l,3) = vz 
 
-c         m_arr(l) = mpart
          mrat(l) = mproton/mpart
          beta_p(l) = bwght
 
@@ -266,8 +241,6 @@ c initialize He++
          ijkp(l,1)= i
 
 
-c         ijkp(l,2) = floor(xp(l,2)/dy) 
-
          j=0
  33      continue
          j = j + 1
@@ -283,31 +256,14 @@ c         ijkp(l,2) = floor(xp(l,2)/dy)
          k = k-1
          ijkp(l,3)= k
 
-c         ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c         ijkp(l,2) = nint(xp(l,2)/dy)
-         
-c         k=1
-c         do 32 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c            ijkp(l,3) = k       !grid
-c            k=k+1
-c 32      continue
-c         k=ijkp(l,3)
-c         if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c            ijkp(l,3) = k+1
-c         endif
-
          vth = vth_top
 
          call maxwl_init(vth,vx,vy,vz)
-
-c         ii = ijkp(l,1)
-c         kk = ijkp(l,3)
 
          vp(l,1) = -vsw + vx 
          vp(l,2) = vy 
          vp(l,3) = vz 
 
-c         m_arr(l) = 2*mproton
          mrat(l) = 1.0/2.0
          beta_p(l) = b_mq_2
 
@@ -333,7 +289,6 @@ c add shell distribution
             xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
             xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
             
-c            m_arr(l) = mproton
             mrat(l) = 1.0
             beta_p(l) = b_shl
 
@@ -346,9 +301,6 @@ c            m_arr(l) = mproton
             ijkp(l,1)= i
             
             
-c            ijkp(l,2) = floor(xp(l,2)/dy) 
-
-
             j=0
  73         continue
             j = j + 1
@@ -364,38 +316,17 @@ c            ijkp(l,2) = floor(xp(l,2)/dy)
             k = k-1
             ijkp(l,3)= k
 
-c            ijkp(l,1) = nint(xp(l,1)/dx) !particle grid location index
-c            ijkp(l,2) = nint(xp(l,2)/dy)
             
-c            k=1
-c            do 70 while(xp(l,3) .gt. qz(k)) !find k on non-uniform 
-c               ijkp(l,3) = k    !grid
-c               k=k+1
-c 70         continue
-c            k=ijkp(l,3)
-c            if (xp(l,3) .gt. (qz(k)+(dz_grid(k)/2))) then
-c               ijkp(l,3) = k+1
-c            endif
-            
-c            ii = ijkp(l,1)
-c            kk = ijkp(l,3)
-
             vz = pad_ranf()*2 - 1
             tmp = sqrt(1-vz**2)
             phi = 2*PI*pad_ranf()
             vx = tmp*cos(phi)
             vy = tmp*sin(phi)
-c            vp(l,1) = 1.0*vsw*cos(theta) + vx !+dvx
-c            vp(l,2) = vy 
-c            vp(l,3) = 1.0*vsw*sin(theta) + vz        !+dvz 
 
-            vp(l,1) = -vsw+vsw*vx !+dvx
-            vp(l,2) = vsw*vy !+dvz 
+            vp(l,1) = -vsw+vsw*vx
+            vp(l,2) = vsw*vy
             vp(l,3) = vsw*vz
 
-c            if (xp(l,3) .gt. qz(nz/2)) mix_ind(l) = 1
-c            if (xp(l,3) .le. qz(nz/2)) mix_ind(l) = 0
-            
             do  m=1,3
                vp1(l,m) = vp(l,m)
                input_E = input_E + 
