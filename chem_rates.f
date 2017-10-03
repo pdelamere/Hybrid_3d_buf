@@ -142,7 +142,6 @@ c----------------------------------------------------------------------
       real intgl            !integral
       integer rijk
       integer cnt, l1
-      real npmax
 
       real rho2
       real x,y,z
@@ -166,9 +165,6 @@ c get source density
                rho2 = y**2 + z**2
                r = sqrt(x**2+rho2)
              
-               npmax = sqrt(neutral_density(i,j,k)/(tau_photo*k_rec))
-
-
                bpu = 2.0
                   if (np(i,j,k) .le. max_ion_density) then
                      npofr = vol*beta*bpu*
