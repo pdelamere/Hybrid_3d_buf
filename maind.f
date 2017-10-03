@@ -300,7 +300,7 @@ c----------------------------------------------------------------------
          if(my_rank .eq. 0) then
            write(error_unit,*) 'python'
            call execute_command_line(
-     x     'python3 fileShrinker.py '//
+     x     'python fileShrinker.py '//
      x         trim(out_dir)//'grid/ '//int_to_str(mstart)
      x         ,exitstat=ierr)
            if(ierr .ne. 0) then
@@ -309,7 +309,7 @@ c----------------------------------------------------------------------
              stop
            endif
            call execute_command_line(
-     x     'python3 fileShrinker.py '//
+     x     'python fileShrinker.py '//
      x         trim(out_dir)//'particle/ '//int_to_str(mstart)
      x         ,exitstat=ierr)
            if(ierr .ne. 0) then
