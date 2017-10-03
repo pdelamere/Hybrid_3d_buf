@@ -18,11 +18,10 @@ c----------------------------------------------------------------------
       end function neut_corona
 
       real function atmosphere(r)
-          real r
-          if(r .lt. 1000) then
-              r = 1000
-          endif
-          atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
+          real, intent(in) :: r
+          real rr
+          rr = max(r, 1.1*Rpluto)
+          atmosphere = 1e15*(Rpluto/rr)**25.0 + 5e9*(Rpluto/rr)**8.0
           atmosphere = atmosphere*1e15
       end function atmosphere
 
