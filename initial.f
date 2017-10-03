@@ -142,7 +142,7 @@ c----------------------------------------------------------------------
 
                   bt(i,j,k,m) = b0(i,j,k,m)
                   vol = dx*dy*dz_cell(k)*km_to_m**3
-                  input_Eb = input_Eb + 
+                  input_E = input_E + 
      x                      (vol/(2.0*mu0))*(mO_q*b0(i,j,k,m))**2 
 
  20            continue
