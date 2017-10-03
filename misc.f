@@ -220,26 +220,11 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_beta()
 c----------------------------------------------------------------------
-      real src(200)
-      real r_xyz(200)
-      real tau
-      real Nofr(200),Np_tot
 
-      tau = tau_photo
-      
-      src(2) = Qo !1.5e27   !mol/s at Pluto
-
-      do i = 1,200 
-         r_xyz(i) = i*dx 
-      enddo
-
-c divide particles up between procnum processors      
       beta = (Ni_tot_sys/((qx(nx)-qx(1))*(qy(ny-1)-qy(1))*
      x                    (qz(nz-1)-qz(1))))/nf_init
-      dNi_sw = nf_init*vsw*((ny-2)*dy*(nz-2)*delz)*(dt/2)*beta
-      print *,'dNi_sw....',dNi_sw
 
-      write(*,*) 'beta, dNi....',beta,dNi
+      write(*,*) 'beta....',beta
 
       return
       end SUBROUTINE get_beta

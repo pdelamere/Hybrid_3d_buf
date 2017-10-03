@@ -137,7 +137,6 @@ c----------------------------------------------------------------------
       real vol_shell_min
       real intgl            !integral
       integer rijk
-      real ddni
       integer cnt, l1
       real npmax
 

@@ -58,7 +58,7 @@ c variable for anomlous resistivity
       real nuei
 
 c variable for particle scale
-      real beta, beta_p(Ni_max), dNi, dNi_sw
+      real beta, beta_p(Ni_max)
 
 c mass array for multi-ion species
       real mrat(Ni_max), mrat_buf(Ni_max_buf)
