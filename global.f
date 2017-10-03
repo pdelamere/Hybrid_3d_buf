@@ -36,7 +36,7 @@ c Indices for boundary cells
       integer ip,im,jp,jm,kp,km
 
 c Total input energy (ions) 
-      real input_E,input_Eb,input_EeP, bndry_Eflux
+      real input_E, bndry_Eflux
       real input_chex, input_bill
 
 c Momentum conservation
