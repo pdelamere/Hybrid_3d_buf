@@ -19,6 +19,9 @@ c----------------------------------------------------------------------
 
       real function atmosphere(r)
           real r
+          if(r .lt. 1000) then
+              r = 1000
+          endif
           atmosphere = 1e15*(Rpluto/r)**25.0 + 5e9*(Rpluto/r)**8.0
           atmosphere = atmosphere*1e15
       end function atmosphere
