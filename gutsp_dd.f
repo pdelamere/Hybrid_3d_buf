@@ -1991,8 +1991,7 @@ c use for periodic boundary conditions
 
       up = ct
 
-
-      call boundaries(up, spread(spread((/-vsw,0.0,0.0/),1,ny),2,nz))
+      call boundaries(up, vsw_us)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 

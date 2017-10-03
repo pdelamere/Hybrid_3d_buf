@@ -74,4 +74,9 @@ c Tags for particle origin
       real tags(Ni_max)
       real tags_buf(Ni_max_buf)
 
+      real vsw_us(ny,nz,3)
+      real b0_us(ny,nz,3)
+
+
+
       end MODULE GLOBAL

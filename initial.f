@@ -41,6 +41,11 @@ c----------------------------------------------------------------
       vtop = vsw
       vbottom = -vsw
 
+      ! Initialize upstream solar wind velocities
+      vsw_us(:,:,1) = -vsw
+      vsw_us(:,:,2) = 0
+      vsw_us(:,:,3) = 0
+
       Ni_tot_0 = Ni_max*Ni_tot_frac
 
       write(*,*) 'Ni_tot_0...',Ni_tot_0, Ni_max,Ni_tot_frac
@@ -76,6 +81,7 @@ c----------------------------------------------------------------
       max_ion_density = PCE_coef*sqrt(atmosphere(r_thin))
       write(*,*) 'max_ion_density...', max_ion_density
 
+      ! Variable needs to be initialized so it can act as an accumulator.
       bndry_Eflux = 0
 
       end subroutine initparameters
@@ -135,6 +141,9 @@ c----------------------------------------------------------------------
             enddo
          enddo
       enddo
+
+      ! Store the upstream condition
+      b0_us = b0(nx,:,:,:)
 
       do 20 i=1,nx
          do 20 j=1,ny

@@ -39,6 +39,8 @@ c----------------------------------------------------------------------
       real aus(ny,nz,3)
       real bus(ny,nz,3)
 
+      real cus(ny,nz,3)
+
       real ax,ay,az,bx,by,bz    !dummy vars
 
 
@@ -68,7 +70,8 @@ c about the grid points.
 
  60            continue
 
-      call boundaries(cc, ct(nx,:,:,:))
+      cus = ct(nx,:,:,:)
+      call boundaries(cc, cus)
 
       return
       end SUBROUTINE crossf2
