@@ -73,7 +73,7 @@ c      include 'incurv.h'
 
       real cx,cy,cz,r,vrel
       real nn !,neutral_density
-      real chex_tau,chex_prob
+      real chex_inv_tau,chex_prob
 
       real sigma_chex
       PARAMETER (sigma_chex = 1e-25)  !10 A^2 in units of km^2
@@ -84,8 +84,10 @@ c      include 'incurv.h'
          vrel = sqrt(vp(l,1)**2 + vp(l,2)**2 + vp(l,3)**2)
          nn = neutral_density(ijkp(l,1),ijkp(l,2),ijkp(l,3))
 
-         chex_tau = 1./(nn*sigma_chex*vrel)
-         chex_prob = dt/chex_tau
+         ! one over the time constant
+         chex_inv_tau = (nn*sigma_chex*vrel)
+
+         chex_prob = dt*chex_inv_tau
 
          if (pad_ranf() .lt. chex_prob) then
             do m=1,3
