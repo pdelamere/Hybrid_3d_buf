@@ -82,10 +82,6 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE grd6_setup(b0,bt,b12,b1,b1p2,nu)
 c----------------------------------------------------------------------
-c      include 'incurv.h'
-
-c      real eoverm
-c      parameter(eoverm = q/mO)
       real mO_q
 
       real vol
@@ -113,13 +109,6 @@ c      parameter(eoverm = q/mO)
       b0_1y = b0_top*eoverm*cos(phi)
       b0_2y = b0_bottom*eoverm*cos(phi)  
 
-c      kr = 2.0/delz
-
-c      a1 = kr**2*b0r/(alpha*nfr)
-c      a2 = kr**2*b0r**2/(alpha*nfr)
-
-c      omegar = 0.5*(a1 + sqrt(a1**2 + 4*a2))
-
       call Neut_Center(cx,cy,cz)
 
       do i = 1,nx
@@ -144,25 +133,14 @@ c      omegar = 0.5*(a1 + sqrt(a1**2 + 4*a2))
             enddo
          enddo
       enddo
-      
-c      do 10 k=1,nz
-c         kdz = 2.0/dz_grid(k)
-cc         b0(k) = b0r
-cc         b0(k) = 1.2*(0.5*(-omegar + (omegar/kdz)*
-cc     x                 sqrt(kdz**2 + 4*alpha*nfr)))
-c 10      continue
 
       do 20 i=1,nx
          do 20 j=1,ny
             do 20 k=1,nz
-c               nf(i,j,k) = nfr  !/km^3
                nu(i,j,k) = nu_init
                do 20 m=1,3
 
                   bt(i,j,k,m) = b0(i,j,k,m)
-c                  b12(i,j,k,m) = 0.0 !b0(i,j,k,m)
-c                  b1(i,j,k,m) = 0.0 !b0(i,j,k,m)
-c                  b1p2(i,j,k,m) = 0.0 !b0(i,j,k,m)
                   vol = dx*dy*dz_cell(k)*km_to_m**3
                   input_Eb = input_Eb + 
      x                      (vol/(2.0*mu0))*(mO_q*b0(i,j,k,m))**2 
@@ -170,51 +148,15 @@ c                  b1p2(i,j,k,m) = 0.0 !b0(i,j,k,m)
  20            continue
 
 
-c      nu(1,:,:) = nu_init*50.0
-c      nu(2,:,:) = nu_init*50.0
-c      nu(3,:,:) = nu_init*10.0
-c      nu(4,:,:) = nu_init*5.0
-c      nu(5,:,:) = nu_init*2.0
-
-c      nu(nx,:,:) = nu_init*50.0
-c      nu(nx-1,:,:) = nu_init*50.0
-c      nu(nx-2,:,:) = nu_init*10.0
-c      nu(nx-3,:,:) = nu_init*5.0
-c      nu(nx-4,:,:) = nu_init*2.0
-
-
-c set resistive boundary 
-
-c      do 50 i=1,nx
-c         do 50 k=1,nz
-c            nu(i,4,k) = 5.0
-c            nu(i,3,k) = 10.0
-c            nu(i,2,k) = 20.0
-c            nu(i,1,k) = 20.0
-c            nu(i,ny,k) = 20.0
-c            nu(i,ny-1,k) = 10.0
-c            nu(i,ny-2,k) = 5.0
-c 50         continue
 
       do 60 i=1,nx
        do 60 j=1,ny
           do 60 k=1,nz
              nu(i,j,k) = (q*b0_init/mproton)*
      x            exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
-c             nu(i,j,k) = (q*b0_init/mproton)*
-c     x            exp(-(qy(ny)-qy(i))**2/(10.0*dx)**2) + nu_init
-c             nu(i,j,k) = (q*b0_init/mproton)*
-c     x            exp(-(qy(1)-qy(i))**2/(10.0*dx)**2) + nu_init
-c             nu(i,j,k) = (q*b0_init/mproton)*
-c     x            exp(-(qx(1)-qx(i))**2/(10.0*dx)**2) + nu_init
  60   continue
 
      
-c      open(30,file='nf.dat',status='unknown',form='unformatted')
-c      write(30) nz
-c      write(30) nf
-c      close(30)
-
       open(40,file='b0.dat',status='unknown',form='unformatted')
       write(40) nz
       write(40) b0
