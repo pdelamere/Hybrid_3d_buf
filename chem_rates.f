@@ -123,7 +123,6 @@ c----------------------------------------------------------------------
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
 
-      real function ranf      
       real r                !dist of particle to neutral cloud center
       real t                !run time
       real v                !neutral cloud velocity, r/t
@@ -134,14 +133,17 @@ c----------------------------------------------------------------------
       real rnd              !random number
       real n_source,vol_source
       real nnofr       !neutral density vs. r
-      real npofr       !plasma production rate vs. r
+      real new_macro   !fractional part indicates probabalisitc particle
+      real new_micro
+      real cur_micro
+      
       real Np_total         !total number of ions /s
       real vol         !volume of shell vs. r
       real vol_shell
       real vol_shell_min
       real intgl            !integral
       integer rijk
-      integer cnt, l1
+      integer l1
 
       real rho2
       real x,y,z
@@ -153,7 +155,6 @@ c get source density
 
       
       vol = dx**3
-      cnt = 0
       l1 = Ni_tot+1
       do i = 2,nx-1
          do j = 2,ny-1
@@ -166,113 +167,114 @@ c get source density
                r = sqrt(x**2+rho2)
              
                bpu = 2.0
-                  if (np(i,j,k) .le. max_ion_density) then
-                     npofr = vol*beta*bpu*
-     x                    neutral_density(i,j,k)*dt/tau_photo
-                  else 
-                     npofr = 0
-                  endif
 
-                  if ((npofr .ge. 1) .and. (npofr+l1 .lt. Ni_max)) then
-                     do ll = 1,nint(npofr)
-                        l = Ni_tot + 1
-                        vp(l,1) = 0.0
-                        vp(l,2) = 0.0
-                        vp(l,3) = 0.0                        
+               cur_micro = np(i,j,k)*vol
+               new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
+               if((cur_micro+new_micro)/vol .le. max_ion_density) then
+                   new_macro = new_micro*beta*bpu
+               else
+                   new_macro = (max_ion_density*vol-cur_micro)*beta*bpu
+               endif
 
-                        xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
-                        xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
-                        xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
+               if (Ni_tot + nint(new_macro) .lt. Ni_max ) then
+                   do ll = 1,nint(new_macro)
+                      l = Ni_tot + 1
+                      vp(l,1) = 0.0
+                      vp(l,2) = 0.0
+                      vp(l,3) = 0.0                        
 
-                        ii=0
- 26                     continue
-                        ii = ii + 1
-                        if (xp(l,1) .gt. qx(ii)) go to 26 !find i on non-uniform 
-                        ii = ii-1
-                        ijkp(l,1)= ii
+                      xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
+                      xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
+                      xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
-                        jj=0
- 18                     continue
-                        jj = jj + 1
-                        if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
-                        jj = jj-1
-                        ijkp(l,2)= jj
+                      ii=0
+ 26                   continue
+                      ii = ii + 1
+                      if (xp(l,1) .gt. qx(ii)) go to 26 !find i on non-uniform 
+                      ii = ii-1
+                      ijkp(l,1)= ii
 
-                        kk=2
- 15                     continue
-                        kk = kk + 1
-                        if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
-                        kk = kk-1
-                        ijkp(l,3)= kk
+                      jj=0
+ 18                   continue
+                      jj = jj + 1
+                      if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
+                      jj = jj-1
+                      ijkp(l,2)= jj
 
-                        mrat(l) = 1.0/m_pu
-                        beta_p(l) = bpu
-                        tags(l) = 1
-                        Ni_tot = l
-                        cnt = cnt + 1
-                        do m=1,3
-                           vp1(l,m) = vp(l,m)
-                           ! Add the kinetic energy of the particle
-                           ! (often zero)
-                           input_E = input_E + 
+                      kk=2
+ 15                   continue
+                      kk = kk + 1
+                      if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
+                      kk = kk-1
+                      ijkp(l,3)= kk
+
+                      mrat(l) = 1.0/m_pu
+                      beta_p(l) = bpu
+                      tags(l) = 1
+                      Ni_tot = l
+                      do m=1,3
+                         vp1(l,m) = vp(l,m)
+                         ! Add the kinetic energy of the particle
+                         ! (often zero)
+                         input_E = input_E + 
      x                      0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x                          (beta*beta_p(l))
-                        enddo                     
+                      enddo                     
 
-                     enddo
-                  endif
-                  if ((npofr .lt. 1).and.(npofr + l1 .lt. Ni_max)) then
-                     if (npofr .gt. pad_ranf()) then
-                        l = Ni_tot + 1
-                        vp(l,1) = 0.0
-                        vp(l,2) = 0.0
-                        vp(l,3) = 0.0                        
-                        
-                        xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
-                        xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
-                        xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
-
-
-                        ii=0
- 27                     continue
-                        ii = ii + 1
-                        if (xp(l,1) .gt. qx(ii)) go to 27 !find i on non-uniform 
-                        ii = ii-1
-                        ijkp(l,1)= ii
+                   enddo
+               endif
+               new_macro = new_macro - nint(new_macro)
+               if (Ni_tot+1 .le. Ni_max) then
+                   if (new_macro .gt. pad_ranf()) then
+                      l = Ni_tot + 1
+                      vp(l,1) = 0.0
+                      vp(l,2) = 0.0
+                      vp(l,3) = 0.0                        
+                      
+                      xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
+                      xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
+                      xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
 
-                        jj=0
- 17                     continue
-                        jj = jj + 1
-                        if (xp(l,2) .gt. qy(jj)) go to 17 !find i on non-uniform 
-                        jj = jj-1
-                        ijkp(l,2)= jj                     
+                      ii=0
+ 27                   continue
+                      ii = ii + 1
+                      if (xp(l,1) .gt. qx(ii)) go to 27 !find i on non-uniform 
+                      ii = ii-1
+                      ijkp(l,1)= ii
 
-                        kk=2
- 16                     continue
-                        kk = kk + 1
-                        if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 
-                        kk = kk-1
-                        ijkp(l,3)= kk
-                        
-                        mrat(l) = 1.0/m_pu
-                        beta_p(l) = bpu
-                        tags(l) = 1
-                        Ni_tot = l
-                        cnt = cnt + 1
-                        do m=1,3
-                           vp1(l,m) = vp(l,m)
-                           ! Add the kinetic energy of the particle
-                           ! (often zero)
-                           input_E = input_E + 
+
+                      jj=0
+ 17                   continue
+                      jj = jj + 1
+                      if (xp(l,2) .gt. qy(jj)) go to 17 !find i on non-uniform 
+                      jj = jj-1
+                      ijkp(l,2)= jj                     
+
+                      kk=2
+ 16                   continue
+                      kk = kk + 1
+                      if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 
+                      kk = kk-1
+                      ijkp(l,3)= kk
+                      
+                      mrat(l) = 1.0/m_pu
+                      beta_p(l) = bpu
+                      tags(l) = 1
+                      Ni_tot = l
+                      do m=1,3
+                         vp1(l,m) = vp(l,m)
+                         ! Add the kinetic energy of the particle
+                         ! (often zero)
+                         input_E = input_E + 
      x                          0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2/
      x                          (beta*beta_p(l))
-                        enddo                     
+                      enddo                     
                         
                         
-                     endif
+                   endif
                      
-                  endif
+               endif
 
                   
             enddo
@@ -284,7 +286,6 @@ c get source density
       do 60 l = l1,Ni_tot
          if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,2) .gt. ny) .or. 
      x        (ijkp(l,3) .gt. nz)) then
-            write(*,*) 'removing ion...',my_rank,ijkp(l,:)
             call remove_ion(xp,vp,vp1,l)
             
          endif
