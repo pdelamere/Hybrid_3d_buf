@@ -119,7 +119,6 @@ c----------------------------------------------------------------------
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
 
-      real function ranf      
       real r                !dist of particle to neutral cloud center
       real t                !run time
       real v                !neutral cloud velocity, r/t
@@ -141,7 +140,7 @@ c----------------------------------------------------------------------
       real intgl            !integral
       integer rijk
       real ddni
-      integer cnt, l1
+      integer l1
 
       real rho2
       real x,y,z
@@ -153,7 +152,6 @@ c get source density
 
       
       vol = dx**3
-      cnt = 0
       l1 = Ni_tot+1
       do i = 2,nx-1
          do j = 2,ny-1
@@ -213,7 +211,6 @@ c get source density
                       beta_p(l) = bpu
                       tags(l) = 1
                       Ni_tot = l
-                      cnt = cnt + 1
                       do m=1,3
                          vp1(l,m) = vp(l,m)
                          ! Add the kinetic energy of the particle
@@ -264,7 +261,6 @@ c get source density
                       beta_p(l) = bpu
                       tags(l) = 1
                       Ni_tot = l
-                      cnt = cnt + 1
                       do m=1,3
                          vp1(l,m) = vp(l,m)
                          ! Add the kinetic energy of the particle
