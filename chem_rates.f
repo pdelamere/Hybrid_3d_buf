@@ -170,12 +170,10 @@ c get source density
                if((cur_micro+new_micro)/vol .le. max_ion_density) then
                    new_macro = new_micro*beta*bpu
                else
-                   new_macro = 0
+                   new_macro = (max_ion_density*vol-cur_micro)*beta*bpu
                endif
 
-
-
-               if (Ni_tot + new_macro .lt. Ni_max ) then
+               if (Ni_tot + nint(new_macro) .lt. Ni_max ) then
                    do ll = 1,nint(new_macro)
                       l = Ni_tot + 1
                       vp(l,1) = 0.0
