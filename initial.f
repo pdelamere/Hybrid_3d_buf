@@ -76,6 +76,8 @@ c----------------------------------------------------------------
       max_ion_density = PCE_coef*sqrt(atmosphere(r_thin))
       write(*,*) 'max_ion_density...', max_ion_density
 
+      bndry_Eflux = 0
+
       end subroutine initparameters
 c----------------------------------------------------------------      
 
