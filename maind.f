@@ -171,12 +171,10 @@ c----------------------------------------------------------------------
       call get_command_argument(number=1,value=arg,status=ierr)
       restart = (trim(arg) == "restart")
 
-      if (.not. restart) then
-         Ni_tot = Ni_tot_0
-         Ni_tot_sw = Ni_tot
-         Ni_tot_sys = Ni_tot
-         print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
-      endif
+      Ni_tot = Ni_tot_0
+      Ni_tot_sw = Ni_tot
+      Ni_tot_sys = Ni_tot
+      print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
       
       if (my_rank .eq. 0) then
          call check_inputs(my_rank)
@@ -224,7 +222,11 @@ c initialize seed for each processor
       endif
 
       call grd8()
-      call grd6_setup(b0,bt,b12,b1,b1p2,nu)
+      call get_nu(nu)
+
+      if (.not.(restart)) then
+          call grd6_setup(b0,bt,b12,b1,b1p2)
+      endif
 
 
       call get_beta()
@@ -233,8 +235,6 @@ c initialize seed for each processor
       if (.not.(restart)) then
          call sw_part_setup_maxwl(np,vp,vp1,xp,up)
 
-         call part_setup_buf(xp_buf,vp_buf)
-         
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
 
@@ -274,7 +274,7 @@ c----------------------------------------------------------------------
      x          form='unformatted')
           write(*,*) 'reading restart.vars......',filenum
          
-          read(1000+my_rank)  b0,b1,b12,b1p2,bt,
+          read(1000+my_rank) b0,b1,b12,b1p2,bt,
      x         E,input_E,mstart,
      x         Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x         beta_p
@@ -286,7 +286,7 @@ c----------------------------------------------------------------------
           read(1000+my_rank) vp,vp1,
      x         xp,Ni_tot,
      x         Ni_tot_sys,
-     x         mrat,
+     x         mrat
 
           close(1000+my_rank)
 
@@ -526,6 +526,7 @@ c======================================================================
          
          call move_ion_half(xp,vp,vp1,Ep)
 
+         call part_setup_buf(xp_buf,vp_buf)
          call get_Ep_buf(Ep_buf,b0,xp_buf,up)
          call get_vplus_vminus_buf(Ep_buf,vp_buf,vplus_buf,
      x        vminus_buf,b0)
@@ -538,7 +539,6 @@ c======================================================================
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
-         call part_setup_buf(xp_buf,vp_buf)
 
 
          call get_interp_weights(xp)
@@ -592,6 +592,7 @@ c**********************************************************************
 
          call move_ion_half(xp,vp,vp1,Ep)
 
+         call part_setup_buf(xp_buf,vp_buf)
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
@@ -601,7 +602,6 @@ c**********************************************************************
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
-         call part_setup_buf(xp_buf,vp_buf)
 
          call check_min_den(np,xp,vp,vp1,up,bt)
 
@@ -688,10 +688,10 @@ c----------------------------------------------------------------------
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x             status='unknown',form='unformatted')
-          write(1000+my_rank) vp,vp1
+          write(1000+my_rank) vp,vp1,
      x             xp,Ni_tot,
-     x             Ni_tot_sys
-     x             mrat,
+     x             Ni_tot_sys,
+     x             mrat
 
           close(1000+my_rank)
                   
