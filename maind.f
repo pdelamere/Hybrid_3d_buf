@@ -227,9 +227,7 @@ c initialize seed for each processor
       call grd6_setup(b0,bt,b12,b1,b1p2,nu)
 
 
-      if (.not.(restart)) then
-         call get_beta()
-      endif
+      call get_beta()
 
 
       if (.not.(restart)) then
@@ -276,24 +274,19 @@ c----------------------------------------------------------------------
      x          form='unformatted')
           write(*,*) 'reading restart.vars......',filenum
          
-          read(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
-     x         up,aj,nu,E,input_E,mstart,
+          read(1000+my_rank)  b0,b1,b12,b1p2,bt,
+     x         E,input_E,mstart,
      x         Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x         beta_p,beta_p_buf,wght,beta
+     x         beta_p
 
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x         status='unknown',form='unformatted')
           write(*,*) 'reading restart.part......',filenum
-          read(1000+my_rank) vp,vp1,vplus,vminus,
-     x         xp,Ep,Ni_tot,
-     x         Ni_tot_sys,ijkp,
+          read(1000+my_rank) vp,vp1,
+     x         xp,Ni_tot,
+     x         Ni_tot_sys,
      x         mrat,
-     x         xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x         vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x         B_out_buf,mrat_out_buf,
-     x         in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x         mrat_buf
 
           close(1000+my_rank)
 
@@ -508,27 +501,19 @@ c======================================================================
          !Calculate neutral density
 
 
-         !Ionize cloud and calculate ion density
          write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
 
-         mr = 1.0/m_pu
+         call get_interp_weights(xp)
+         call update_np(xp, vp, vp1, np)             !np at n+1/2
+         call update_np_boundary(np)
+         call update_up(vp,np,up)       !up at n+1/2
+
          if (Ni_tot .lt. 0.80*Ni_max) then
             call ionization(np,xp,vp,vp1)
          endif
 
-         call get_interp_weights(xp)
-         call update_np(xp, vp, vp1, np)             !np at n+1/2
-         call update_up(vp,np,up)       !up at n+1/2
-         call update_np_boundary(np)
-
-         !energy diagnostics
-         
-         call get_bndry_Eflux(b1,E)
-         call Energy_diag(vp,b0,b1,E,Evp,EB1,EE,
-     x                    nu,up,np)
 
          call curlB(b1,np,aj)
-         
          call edge_to_center(bt,btc,b0_us)
 
          call extrapol_up(up,vp,vp1,np)
@@ -630,6 +615,10 @@ c----------------------------------------------------------------------
          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
 
+         !energy diagnostics
+         call get_bndry_Eflux(b1,E)
+         call Energy_diag(vp,b0,b1,E,Evp,EB1,EE,
+     x                    nu,up,np)
 
          if (ndiag .eq. nout) then
 
@@ -691,23 +680,18 @@ c----------------------------------------------------------------------
      x              status='unknown',
      x              form='unformatted')
          
-          write(1000+my_rank)  b0,b1,b12,b1p2,bt,btc,np,
-     x             up,aj,nu,E,input_E,m,
+          write(1000+my_rank)  b0,b1,b12,b1p2,bt,
+     x             E,input_E,m,
      x             Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
-     x             beta_p,beta_p_buf,wght,beta
+     x             beta_p
 
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x             status='unknown',form='unformatted')
-          write(1000+my_rank) vp,vp1,vplus,vminus,
-     x             xp,Ep,Ni_tot,
-     x             Ni_tot_sys,ijkp,
+          write(1000+my_rank) vp,vp1
+     x             xp,Ni_tot,
+     x             Ni_tot_sys
      x             mrat,
-     x             xp_buf,vp_buf,Ep_buf,vplus_buf,
-     x             vminus_buf,xp_out_buf,vp_out_buf,E_out_buf,
-     x             B_out_buf,mrat_out_buf,
-     x             in_bounds,Ni_tot_buf,in_bounds_buf,Ni_tot_out_buf,
-     x             mrat_buf
 
           close(1000+my_rank)
                   
