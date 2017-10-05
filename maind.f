@@ -286,7 +286,7 @@ c----------------------------------------------------------------------
           read(1000+my_rank) vp,vp1,
      x         xp,Ni_tot,
      x         Ni_tot_sys,
-     x         mrat
+     x         mrat, tags
 
           close(1000+my_rank)
 
@@ -691,7 +691,7 @@ c----------------------------------------------------------------------
           write(1000+my_rank) vp,vp1,
      x             xp,Ni_tot,
      x             Ni_tot_sys,
-     x             mrat
+     x             mrat, tags
 
           close(1000+my_rank)
                   
