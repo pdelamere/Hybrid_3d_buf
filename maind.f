@@ -274,7 +274,7 @@ c----------------------------------------------------------------------
      x          form='unformatted')
           write(*,*) 'reading restart.vars......',filenum
          
-          read(1000+my_rank) b0,b1,b12,b1p2,bt,
+          read(1000+my_rank) b0,b1,b12,b1p2,bt,b0_us,
      x         E,input_E,mstart,
      x         Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x         beta_p
@@ -680,7 +680,7 @@ c----------------------------------------------------------------------
      x              status='unknown',
      x              form='unformatted')
          
-          write(1000+my_rank)  b0,b1,b12,b1p2,bt,
+          write(1000+my_rank)  b0,b1,b12,b1p2,bt,b0_us,
      x             E,input_E,m,
      x             Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
      x             beta_p
