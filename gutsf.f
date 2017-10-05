@@ -1177,10 +1177,6 @@ c----------------------------------------------------------------
                ak = 2./dx
                btot = sqrt(bt(i,j,k,1)**2 + bt(i,j,k,2)**2 + 
      x              bt(i,j,k,3)**2)
-               write(*,*) my_rank, "BTOT:", btot, 
-     x             bt(i,j,k,1), bt(i,j,k,2), bt(i,j,k,2)
-
-
                a1 = ak**2*Btot/(alpha*(np(i,j,k)))
                a2 = (ak*Btot)**2/(alpha*(np(i,j,k)))
                womega = 0.5*(a1 + sqrt(a1**2 + 4*a2))
