@@ -88,7 +88,7 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------      
 
 c----------------------------------------------------------------------
-      SUBROUTINE grd6_setup(b0,bt,b12,b1,b1p2,nu)
+      SUBROUTINE grd6_setup(b0,bt,b12,b1,b1p2)
 c----------------------------------------------------------------------
       real mO_q
 
@@ -98,8 +98,7 @@ c----------------------------------------------------------------------
      x     bt(nx,ny,nz,3),
      x     b12(nx,ny,nz,3),
      x     b1(nx,ny,nz,3),
-     x     b1p2(nx,ny,nz,3),
-     x     nu(nx,ny,nz)
+     x     b1p2(nx,ny,nz,3)
 
       real b0r,a1,a2,omegar,kr,nfr,kdz
       real b0_1x, b0_2x, b0_1y, b0_2y
@@ -148,7 +147,6 @@ c----------------------------------------------------------------------
       do 20 i=1,nx
          do 20 j=1,ny
             do 20 k=1,nz
-               nu(i,j,k) = nu_init
                do 20 m=1,3
 
                   bt(i,j,k,m) = b0(i,j,k,m)
@@ -160,12 +158,6 @@ c----------------------------------------------------------------------
 
 
 
-      do 60 i=1,nx
-       do 60 j=1,ny
-          do 60 k=1,nz
-             nu(i,j,k) = (q*b0_init/mproton)*
-     x            exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
- 60   continue
 
      
       open(40,file='b0.dat',status='unknown',form='unformatted')
@@ -176,6 +168,16 @@ c----------------------------------------------------------------------
       return
       end SUBROUTINE grd6_setup
 c----------------------------------------------------------------------
+
+      SUBROUTINE get_nu(nu)
+      real nu(nx,ny,nz)
+      do 60 i=1,nx
+       do 60 j=1,ny
+          do 60 k=1,nz
+             nu(i,j,k) = (q*b0_init/mproton)*
+     x            exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
+ 60   continue
+      end SUBROUTINE
 
 
 c----------------------------------------------------------------------
@@ -291,9 +293,9 @@ c      include 'incurv.h'
 
 c==============stretch y direction=====================================
                
-      ysf = 0.5
+      ysf = 0.0
       rj = ny/2
-      nrgrd = 10
+      nrgrd = 0
 c up from center
       do 42 j = rj,rj+nrgrd
          dy_grid(j) = dy
@@ -337,9 +339,9 @@ c 10            continue
 
 c==============stretch x direction=====================================
                
-      xsf = 1.0
+      xsf = 0.0
       ri = nx/2 + ri0
-      nrgrd = 8
+      nrgrd = 0
 c up from center
       do 12 i = ri,ri+nrgrd
          dx_grid(i) = dx
