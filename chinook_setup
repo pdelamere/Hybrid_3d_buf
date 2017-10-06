@@ -6,6 +6,7 @@ import sys
 import time
 import shutil
 import argparse
+from gen_batch import gen_batch
 from subprocess import call, check_output
 
 def make_next_directory(path):
@@ -24,14 +25,26 @@ def get_command_line():
     return ' '.join(sys.argv)
 
 parser = argparse.ArgumentParser()
+parser.add_argument('scratch',
+        help='Set the scratch folder where run folders are stored by date and number')
+parser.add_argument('ntasks',
+        help="Number of tasks to launch")
+
 parser.add_argument('-i', '--ignore', dest='ignore', action='store_true', 
-        help='Ignore the fact that the changes are not commited')
+        help='Ignore the fact that the changes to the working directory are not commited')
 parser.add_argument('--no-compile', dest='compile', action='store_false', 
-        help='Disable recompiling he program')
-parser.add_argument('-s', '--scratch', dest='scratch', required=True,
-        help='Set the scratch folder to output data to')
+        help='Disable automatically compiling the program')
+parser.add_argument('--no-submit', action='store_false', dest='submit',
+        help='Set this flag to just setup the folder without submitting the SLURM job.')
 parser.add_argument('-m', '--message', dest='message',
         help='Provide a message to be saved with the output')
+
+parser.add_argument('-j', '--job-name', dest='jobname', default='pluto',
+        help="Set the job name. The default is 'pluto'.")
+parser.add_argument('--tasks-per-node', dest='tasks_per_node', default=None,
+        help="Maximum number of tasks to launch per node.")
+parser.add_argument('--partition', default='t1standard',
+        help="Name the partition to submit to. The defualt is 't1standard'")
 
 args = parser.parse_args()
 
@@ -52,19 +65,29 @@ if not os.path.exists(os.path.join(args.scratch, date_today)):
 # Now make a new subfolder to put this run into.
 data_folder = make_next_directory(os.path.join(args.scratch, date_today))
 
-# Copy the needed files over
+
+# Copy the needed hybrid code files over
 shutil.copy('hybrid', data_folder)
 shutil.copy('inputs.dat', data_folder)
 shutil.copy('fileShrinker.py', data_folder)
 shutil.copy('restart.sh', data_folder)
 
+# Generate a few more informational files
 with open(os.path.join(data_folder, 'invocation'), mode='w') as f:
     f.write(get_command_line())
 with open(os.path.join(data_folder, 'message'), mode='w') as f:
     f.write(args.message)
 
-if not args.ignore:
-    with open(os.path.join(data_folder, 'commit'), mode='w') as f:
-        f.write(check_output('git show --quiet --pretty=fuller HEAD', shell=True))
+if args.ignore:
+    with open(os.path.join(data_folder, 'diff'), mode='w') as f:
+        f.write(check_output('git diff', shell=True).decode(sys.stdout.encoding))
 
-print(data_folder)
+with open(os.path.join(data_folder, 'commit'), mode='w') as f:
+    f.write(check_output('git show --quiet --pretty=fuller HEAD', shell=True).decode(sys.stdout.encoding))
+
+# Generate the SLURM batch script that will be used to submit the job
+gen_batch(os.path.join(data_folder,'pluto.slurm'), args.jobname, args.partition, args.ntasks, args.tasks_per_node)
+
+if args.submit:
+    os.chdir(data_folder)
+    call('sbatch pluto.slurm', shell=True)
