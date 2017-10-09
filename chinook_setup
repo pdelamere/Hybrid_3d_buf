@@ -21,8 +21,8 @@ def make_next_directory(path):
     os.mkdir(ret)
     return ret
 
-def get_command_line():
-    return ' '.join(sys.argv)
+def get_command_line_args():
+    return repr(sys.argv)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('scratch',
@@ -74,7 +74,7 @@ shutil.copy('restart.sh', data_folder)
 
 # Generate a few more informational files
 with open(os.path.join(data_folder, 'invocation'), mode='w') as f:
-    f.write(get_command_line())
+    f.write(get_command_line_args())
 with open(os.path.join(data_folder, 'message'), mode='w') as f:
     f.write(args.message)
 
