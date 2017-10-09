@@ -31,7 +31,7 @@ parser.add_argument('ntasks',
         help="Number of tasks to launch")
 
 parser.add_argument('-i', '--ignore', dest='ignore', action='store_true', 
-        help='Ignore the fact that the changes to the working directory are not commited')
+        help='Ignore the fact that the changes to the working directory are not commited and proceed anyway')
 parser.add_argument('--no-compile', dest='compile', action='store_false', 
         help='Disable automatically compiling the program')
 parser.add_argument('--no-submit', action='store_false', dest='submit',
@@ -51,7 +51,8 @@ args = parser.parse_args()
 # Check if working directory is clean unless we ignore it.
 if not args.ignore:
     if call('git diff-index --quiet HEAD --', shell=True):
-        raise RuntimeError("There are uncommited changes in the working directory. Commit them and try again.")
+        print("There are uncommited changes in the working directory. Commit them and try again or set the --ignore flag.")
+        sys.exit()
 
 # Make sure the program is rebuilt correctly.
 if args.compile:
