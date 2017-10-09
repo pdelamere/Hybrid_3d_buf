@@ -203,15 +203,9 @@ c initialize seed for each processor
       endif
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
 
-      if (.not.(restart)) then
-         do 66 i=1,nx
-            do 66 j=1,ny
-               do 66 k=1,nz
-                  input_E = 0.0
-                  input_chex = 0.0
-                  input_bill = 0.0
- 66               continue
-               endif
+      input_E = 0.0
+      input_chex = 0.0
+      input_bill = 0.0
 
 
       if (.not.(restart)) then
@@ -223,12 +217,7 @@ c initialize seed for each processor
 
       call grd8()
       call get_nu(nu)
-
-      if (.not.(restart)) then
-          call grd6_setup(b0,bt,b12,b1,b1p2)
-      endif
-
-
+      call grd6_setup(b0,b1,bt)
       call get_beta()
 
 
@@ -274,10 +263,12 @@ c----------------------------------------------------------------------
      x          form='unformatted')
           write(*,*) 'reading restart.vars......',filenum
          
-          read(1000+my_rank) b0,b1,b12,b1p2,bt,b0_us,
+          read(1000+my_rank) b1,b12,
      x         E,input_E,mstart,
-     x         Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x         Evp,EB1,EE,
      x         beta_p
+
+          bt = b0 + b1
 
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
@@ -680,9 +671,9 @@ c----------------------------------------------------------------------
      x              status='unknown',
      x              form='unformatted')
          
-          write(1000+my_rank)  b0,b1,b12,b1p2,bt,b0_us,
+          write(1000+my_rank)  b1,b12,
      x             E,input_E,m,
-     x             Evp,EB1,EB1x,EB1y,EB1z,EE,EeP,
+     x             Evp,EB1,EE,
      x             beta_p
 
           close(1000+my_rank)
