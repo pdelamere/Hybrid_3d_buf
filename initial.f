@@ -78,6 +78,11 @@ c----------------------------------------------------------------
       imf_theta = (pi/180)*imf_theta
       imf_phi = (pi/180)*imf_phi
 
+      ! Store the upstream condition of B given imf_theta and imf_phi
+      b0_us(:,:,1) = cos(imf_phi)*sin(imf_theta)*b0_top*eoverm
+      b0_us(:,:,2) = sin(imf_phi)*sin(imf_theta)*b0_top*eoverm
+      b0_us(:,:,3) = cos(imf_theta)*b0_top*eoverm
+
       max_ion_density = PCE_coef*sqrt(atmosphere(r_thin))
       write(*,*) 'max_ion_density...', max_ion_density
 
@@ -141,8 +146,6 @@ c----------------------------------------------------------------------
          enddo
       enddo
 
-      ! Store the upstream condition
-      b0_us = b0(nx,:,:,:)
 
       do 20 i=1,nx
          do 20 j=1,ny
