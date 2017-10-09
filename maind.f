@@ -282,7 +282,6 @@ c----------------------------------------------------------------------
           close(1000+my_rank)
 
          if(my_rank .eq. 0) then
-           write(error_unit,*) 'python'
            call execute_command_line(
      x     'python fileShrinker.py '//
      x         trim(out_dir)//'grid/ '//int_to_str(mstart)
