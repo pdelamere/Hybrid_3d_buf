@@ -27,7 +27,7 @@ module load PrgEnv-intel/2016
 module load python/anaconda3-2.5.0
 
 echo "Generate machinefile"
-srun -l /bin/hostname | sort -n | awk '{{print $2}}' > ./nodes.$SLURM_JOB_ID
+srun -l /bin/hostname | sort -n | awk '{print $2}' > ./nodes.$SLURM_JOB_ID
 echo "Start Hybrid Code"
 mpirun -np $SLURM_NTASKS --machinefile ./nodes.$SLURM_JOB_ID "hybrid" > output 2> error
 RESULT=$?
@@ -42,7 +42,7 @@ def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None):
     if tasks_per_node is None:
         extra_batch_commands = ""
     else:
-        extra_batch_commands = "#SLURM --tasks-per-node={}\n".format(tasks_per_node)
+        extra_batch_commands = "#SBATCH --tasks-per-node={}\n".format(tasks_per_node)
 
     with open(filename, mode='w') as f:
         f.write(shebang
