@@ -613,6 +613,7 @@ c----------------------------------------------------------------------
          if (ndiag .eq. nout) then
 
 c save 3d arrays------------------------
+               ! Output grid data for the whole domain
                write(111) m
                write(111) np
 
@@ -629,15 +630,15 @@ c save 3d arrays------------------------
                write(132) b0
                write(133) m
                write(133) bt
-c               write(140) m
-c               write(140) aj
-c               write(150) m
-c               write(150) E
                write(181) m
                write(181) up
                write(301) m
                write(301) temp_p/1.6e-19
+
+               ! Only output particle data only near pluto
                if ( ndiag_part .eq. part_nout ) then
+               if ( my_rank .gt. procnum/2 - 15 .and.
+     x              my_rank .lt. procnum/2 + 15) then
                    write(305) m
                    write(305) xp
                    write(310) m
@@ -649,7 +650,8 @@ c               write(150) E
                    write(320) m
                    write(320) mrat
                    ndiag_part = 0
-                endif
+               endif
+               endif
                ndiag = 0
 
          endif

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#SBATCH --partition=debug
-#SBATCH --ntasks=15
+#SBATCH --partition=t1standard
+#SBATCH --ntasks=115
+#SBATCH --tasks-per-node=23
 #SBATCH --mail-user=npbarnes@alaska.edu
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
