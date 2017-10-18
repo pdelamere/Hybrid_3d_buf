@@ -498,9 +498,7 @@ c======================================================================
          call update_np_boundary(np)
          call update_up(vp,np,up)       !up at n+1/2
 
-         if (Ni_tot .lt. 0.80*Ni_max) then
-            call ionization(np,xp,vp,vp1)
-         endif
+         call ionization(np,xp,vp,vp1)
 
 
          call curlB(b1,np,aj)
