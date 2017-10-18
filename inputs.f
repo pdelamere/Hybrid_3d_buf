@@ -80,8 +80,9 @@ c density scaling parameter, alpha, and ion particle array dims
       real*8 alpha, beta_pu  
       PARAMETER (beta_pu = 0.1)
 
+      integer ri0 ! Number of grid cells pluto is offset from the center.
 
-      real Qo, vrad, N_o, RIo, Rpluto, tau_photo, k_rec, ri0
+      real Qo, vrad, N_o, RIo, Rpluto, tau_photo, k_rec
       real S_radius
       PARAMETER (Qo = 3e27)       !neutral source rate
       PARAMETER (vrad = 0.05)     !escape velocity
