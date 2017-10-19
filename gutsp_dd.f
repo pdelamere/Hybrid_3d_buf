@@ -5,6 +5,7 @@
       USE mpi
       USE boundary
       USE grid_interp
+      USE iso_fortran_env, only: error_unit
 
       contains
 
@@ -962,6 +963,12 @@ c -------------------z exchange, up-----------------------------
      x     cartcomm, ierr)
       call MPI_RECV(Ni_in, 1, MPI_INTEGER, source, tag,
      x     cartcomm, stat, ierr)
+
+      if(Ni_tot_in + Ni_in .gt. Ni_max) then
+          write(error_unit,*) 'Not enough space to pass particles in',
+     x                                                      my_rank
+          stop 1
+      endif
       
       allocate(in_part(Ni_in,3))
       allocate(in_ijkp(Ni_in,3))
@@ -1188,6 +1195,12 @@ c ---------z exchange down---------------------------------------
 
 
       call MPI_WAITALL(2, reqs, stats, ierr)
+
+      if(Ni_tot_in + Ni_in .gt. Ni_max) then
+          write(error_unit,*) 'Not enough space to pass particles in',
+     x                                                      my_rank
+          stop 1
+      endif
 
 
       allocate(in_part(Ni_in,3))
