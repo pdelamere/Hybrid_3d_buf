@@ -1,4 +1,4 @@
-#!/usr/local/pkg/python-anaconda/anaconda3/bin/python
+#!/usr/bin/env python
 
 import os
 import re
