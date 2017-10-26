@@ -239,13 +239,14 @@ c----------------------------------------------------------------------
       
       ! sanity check to ensure no files get overwritten
       if(restart .and. (.not. ex)) then
-          write(*,*) 'restart is true, but '//trim(out_dir)//' does not
-     x      exist'
+          write(*,*) 'restart is true, but '//trim(out_dir)//'/para.dat
+     x      does not exist'
           write(*,*) 'stopping'
           call MPI_FINALIZE(ierr)
           stop
       else if((.not. restart) .and. ex) then
-          write(*,*) 'not a restart, but '//trim(out_dir)//' exists'
+          write(*,*) 'not a restart, but '//trim(out_dir)//'/para.dat
+     x        exists'
           write(*,*) 'stopping'
           call MPI_FINALIZE(ierr)
           stop
