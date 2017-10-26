@@ -38,11 +38,15 @@ echo "Finish batch script"
 exit $RESULT
 """
 
-def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None):
-    if tasks_per_node is None:
-        extra_batch_commands = ""
-    else:
-        extra_batch_commands = "#SBATCH --tasks-per-node={}\n".format(tasks_per_node)
+def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=None, test=False):
+    extra_batch_commands = ""
+    if tasks_per_node is not None:
+        extra_batch_commands += "#SBATCH --tasks-per-node={}\n".format(tasks_per_node)
+    if time is not None:
+        extra_batch_commands += "#SBATCH --time={}\n".format(time)
+    if test:
+        extra_batch_commands += "#SBATCH --test-only\n"
+
 
     with open(filename, mode='w') as f:
         f.write(shebang
