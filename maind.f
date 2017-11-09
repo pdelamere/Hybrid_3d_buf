@@ -609,7 +609,7 @@ c----------------------------------------------------------------------
          call Energy_diag(vp,b0,b1,E,Evp,EB1,EE,
      x                    nu,up,np)
 
-         if (ndiag .eq. nout) then
+         if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
 
 c save 3d arrays------------------------
                ! Output grid data for the whole domain
@@ -635,7 +635,7 @@ c save 3d arrays------------------------
                write(301) temp_p/1.6e-19
 
                ! Only output particle data only near pluto
-               if ( ndiag_part .eq. part_nout ) then
+               if ( ndiag_part .ge. part_nout ) then
                if ( my_rank .gt. procnum/2 - 15 .and.
      x              my_rank .lt. procnum/2 + 15) then
                    write(305) m

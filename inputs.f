@@ -12,6 +12,7 @@
       integer nt
       integer nout
       integer part_nout
+      integer output_wait
       real vsw
       real vth
       real Ni_tot_frac
@@ -160,6 +161,8 @@ c----------------------------------------------------------------
       write(*,*) 'nout..............',nout
       read(100,*) part_nout
       write(*,*) 'part_nout..............',part_nout
+      read(100,*) output_wait
+      write(*,*) 'output_wait..............',output_wait
       read(100,*) vsw
       write(*,*) 'vsw...............',vsw
       read(100,*) vth
