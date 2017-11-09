@@ -639,15 +639,15 @@ c save 3d arrays------------------------
                if ( my_rank .gt. procnum/2 - 15 .and.
      x              my_rank .lt. procnum/2 + 15) then
                    write(305) m
-                   write(305) xp
+                   write(305) xp(:Ni_tot,:)
                    write(310) m
-                   write(310) vp
+                   write(310) vp(:Ni_tot,:)
                    write(311) m
-                   write(311) tags
+                   write(311) tags(:Ni_tot)
                    write(315) m
-                   write(315) beta_p
+                   write(315) beta_p(:Ni_tot)
                    write(320) m
-                   write(320) mrat
+                   write(320) mrat(:Ni_tot)
                    ndiag_part = 0
                endif
                endif
