@@ -21,10 +21,7 @@ ulimit -l unlimited
 echo "Setting up modules"
 module purge
 module load slurm
-module load intel/2016
-module load openmpi/intel/1.10.7
-module load PrgEnv-intel/2016
-module load python/anaconda3-2.5.0
+module load lang/Anaconda3/2.5.0
 
 echo "Generate machinefile"
 srun -l /bin/hostname | sort -n | awk '{print $2}' > ./nodes.$SLURM_JOB_ID
