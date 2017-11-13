@@ -19,11 +19,14 @@ ulimit -f unlimited
 ulimit -l unlimited
 
 echo "Setting up modules"
+. /etc/profile.d/modules.sh
 module purge
 module load slurm
+module load toolchain/pic-intel/2016b
 module load lang/Anaconda3/2.5.0
 
 echo "Generate machinefile"
+cd $SLURM_SUBMIT_DIR
 srun -l /bin/hostname | sort -n | awk '{print $2}' > ./nodes.$SLURM_JOB_ID
 echo "Start Hybrid Code"
 mpirun -np $SLURM_NTASKS --machinefile ./nodes.$SLURM_JOB_ID "hybrid" > output 2> error
