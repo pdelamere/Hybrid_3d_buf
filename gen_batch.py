@@ -22,7 +22,8 @@ echo "Setting up modules"
 . /etc/profile.d/modules.sh
 module purge
 module load slurm
-module load toolchain/pic-intel/2016b
+module load compiler/ifort/2016.3.210-GCC-5.4.0-2.26
+module load openmpi/intel/3.0.0 
 module load lang/Anaconda3/2.5.0
 
 echo "Generate machinefile"
