@@ -39,7 +39,7 @@ echo "Finish batch script"
 exit $RESULT
 """
 
-def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=None, test=False):
+def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=None, test=False, cont=False):
     extra_batch_commands = ""
     if tasks_per_node is not None:
         extra_batch_commands += "#SBATCH --tasks-per-node={}\n".format(tasks_per_node)
@@ -47,6 +47,8 @@ def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=No
         extra_batch_commands += "#SBATCH --time={}\n".format(time)
     if test:
         extra_batch_commands += "#SBATCH --test-only\n"
+    if cont:
+        extra_batch_commands += "#SBATCH --contiguous\n"
 
 
     with open(filename, mode='w') as f:
