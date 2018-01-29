@@ -6,6 +6,7 @@
       USE misc
       USE gutsp_dd
       USE mpi
+      USE iso_fortran_env, only: output_unit,error_unit
 
       contains
 
@@ -105,12 +106,18 @@ c----------------------------------------------------------------------
       ! (kinetic + electromagnetic)
       supposed_E = S_input_E + S_bndry_Eflux
 
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+      call flush(output_unit)
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       if (my_rank .eq. 0) then
 
       write(*,*) 'Normalized particle energy...',S_Evp/S_input_E
       write(*,*) 'Normalized total energy......',actual_E/supposed_E
 
       endif
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+      call flush(output_unit)
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       
       return
       end SUBROUTINE Energy_diag

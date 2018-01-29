@@ -18,7 +18,7 @@ c----------------------------------------------------------------------
       USE part_init
       USE grid_interp
       USE chem_rates
-      USE iso_fortran_env, only: error_unit
+      USE iso_fortran_env, only: output_unit,error_unit
 
 
 c----------------------------------------------------------------------
@@ -36,6 +36,7 @@ c----------------------------------------------------------------------
       save
 
 
+      integer dumb(1)
       real b0(nx,ny,nz,3),            !ambient magnetic field
      x     b1(nx,ny,nz,3),    !1st order magnetic field
      x     b12(nx,ny,nz,3),   !b1 at previous time step
@@ -96,7 +97,7 @@ c----------------------------------------------------------------------
       real ndot(nx,ny,nz)
       
       integer seedsize
-      integer, dimension(:), allocatable :: seeder
+      integer, dimension(:), allocatable :: cursteps
 
       real recvbuf
       integer count
@@ -145,6 +146,7 @@ c----------------------------------------------------------------------
       write(*,*) 'filenum...',filenum,my_rank+1
 
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
+      allocate( cursteps(procnum) )
       io_proc = nint(procnum/2.)
       dims(1) = procnum
 
@@ -482,17 +484,33 @@ c======================================================================
 
       do 1 m = mstart+1, nt
 
+         dumb(1) = m
+         call MPI_GATHER(dumb, 1, MPI_INT, cursteps, 1, MPI_INT, 0,
+     x                MPI_COMM_WORLD, ierr)
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+         if (my_rank .eq. 0) then
+         do i=1,procnum
+         if (cursteps(i) .ne. m) then
+             call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
+         endif
+         enddo
+         write(*,*) 'All the same steps'
+         call flush(output_unit)
+         endif
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+
          ndiag = ndiag + 1
          ndiag_part = ndiag_part + 1
 
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
          if (my_rank .eq. 0) then
             write(*,*) 'time...', m, dt,mstart
+            call flush(output_unit)
          endif
-
-         !Calculate neutral density
-
-
-         write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+         write(*,*) 'Ni_tot...',Ni_tot,Ni_max,my_rank,m
 
          call get_interp_weights(xp)
          call update_np(xp, vp, vp1, np)             !np at n+1/2
@@ -694,7 +712,6 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
 
-         call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
 
  1     continue
