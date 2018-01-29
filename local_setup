@@ -7,7 +7,7 @@ import time
 import shutil
 import argparse
 from gen_batch import gen_batch
-from subprocess import call
+from subprocess import call, Popen
 
 def make_next_directory(path):
     max_num = 0
@@ -100,4 +100,4 @@ gen_batch( os.path.join(data_folder,'pluto.slurm'), args.jobname, args.partition
 if args.submit:
     os.chdir(data_folder)
     with open('output', mode='w') as std, open('error', mode='w') as err:
-            call(['mpirun', '-np', args.ntasks, 'hybrid'], stdout=std, stderr=err)
+            Popen(['mpirun', '-np', args.ntasks, 'hybrid'], stdout=std, stderr=err)
