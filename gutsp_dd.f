@@ -1325,7 +1325,7 @@ c ---------z exchange down---------------------------------------
       beta_p(Ni_tot_in+1:Ni_tot_in+Ni_in) = in_mass(:)
 
 
-      if( my_rank .eq. procnum-1 ) then
+      if( my_rank .eq. 0 ) then
         out_tags(1:Ni_out) = 2
       else
         out_tags(1:Ni_out) =
