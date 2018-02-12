@@ -1833,13 +1833,13 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE separate_np(np,mr)
+      SUBROUTINE separate_np(np,mask)
 c Weight density to eight nearest grid points.
 c----------------------------------------------------------------------
 
       real np(nx,ny,nz)
       real us(ny,nz)
-      real mr
+      logical mask(Ni_max)
 
       real xp(Ni_max,3)
       real vp(Ni_max,3)
@@ -1858,7 +1858,7 @@ c----------------------------------------------------------------------
 
       do 20 l=1,Ni_tot
          
-         if (mrat(l) .eq. mr) then 
+         if (mask(l)) then 
             
 
             i=ijkp(l,1)
@@ -2334,6 +2334,263 @@ c use for periodic boundary conditions
       return
       end SUBROUTINE get_temperature
 c----------------------------------------------------------------------
+
+      SUBROUTINE separate_temperature(xp,vp,np,temp_p,mask)
+c----------------------------------------------------------------------
+      
+      real xp(Ni_max,3),
+     x     vp(Ni_max,3),
+     x     np(nx,ny,nz),
+     x     up_ave(nx,ny,nz,3),
+     x     up2(nx,ny,nz,3),
+     x     temp_p(nx,ny,nz)
+      logical mask(Ni_max)
+
+      integer dest, source
+      real out_buf_z(nx,ny,3)
+      real in_buf_z(nx,ny,3)
+      integer cnt_buf_z
+      integer reqs(2)
+      integer stats(MPI_STATUS_SIZE,2)
+
+      real cnt(nx,ny,nz)
+
+      real mvp(Ni_max,3)
+
+      real volb,nvolb      !np times vol times beta
+
+      cnt_buf_z = nx*ny*3
+
+      cnt(:,:,:) = 0.0
+
+      up2(:,:,:,:) = 0.0
+      up_ave(:,:,:,:) = 0.0
+      ct(:,:,:,:) = 0.0
+
+
+      do m = 1,3 
+         mvp(:,m) = vp(:,m)/sqrt(mrat(:))
+      enddo
+
+
+      do 20 l=1,Ni_tot
+      if(mask(l)) then
+
+
+         i=ijkp(l,1)
+         j=ijkp(l,2)
+         k=ijkp(l,3)
+
+         ip = i+1
+         jp = j+1
+         kp = k+1
+      
+         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
+         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)**2*wght(l,1)/beta_p(l)
+         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)**2*wght(l,1)/beta_p(l)
+         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)**2*wght(l,1)/beta_p(l)
+
+         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)         
+         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)**2*wght(l,2)/beta_p(l)
+         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)**2*wght(l,2)/beta_p(l)
+         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)**2*wght(l,2)/beta_p(l)
+
+         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
+         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)**2*wght(l,3)/beta_p(l)
+         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)**2*wght(l,3)/beta_p(l)
+         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)**2*wght(l,3)/beta_p(l)
+
+         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l)
+         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)**2*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)**2*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)**2*wght(l,4)/beta_p(l)
+
+         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
+         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)**2*wght(l,5)/beta_p(l)
+         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)**2*wght(l,5)/beta_p(l)
+         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)**2*wght(l,5)/beta_p(l)
+
+         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
+         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)**2*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)**2*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)**2*wght(l,6)/beta_p(l)
+
+         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
+         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)**2*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)**2*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)**2*wght(l,7)/beta_p(l)
+
+         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,1) = ct(ip,jp,kp,1)+mvp(l,1)**2*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,2) = ct(ip,jp,kp,2)+mvp(l,2)**2*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,3) = ct(ip,jp,kp,3)+mvp(l,3)**2*wght(l,8)/beta_p(l)
+
+
+      endif
+ 20   continue
+
+c use for periodic boundary conditions
+      ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
+      cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
+
+
+      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
+
+      where (cnt(:,:,:) .gt. 0.0)
+         ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
+         ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)
+         ct(:,:,:,3) = ct(:,:,:,3)/cnt(:,:,:)
+      endwhere
+
+
+      out_buf_z(:,:,:) = ct(:,:,nz,:)         
+
+      dest = up_proc
+      source = down_proc
+      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+     x     cartcomm, reqs(1), ierr)
+      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+     x     cartcomm, reqs(2), ierr)
+
+      call MPI_WAITALL(2, reqs, stats, ierr)
+      ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
+
+      call periodic(ct)
+      
+      do 30 i=1,nx-1      !interpolate back to contravarient positions
+         do 30 j=1,ny-1
+            do 30 k=1,nz-1
+
+               up2(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
+               up2(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
+               up2(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
+
+ 30            continue
+
+
+      call periodic(up2)
+
+
+      ct(:,:,:,:) = 0.0
+      cnt(:,:,:) = 0.0
+
+
+      do 40 l=1,Ni_tot
+      if(mask(l)) then
+
+         i=ijkp(l,1)
+         j=ijkp(l,2)
+         k=ijkp(l,3)
+
+         ip = i+1
+         jp = j+1
+         kp = k+1
+      
+         cnt(i,j,k) = cnt(i,j,k) + wght(l,1)/beta_p(l)
+         ct(i,j,k,1) = ct(i,j,k,1) + mvp(l,1)*wght(l,1)/beta_p(l)
+         ct(i,j,k,2) = ct(i,j,k,2) + mvp(l,2)*wght(l,1)/beta_p(l)
+         ct(i,j,k,3) = ct(i,j,k,3) + mvp(l,3)*wght(l,1)/beta_p(l)
+
+         cnt(ip,j,k) = cnt(ip,j,k) + wght(l,2)/beta_p(l)
+         ct(ip,j,k,1) = ct(ip,j,k,1) + mvp(l,1)*wght(l,2)/beta_p(l)
+         ct(ip,j,k,2) = ct(ip,j,k,2) + mvp(l,2)*wght(l,2)/beta_p(l)
+         ct(ip,j,k,3) = ct(ip,j,k,3) + mvp(l,3)*wght(l,2)/beta_p(l)
+
+         cnt(i,j,kp) = cnt(i,j,kp) + wght(l,3)/beta_p(l)
+         ct(i,j,kp,1) = ct(i,j,kp,1) + mvp(l,1)*wght(l,3)/beta_p(l)
+         ct(i,j,kp,2) = ct(i,j,kp,2) + mvp(l,2)*wght(l,3)/beta_p(l)
+         ct(i,j,kp,3) = ct(i,j,kp,3) + mvp(l,3)*wght(l,3)/beta_p(l)
+
+         cnt(ip,j,kp) = cnt(ip,j,kp) + wght(l,4)/beta_p(l)
+         ct(ip,j,kp,1) = ct(ip,j,kp,1) + mvp(l,1)*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,2) = ct(ip,j,kp,2) + mvp(l,2)*wght(l,4)/beta_p(l)
+         ct(ip,j,kp,3) = ct(ip,j,kp,3) + mvp(l,3)*wght(l,4)/beta_p(l)
+
+         cnt(i,jp,k) = cnt(i,jp,k) + wght(l,5)/beta_p(l)
+         ct(i,jp,k,1) = ct(i,jp,k,1) + mvp(l,1)*wght(l,5)/beta_p(l)
+         ct(i,jp,k,2) = ct(i,jp,k,2) + mvp(l,2)*wght(l,5)/beta_p(l)
+         ct(i,jp,k,3) = ct(i,jp,k,3) + mvp(l,3)*wght(l,5)/beta_p(l)
+
+         cnt(ip,jp,k) = cnt(ip,jp,k) + wght(l,6)/beta_p(l)
+         ct(ip,jp,k,1) = ct(ip,jp,k,1) + mvp(l,1)*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,2) = ct(ip,jp,k,2) + mvp(l,2)*wght(l,6)/beta_p(l)
+         ct(ip,jp,k,3) = ct(ip,jp,k,3) + mvp(l,3)*wght(l,6)/beta_p(l)
+
+         cnt(i,jp,kp) = cnt(i,jp,kp) + wght(l,7)/beta_p(l)
+         ct(i,jp,kp,1) = ct(i,jp,kp,1) + mvp(l,1)*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,2) = ct(i,jp,kp,2) + mvp(l,2)*wght(l,7)/beta_p(l)
+         ct(i,jp,kp,3) = ct(i,jp,kp,3) + mvp(l,3)*wght(l,7)/beta_p(l)
+
+         cnt(ip,jp,kp) = cnt(ip,jp,kp) + wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,1) = ct(ip,jp,kp,1) + mvp(l,1)*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,2) = ct(ip,jp,kp,2) + mvp(l,2)*wght(l,8)/beta_p(l)
+         ct(ip,jp,kp,3) = ct(ip,jp,kp,3) + mvp(l,3)*wght(l,8)/beta_p(l)
+
+
+      endif
+ 40   continue
+
+c use for periodic boundary conditions
+      ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
+      cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
+
+
+      call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
+      where (cnt(:,:,:) .gt. 0.0)
+         ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
+         ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)
+         ct(:,:,:,3) = ct(:,:,:,3)/cnt(:,:,:)
+      endwhere
+
+
+      out_buf_z(:,:,:) = ct(:,:,nz,:)         
+
+      dest = up_proc
+      source = down_proc
+      call MPI_ISEND(out_buf_z, cnt_buf_z , MPI_REAL, dest, tag, 
+     x     cartcomm, reqs(1), ierr)
+      call MPI_IRECV(in_buf_z, cnt_buf_z, MPI_REAL, source, tag,
+     x     cartcomm, reqs(2), ierr)
+
+      call MPI_WAITALL(2, reqs, stats, ierr)
+      ct(:,:,2,:) = (ct(:,:,2,:) + in_buf_z)/2
+
+      call periodic(ct)
+
+      do 50 i=1,nx-1      !interpolate back to contravarient positions
+         do 50 j=1,ny-1
+            do 50 k=1,nz-1
+
+               up_ave(i,j,k,1) = 0.5*(ct(i,j,k,1)+ct(i+1,j,k,1))
+               up_ave(i,j,k,2) = 0.5*(ct(i,j,k,2)+ct(i,j+1,k,2))
+               up_ave(i,j,k,3) = 0.5*(ct(i,j,k,3)+ct(i,j,k+1,3))
+
+ 50            continue
+
+
+      call periodic(up_ave)
+
+
+      do i = 1,nx
+         do j = 1,ny
+            do k = 1,nz
+               temp_p(i,j,k) = (1./3.)*1e6*mproton*(up2(i,j,k,1)+
+     x                              up2(i,j,k,2) + 
+     x                              up2(i,j,k,3) - up_ave(i,j,k,1)**2 -
+     x                              up_ave(i,j,k,2)**2 -
+     x                              up_ave(i,j,k,3)**2)
+            enddo
+         enddo
+      enddo
+      
+
+      call periodic_scalar(temp_p)
+
+
+      return
+      end SUBROUTINE separate_temperature
 
 
       end MODULE gutsp_dd

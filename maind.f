@@ -72,6 +72,10 @@ c----------------------------------------------------------------------
       real mrat_out_buf(Ni_max_buf)
 
       real temp_p(nx,ny,nz)
+      real temp_tot(nx,ny,nz)
+      real temp_h(nx,ny,nz)
+      real temp_he(nx,ny,nz)
+      real temp_ch4(nx,ny,nz)
 
       real Evp,       !total particle kinetic energy
      x     EB1,       !total magnetic field energy
@@ -422,11 +426,23 @@ c----------------------------------------------------------------------
      x     form='unformatted')
 
       open(300,file=trim(out_dir)//'grid/'//
-     x     'c.temp_p_'//filenum//'.dat',
+     x     'c.temp_p_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
       open(301,file=trim(out_dir)//'grid/'//
-     x     'c.temp_p_3d_'//filenum//'.dat',
+     x     'c.temp_tot_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(302,file=trim(out_dir)//'grid/'//
+     x     'c.temp_h_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(303,file=trim(out_dir)//'grid/'//
+     x     'c.temp_he_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(304,file=trim(out_dir)//'grid/'//
+     x     'c.temp_ch4_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
 
@@ -452,16 +468,6 @@ c----------------------------------------------------------------------
 
       open(320,file=trim(out_dir)//'particle/'//
      x     'c.mrat_'//filenum//'.dat',
-     x     status=stat, access= acc,
-     x     form='unformatted')
-
-      open(330,file=trim(out_dir)//'grid/'//
-     x     'c.temp_p_3d_1_'//filenum//'.dat',
-     x     status=stat, access= acc,
-     x     form='unformatted')
-
-      open(331,file=trim(out_dir)//'grid/'//
-     x     'c.temp_p_3d_2_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
 
@@ -556,9 +562,17 @@ c======================================================================
          ! to be updated on the output step
          if (ndiag .eq. nout) then
                call get_temperature(xp,vp,np,temp_p)
-               call separate_np(np_H, 1.0)
-               call separate_np(np_He, 2.0/4.0)
-               call separate_np(np_CH4, 1.0/16.0)
+               call separate_temperature(xp,vp,np,temp_tot,
+     x                   (tags==1))
+               call separate_temperature(xp,vp,np,temp_h,
+     x                   (mrat==1.0 .and. tags==1))
+               call separate_temperature(xp,vp,np,temp_he,
+     x                   (mrat==2.0/4.0 .and. tags==1))
+               call separate_temperature(xp,vp,np,temp_ch4,
+     x                   (mrat==1.0/16.0 .and. tags==1))
+               call separate_np(np_H, mrat == 1.0)
+               call separate_np(np_He, mrat==2.0/4.0)
+               call separate_np(np_CH4, mrat==1.0/16.0)
          endif
 
          
@@ -649,8 +663,16 @@ c save 3d arrays------------------------
                write(133) bt
                write(181) m
                write(181) up
+               write(300) m
+               write(300) temp_p/1.6e-19
                write(301) m
-               write(301) temp_p/1.6e-19
+               write(301) temp_tot/1.6e-19
+               write(302) m
+               write(302) temp_h/1.6e-19
+               write(303) m
+               write(303) temp_he/1.6e-19
+               write(304) m
+               write(304) temp_ch4/1.6e-19
 
                ! Only output particle data only near pluto
                if ( ndiag_part .ge. part_nout ) then
@@ -722,6 +744,7 @@ c======================================================================
           close(115)
           close(116)
           close(117)
+          close(118)
           close(120)
           close(130)
           close(140)
@@ -738,12 +761,14 @@ c======================================================================
           close(220)
           close(221)
           close(300)
+          close(301)
+          close(302)
+          close(303)
+          close(304)
           close(305)
           close(310)
           close(315)
           close(320)
-          close(330)
-          close(331)
           close(350)
 
 
