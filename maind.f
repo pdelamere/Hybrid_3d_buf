@@ -43,7 +43,7 @@ c----------------------------------------------------------------------
      x     b1p2(nx,ny,nz,3),  !temporary b1 at time level m+1
      x     bt(nx,ny,nz,3),    !total magnetic field..mc covarient
      x     btc(nx,ny,nz,3),   !btmf at cell center for particle move
-     x     np(nx,ny,nz),      !total ion number density at time level n, n+1/2
+     x     np_tot(nx,ny,nz),      !total ion number density at time level n, n+1/2
      x     np_H(nx,ny,nz),    !proton number density at time level n, n+1/2
      x     np_He(nx,ny,nz),   !He++ number density at time level n, n+1/2
      x     np_CH4(nx,ny,nz),  !CH4+ number density at time level n, n+1/2
@@ -388,6 +388,9 @@ c----------------------------------------------------------------------
       open(117,file=trim(out_dir)//'grid/'//
      x     'c.np_CH4_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
+      open(118,file=trim(out_dir)//'grid/'//
+     x     'c.np_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
 
       open(130,file=trim(out_dir)//'grid/'//
      x     'c.b1_'//filenum//'.dat',
@@ -570,9 +573,15 @@ c======================================================================
      x                   (mrat==2.0/4.0 .and. tags==1))
                call separate_temperature(xp,vp,np,temp_ch4,
      x                   (mrat==1.0/16.0 .and. tags==1))
-               call separate_np(np_H, mrat == 1.0)
-               call separate_np(np_He, mrat==2.0/4.0)
-               call separate_np(np_CH4, mrat==1.0/16.0)
+
+               call separate_np(np_tot, 
+     x                   (tags == 1))
+               call separate_np(np_H,
+     x                   (mrat==1.0 .and. tags==1))
+               call separate_np(np_He,
+     x                   (mrat==2.0/4.0 .and. tags==1))
+               call separate_np(np_CH4,
+     x                   (mrat==1.0/16.0 .and. tags==1))
          endif
 
          
@@ -654,6 +663,8 @@ c save 3d arrays------------------------
                write(116) np_He
                write(117) m
                write(117) np_CH4
+               write(118) m
+               write(118) np_tot
 
                write(131) m
                write(131) b1
