@@ -1326,7 +1326,7 @@ c ---------z exchange down---------------------------------------
 
 
       if( my_rank .eq. 0 ) then
-        out_tags(1:Ni_out) = 2
+        out_tags(1:Ni_out) = 3
       else
         out_tags(1:Ni_out) =
      x     pack(tags(1:Ni_tot), .not.in_bounds(1:Ni_tot))
