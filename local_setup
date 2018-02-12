@@ -65,7 +65,9 @@ if not args.ignore:
 
 # Make sure the program is rebuilt correctly.
 if args.compile:
-    call('make FC=mpifort', shell=True)
+    ret = call('make FC=mpifort', shell=True)
+    if ret != 0:
+        sys.exit(ret)
 
 # If it doesn't exist already, make a folder for today's runs.
 date_today = time.strftime("%Y-%a-%b-%d")
