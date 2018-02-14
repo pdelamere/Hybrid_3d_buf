@@ -871,7 +871,6 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE move_ion_half(xp,vp,vp1,Ep)
 c----------------------------------------------------------------------
-c      include 'incurv.h'
 
       real xp(Ni_max,3),
      x     vp(Ni_max,3),
@@ -965,8 +964,8 @@ c -------------------z exchange, up-----------------------------
      x     cartcomm, stat, ierr)
 
       if(Ni_tot_in + Ni_in .gt. Ni_max) then
-          write(error_unit,*) 'Not enough space to pass particles in',
-     x                                                      my_rank
+          write(error_unit,*) 'Not enough space to pass particles in1',
+     x                    Ni_tot_in, Ni_in, my_rank
           stop 1
       endif
       
@@ -1160,7 +1159,7 @@ c -------------------z exchange, up-----------------------------
       deallocate(in_tags)
 
 
-c ---------z exchange down---------------------------------------
+c ---------z exchange, down---------------------------------------
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
@@ -1201,7 +1200,7 @@ c ---------z exchange down---------------------------------------
       call MPI_WAITALL(2, reqs, stats, ierr)
 
       if(Ni_tot_in + Ni_in .gt. Ni_max) then
-          write(error_unit,*) 'Not enough space to pass particles in',
+          write(error_unit,*) 'Not enough space to pass particles in2',
      x                                                      my_rank
           stop 1
       endif

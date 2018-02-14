@@ -213,7 +213,7 @@ c initialize protons
 
          vp(l,1) = -vsw + vx 
          vp(l,2) = vy 
-         vp(l,3) = vz 
+         vp(l,3) = vz
 
          mrat(l) = mproton/mpart
          beta_p(l) = bwght
@@ -269,7 +269,7 @@ c initialize He++
 
          vp(l,1) = -vsw + vx 
          vp(l,2) = vy 
-         vp(l,3) = vz 
+         vp(l,3) = vz
 
          mrat(l) = 1.0/2.0
          beta_p(l) = b_mq_2
