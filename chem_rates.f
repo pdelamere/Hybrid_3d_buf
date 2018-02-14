@@ -166,7 +166,7 @@ c get source density
                rho2 = y**2 + z**2
                r = sqrt(x**2+rho2)
              
-               bpu = 2.0
+               bpu = 0.1
 
                cur_micro = np(i,j,k)*vol
                new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
