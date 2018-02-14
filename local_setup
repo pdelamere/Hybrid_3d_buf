@@ -54,6 +54,7 @@ parser.add_argument('--contiguous', dest='cont', action='store_true',
         help="Request contiguous node allocation.")
 
 parser.add_argument('--inputsdat', default='inputs.dat')
+parser.add_argument('--oversubscribe', action='store_true')
 
 args = parser.parse_args()
 
@@ -104,4 +105,8 @@ gen_batch( os.path.join(data_folder,'pluto.slurm'), args.jobname, args.partition
 if args.submit:
     os.chdir(data_folder)
     with open('output', mode='w') as std, open('error', mode='w') as err:
+        if args.oversubscribe:
+            Popen(['mpirun', '--oversubscribe', '-np', args.ntasks, 'hybrid'], stdout=std, stderr=err)
+        else:
             Popen(['mpirun', '-np', args.ntasks, 'hybrid'], stdout=std, stderr=err)
+
