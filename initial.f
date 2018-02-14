@@ -487,6 +487,195 @@ c      open(40,file='coord.dat',status='unknown',form='unformatted')
       end subroutine grd8
 c----------------------------------------------------------------------
 
+      SUBROUTINE grd_no_strech()
+c----------------------------------------------------------------------
+
+      integer nrgrd
+
+      real zplus,zminus,xplus, xminus, yplus, yminus
+      real zsf,xsf,ysf
+
+      rj=ny/2
+      ri=nx/2
+      rk=nz/2
+
+
+c==============stretch y direction=====================================
+               
+      ysf = 0.0
+      rj = ny/2
+      nrgrd = 0
+c up from center
+      do 42 j = rj,rj+nrgrd
+         dy_grid(j) = dy
+ 42   continue
+      do 44 j = rj+nrgrd+1,ny
+         dy_grid(j) = dy +
+     x     ysf*dy*(j-(rj+nrgrd+1))/(ny-(rj+nrgrd+1)) 
+ 44   continue
+
+c down from center
+      do 46 j = rj-nrgrd,rj-1
+         dy_grid(j) = dy
+ 46      continue
+      do 47 j = 1,rj-nrgrd-1
+         ind = rj-nrgrd-j
+         dy_grid(ind) = dy + 
+     x     ysf*dy*(rj-nrgrd-1-ind)/(rj-nrgrd-1)
+ 47   continue
+
+      qy(1) = dy
+      do 48 j=2,ny
+         qy(j) = qy(j-1)+dy_grid(j)
+ 48   continue
+
+      do 49 j = 1,ny-1
+         dy_grid(j) = qy(j+1)-qy(j)
+ 49   continue
+      dy_grid(ny) = dy_grid(ny-1)
+
+c==============stretch x direction=====================================
+               
+      xsf = 0.0
+      ri = nx/2 + ri0
+      nrgrd = 0
+c up from center
+      do 12 i = ri,ri+nrgrd
+         dx_grid(i) = dx
+ 12   continue
+      do 14 i = ri+nrgrd+1,nx
+         dx_grid(i) = dx +
+     x     0.0*xsf*dx*(i-(ri+nrgrd+1))/(nx-(ri+nrgrd+1)) 
+ 14   continue
+
+c down from center
+      do 16 i = ri-nrgrd,ri-1
+         dx_grid(i) = dx
+ 16      continue
+      do 17 i = 1,ri-nrgrd-1
+         ind = ri-nrgrd-i
+         dx_grid(ind) = dx + 
+     x     xsf*dx*(ri-nrgrd-1-ind)/(ri-nrgrd-1)
+ 17   continue
+
+      qx(1) = dx
+      do 18 i=2,nx
+         qx(i) = qx(i-1)+dx_grid(i)
+ 18   continue
+
+      do 19 i = 1,nx-1
+         dx_grid(i) = qx(i+1)-qx(i)
+ 19   continue
+      dx_grid(nx) = dx_grid(nx-1)
+
+
+c==============stretch z direction=====================================
+
+      zsf = 0.0  !z stretch factor
+      nrgrd = 0
+c up from center
+      do 32 k = rk,rk+nrgrd
+         dz_grid(k) = delz
+ 32   continue
+      do 34 k = rk+nrgrd+1,nz
+         dz_grid(k) = delz +
+     x     zsf*delz*(k-(rk+nrgrd+1))/(nz-(rk+nrgrd+1)) 
+c     x     2.0*sin((k-(rk+nrgrd+1))*0.5*pi/(nz-(rk+nrgrd+1)))**2 
+c                                !dz_grid(k-1) + 0.01*delz 
+ 34   continue
+
+c down from center
+      do 36 k = rk-nrgrd,rk-1
+         dz_grid(k) = delz
+ 36      continue
+      do 37 k = 1,rk-nrgrd-1
+         ind = rk-nrgrd-k
+         dz_grid(ind) = delz + 
+     x     zsf*delz*(rk-nrgrd-1-ind)/(rk-nrgrd-1)
+c     x     2.0*sin((rk-nrgrd-1-ind)*(-0.5*pi)/(rk-nrgrd-1))**2 
+c                                !dz_grid(ind+1) + 0.01*delz
+ 37   continue
+
+      qz(1) = 0.0
+      do 38 k=2,nz
+c         write(*,*) 'dz_grid...',k,dz_grid(k)
+         qz(k) = qz(k-1)+dz_grid(k)
+ 38   continue
+
+      do 39 k = 1,nz-1
+         dz_grid(k) = qz(k+1)-qz(k)
+ 39   continue
+      dz_grid(nz) = dz_grid(nz-1)
+c======================================================================
+
+
+      dz_cell(1) = dz_grid(1)
+      dz_cell(nz) = dz_grid(nz)
+      zrat(1) = 0.5
+      zrat(nz) = 0.5
+      do 40 k=2,nz-1
+         dz_cell(k) = ((qz(k+1) + qz(k))/2.0) -
+     x                ((qz(k) + qz(k-1))/2.0)
+               
+         zplus = (qz(k+1) + qz(k))/2.0
+         zminus = (qz(k) + qz(k-1))/2.0
+         zrat(k) = (qz(k) - zminus)/(zplus - zminus)
+ 40   continue
+
+
+      dx_cell(1) = dx_grid(1)
+      dx_cell(nx) = dx_grid(nx)
+      xrat(1) = 0.5
+      xrat(nx) = 0.5
+      do 50 i=2,nx-1
+         dx_cell(i) = ((qx(i+1) + qx(i))/2.0) -
+     x                ((qx(i) + qx(i-1))/2.0)
+         xplus = (qx(i+1) + qx(i))/2.0
+         xminus = (qx(i) + qx(i-1))/2.0
+         xrat(i) = (qx(i) - xminus)/(xplus - xminus)
+ 50   continue
+
+      dy_cell(1) = dy_grid(1)
+      dy_cell(ny) = dy_grid(ny)
+      yrat(1) = 0.5
+      yrat(ny) = 0.5
+      do 60 j=2,ny-1
+         dy_cell(j) = ((qy(j+1) + qy(j))/2.0) -
+     x                ((qy(j) + qy(j-1))/2.0)
+         yplus = (qy(j+1) + qy(j))/2.0
+         yminus = (qy(j) + qy(j-1))/2.0
+         yrat(j) = (qy(j) - yminus)/(yplus - yminus)
+ 60   continue
+
+      if (cart_rank .eq. procnum-1) then
+         gz(:) = qz(:)
+      endif
+
+c      do i = 1,procnum 
+      if (cart_rank .lt. procnum-1) then
+         do k = 1,nz
+            i = procnum - (cart_rank+1)
+            gz(k)=qz(nz)*i + ((k-1)*delz) - (i*delz)
+         enddo
+      endif
+
+c      call assign('assign -F system -N ultrix f:' //'c.coord.dat')
+      open(40,file=trim(out_dir)//'c.coord.dat',status='unknown',
+     x         form='unformatted')
+
+c      open(40,file='coord.dat',status='unknown',form='unformatted')
+      write(40) nx
+      write(40) ny
+      write(40) nz
+      write(40) qx
+      write(40) qy
+      write(40) qz
+      write(40) dz_grid
+      write(40) dz_cell
+      close(40)
+
+      return
+      end subroutine grd_no_strech
 
 
 

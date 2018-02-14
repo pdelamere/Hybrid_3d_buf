@@ -43,6 +43,7 @@ c----------------------------------------------------------------------
      x     b1p2(nx,ny,nz,3),  !temporary b1 at time level m+1
      x     bt(nx,ny,nz,3),    !total magnetic field..mc covarient
      x     btc(nx,ny,nz,3),   !btmf at cell center for particle move
+     x     np(nx,ny,nz),      !total ion number density at time level n, n+1/2
      x     np_tot(nx,ny,nz),      !total ion number density at time level n, n+1/2
      x     np_H(nx,ny,nz),    !proton number density at time level n, n+1/2
      x     np_He(nx,ny,nz),   !He++ number density at time level n, n+1/2
@@ -221,7 +222,7 @@ c initialize seed for each processor
          beta_p(Ni_tot+1:) = beta_pu
       endif
 
-      call grd8()
+      call grd_no_strech()
       call get_nu(nu)
       call grd6_setup(b0,b1,bt)
       call get_beta()
@@ -389,7 +390,7 @@ c----------------------------------------------------------------------
      x     'c.np_CH4_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
       open(118,file=trim(out_dir)//'grid/'//
-     x     'c.np_3d_'//filenum//'.dat', access= acc,
+     x     'c.np_tot_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
       open(130,file=trim(out_dir)//'grid/'//
