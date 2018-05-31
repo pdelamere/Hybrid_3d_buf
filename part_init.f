@@ -285,64 +285,64 @@ c initialize He++
 
 c add shell distribution
 
-         Ni_tot_1 = Ni_tot + 1
-
-         Ni_tot = Ni_tot + f_shl*Ni_tot
-
-         do 69 l = Ni_tot_1,Ni_tot
-
-
-            xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
-            xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-            xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-            
-            mrat(l) = 1.0
-            beta_p(l) = b_shl
-
-
-            i=0
- 71         continue
-            i = i + 1
-            if (xp(l,1) .gt. qx(i)) go to 71 !find i on non-uniform 
-            i = i-1
-            ijkp(l,1)= i
-            
-            
-            j=0
- 73         continue
-            j = j + 1
-            if (xp(l,2) .gt. qy(j)) go to 73 !find i on non-uniform 
-            j = j-1
-            ijkp(l,2)= j
-
-            
-            k=2
- 72         continue
-            k = k + 1
-            if (xp(l,3) .gt. qz(k)) go to 72 !find k on non-uniform 
-            k = k-1
-            ijkp(l,3)= k
-
-            
-            vz = pad_ranf()*2 - 1
-            tmp = sqrt(1-vz**2)
-            phi = 2*PI*pad_ranf()
-            vx = tmp*cos(phi)
-            vy = tmp*sin(phi)
-
-            vp(l,1) = -vsw+vsw*vx
-            vp(l,2) = vsw*vy
-            vp(l,3) = vsw*vz
-
-            do  m=1,3
-               vp1(l,m) = vp(l,m)
-               input_E = input_E + 
-     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x              (beta*b_shl)
-            enddo
-            
-
- 69      enddo
+c         Ni_tot_1 = Ni_tot + 1
+c
+c         Ni_tot = Ni_tot + f_shl*Ni_tot
+c
+c         do 69 l = Ni_tot_1,Ni_tot
+c
+c
+c            xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
+c            xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+c            xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+c            
+c            mrat(l) = 1.0
+c            beta_p(l) = b_shl
+c
+c
+c            i=0
+c 71         continue
+c            i = i + 1
+c            if (xp(l,1) .gt. qx(i)) go to 71 !find i on non-uniform 
+c            i = i-1
+c            ijkp(l,1)= i
+c            
+c            
+c            j=0
+c 73         continue
+c            j = j + 1
+c            if (xp(l,2) .gt. qy(j)) go to 73 !find i on non-uniform 
+c            j = j-1
+c            ijkp(l,2)= j
+c
+c            
+c            k=2
+c 72         continue
+c            k = k + 1
+c            if (xp(l,3) .gt. qz(k)) go to 72 !find k on non-uniform 
+c            k = k-1
+c            ijkp(l,3)= k
+c
+c            
+c            vz = pad_ranf()*2 - 1
+c            tmp = sqrt(1-vz**2)
+c            phi = 2*PI*pad_ranf()
+c            vx = tmp*cos(phi)
+c            vy = tmp*sin(phi)
+c
+c            vp(l,1) = -vsw+vsw*vx
+c            vp(l,2) = vsw*vy
+c            vp(l,3) = vsw*vz
+c
+c            do  m=1,3
+c               vp1(l,m) = vp(l,m)
+c               input_E = input_E + 
+c     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+c     x              (beta*b_shl)
+c            enddo
+c            
+c
+c 69      enddo
       tags(1:Ni_tot) = 1
 
 

@@ -82,31 +82,31 @@ c initialize He++ (m/q =2)
          
 c add shell distribution
 
-      Ni_tot_buf_1 = Ni_tot_buf 
-      
-      Ni_tot_buf = Ni_tot_buf_1 + f_shl*Ni_tot_buf_1
-      
-      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
-         
-         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
-         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-         
-         mrat_buf(l) = 1.0
-         beta_p_buf(l) = b_shl
-         tags_buf(l) = 1
-         
-         vz = pad_ranf()*2 - 1
-         tmp = sqrt(1-vz**2)
-         phi = 2*PI*pad_ranf()
-         vx = tmp*cos(phi)
-         vy = tmp*sin(phi)
-         
-         vp_buf(l,1) = -vsw+vsw*vx !+dvx
-         vp_buf(l,2) = vsw*vy !+dvz 
-         vp_buf(l,3) = vsw*vz
-         
- 69   enddo
+c      Ni_tot_buf_1 = Ni_tot_buf 
+c      
+c      Ni_tot_buf = Ni_tot_buf_1 + f_shl*Ni_tot_buf_1
+c      
+c      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
+c         
+c         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
+c         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+c         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+c         
+c         mrat_buf(l) = 1.0
+c         beta_p_buf(l) = b_shl
+c         tags_buf(l) = 1
+c         
+c         vz = pad_ranf()*2 - 1
+c         tmp = sqrt(1-vz**2)
+c         phi = 2*PI*pad_ranf()
+c         vx = tmp*cos(phi)
+c         vy = tmp*sin(phi)
+c         
+c         vp_buf(l,1) = -vsw+vsw*vx !+dvx
+c         vp_buf(l,2) = vsw*vy !+dvz 
+c         vp_buf(l,3) = vsw*vz
+c         
+c 69   enddo
 
 
       return
