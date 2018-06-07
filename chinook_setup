@@ -7,7 +7,7 @@ import time
 import shutil
 import argparse
 from gen_batch import gen_batch
-from subprocess import call, check_output, CalledProcessError
+from subprocess import call
 
 def make_next_directory(path):
     max_num = 0
@@ -63,7 +63,9 @@ if not args.ignore:
 
 # Make sure the program is rebuilt correctly.
 if args.compile:
-    check_output('make FC=mpifort', shell=True)
+    ret = call('make FC=mpifort', shell=True)
+    if ret != 0:
+        sys.exit(ret)
 
 # If it doesn't exist already, make a folder for today's runs.
 date_today = time.strftime("%Y-%a-%b-%d")
@@ -77,8 +79,6 @@ data_folder = make_next_directory(os.path.join(args.scratch, date_today))
 # Copy the needed hybrid code files over
 shutil.copy('hybrid', data_folder)
 shutil.copy('inputs.dat', data_folder)
-shutil.copy('fileShrinker.py', data_folder)
-shutil.copy('restart.sh', data_folder)
 
 # Generate a few more informational files
 with open(os.path.join(data_folder, 'invocation'), mode='w') as f:
@@ -88,18 +88,14 @@ with open(os.path.join(data_folder, 'message'), mode='w') as f:
 
 if args.ignore:
     with open(os.path.join(data_folder, 'diff'), mode='w') as f:
-        f.write(check_output('git diff', shell=True).decode(sys.stdout.encoding))
+        call('git diff --no-color', shell=True, stdout=f)
 
 with open(os.path.join(data_folder, 'commit'), mode='w') as f:
-    try:
-        f.write(check_output('git show --quiet --pretty=fuller HEAD', shell=True).decode(sys.stdout.encoding))
-    except CalledProcessError as e:
-        f.write(e.output.decode(sys.stdout.encoding))
+    call('git show --quiet --pretty=fuller HEAD', shell=True, stdout=f)
 
 # Generate the SLURM batch script that will be used to submit the job
 gen_batch( os.path.join(data_folder,'pluto.slurm'), args.jobname, args.partition, args.ntasks,
-           args.tasks_per_node, args.time, args.test, args.cont, 
-           restart_filename = os.path.join(data_folder, 'restart.slurm') )
+           args.tasks_per_node, args.time, args.test, args.cont )
 
 if args.submit:
     os.chdir(data_folder)
