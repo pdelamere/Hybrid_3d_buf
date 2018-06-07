@@ -289,26 +289,6 @@ c----------------------------------------------------------------------
 
           close(1000+my_rank)
 
-         if(my_rank .eq. 0) then
-           call execute_command_line(
-     x     'python fileShrinker.py '//
-     x         trim(out_dir)//'grid/ '//int_to_str(mstart)
-     x         ,exitstat=ierr)
-           if(ierr .ne. 0) then
-             write(*,*) 'failed to shrink files1'
-             call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
-             stop
-           endif
-           call execute_command_line(
-     x     'python fileShrinker.py '//
-     x         trim(out_dir)//'particle/ '//int_to_str(mstart)
-     x         ,exitstat=ierr)
-           if(ierr .ne. 0) then
-             write(*,*) 'failed to shrink files'
-             call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
-             stop
-           endif
-         endif
       endif
       restart_counter = mstart + mrestart
 
