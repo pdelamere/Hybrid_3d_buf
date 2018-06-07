@@ -12,17 +12,44 @@ batch_commands = """
 #SBATCH --mail-type=FAIL
 """
 
-restart_preamble = """
-./restart.sh -m "Automatic restart"
-if sacct -j $1 --format=State |grep -q TIMEOUT
-then
-"""
+script = """
+if [ $# -eq 0 ]; then
+    echo "This is not a restart"
+    RESTART=false
+else
+    echo "This is a restart"
+    RESTART=true
+    PREVIOUS_JOBID=$1
+    if [ $PREVIOUS_JOBID = "manual" ]; then
+        echo "Previous job restarted manually"
+    else
+        echo "Checking if the previous job failed or timed out"
+        if ! sacct -j $PREVIOUS_JOBID --format=State |grep -q TIMEOUT; then
+            echo "Previous job ($PREVIOUS_JOBID) failed"
+            echo "Previous job ($PREVIOUS_JOBID) failed" > failed
+            exit 1
+        else
+            echo "Previous job ($PREVIOUS_JOBID) timed out"
+        fi
+    fi
+fi
 
-preamble = """
+date +"%Y-%m-%d-%T" >> restarts
+
+if [ "$RESTART" = true ] ; then
+    if [ $PREVIOUS_JOBID = "manual" ]; then
+        echo -e "\\tManual restart" >> restarts
+    else
+        echo -e "\\tAutomatic restart" >> restarts
+    fi
+else
+    echo -e "\\tInitial start" >> restarts
+fi
+    
 echo "Submit restart job"
-sbatch -d afternotok:$SLURM_JOBID restart.slurm $SLURM_JOBID >& restart_job_submission
+sbatch -d afternotok:$SLURM_JOBID pluto.slurm $SLURM_JOBID &> restart_job_submission
 sleep 1
-set NEWJOB=$(cat restart_job_submission |cut -f 4 -d " ")
+NEXT_JOBID=$(cat restart_job_submission |cut -f 4 -d " ")
 
 echo "Setting ulimits"
 ulimit -s unlimited
@@ -41,42 +68,24 @@ echo "Generate machinefile"
 cd $SLURM_SUBMIT_DIR
 srun -l /bin/hostname | sort -n | awk '{print $2}' > ./nodes.$SLURM_JOB_ID
 echo "Start Hybrid Code"
-"""
+if [ "$RESTART" = true ]; then
+    mpirun -np $SLURM_NTASKS --machinefile ./nodes.$SLURM_JOB_ID hybrid restart > output.$SLURM_JOBID 2> error.$SLURM_JOBID
+else
+    mpirun -np $SLURM_NTASKS --machinefile ./nodes.$SLURM_JOB_ID hybrid > output.$SLURM_JOBID 2> error.$SLURM_JOBID
+fi
 
-job_fmt = 'mpirun -np $SLURM_NTASKS --machinefile ./nodes.$SLURM_JOB_ID hybrid {} > output 2> error'
-job = job_fmt.format('')
-restart_job = job_fmt.format('restart')
-
-conclusion = """
 RESULT=$?
 echo "Removing the machinefile"
 rm ./nodes.$SLURM_JOB_ID
 
 echo "Cancel restart"
-scancel $NEWJOB
+scancel $NEXT_JOBID
 
 echo "Finish batch script"
 exit $RESULT
 """
 
-end_restart ="""
-else
-echo "Previous job failed" > failed
-fi
-"""
-
-
-script = (preamble
-        + job
-        + conclusion)
-
-restart_script = (restart_preamble
-        + preamble
-        + restart_job
-        + conclusion
-        + end_restart)
-
-def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=None, test=False, cont=False, restart_filename=None):
+def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=None, test=False, cont=False):
     extra_batch_commands = ""
     if tasks_per_node is not None:
         extra_batch_commands += "#SBATCH --tasks-per-node={}\n".format(tasks_per_node)
@@ -87,21 +96,11 @@ def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=No
     if cont:
         extra_batch_commands += "#SBATCH --contiguous\n"
 
-
     with open(filename, mode='w') as f:
         f.write(shebang
                 + batch_commands.format(jobname=jobname, partition=partition, ntasks=ntasks)
                 + extra_batch_commands
                 + script)
-
-    if restart_filename is not None:
-        with open(restart_filename, mode='w') as f:
-            f.write(shebang
-                    + batch_commands.format(jobname=jobname, partition=partition, ntasks=ntasks)
-                    + extra_batch_commands
-                    + restart_script)
-
-
 
 if __name__ == '__main__':
     gen_batch('test.slurm', 'pluto', 'debug', 115, restart_filename='restart.slurm')
