@@ -19,6 +19,7 @@ c----------------------------------------------------------------------
       USE grid_interp
       USE chem_rates
       USE iso_fortran_env, only: output_unit,error_unit
+      USE ifport, only: rename
 
 
 c----------------------------------------------------------------------
@@ -695,6 +696,10 @@ c Write restart file
 c----------------------------------------------------------------------
 
          if (m .eq. restart_counter) then
+          ierr = rename(trim(out_dir)//'restart.vars'//filenum, 
+     x           trim(out_dir)//'restart.vars'//filenum//'.old')
+          ierr = rename(trim(out_dir)//'restart.part'//filenum, 
+     x           trim(out_dir)//'restart.part'//filenum//'.old')
 
 
           write(*,*) 'writing restart file....',
