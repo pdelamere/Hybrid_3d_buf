@@ -160,6 +160,13 @@ c get source density
          do j = 2,ny-1
             do k = 2,nz-1
 
+               if(np(i,j,k) .ge. max_ion_density) then
+                   ! Note that this check is not needed. whenever it is
+                   ! true new_macro would be negative and no new
+                   ! particles would be created anyway.
+                   continue
+               endif
+
                x = qx(i)-cx
                y = qy(j)-cy
                z = gz(k)-cz ! global z
