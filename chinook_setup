@@ -98,7 +98,8 @@ with open(os.path.join(data_folder, 'commit'), mode='w') as f:
 
 # Generate the SLURM batch script that will be used to submit the job
 gen_batch( os.path.join(data_folder,'pluto.slurm'), args.jobname, args.partition, args.ntasks,
-           args.tasks_per_node, args.time, args.test, args.cont)
+           args.tasks_per_node, args.time, args.test, args.cont, 
+           restart_filename = os.path.join(data_folder, 'restart.slurm') )
 
 if args.submit:
     os.chdir(data_folder)

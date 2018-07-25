@@ -25,12 +25,6 @@ if [[ "$@" -ne "" ]]; then
     usage
 fi
 
-if [ -e "mpipath" ]; then
-    MPI="$(cat mpipath)"/mpirun
-else
-    MPI="mpirun"
-fi
-
 date +"%Y-%m-%d-%T" >> restarts
 if ! [ -z ${MESSAGE+x} ]; then
     echo -e "\t$MESSAGE" >> restarts
@@ -38,4 +32,3 @@ fi
 
 cp --backup=numbered output old-output
 cp --backup=numbered error old-error
-"$MPI" -n 24 ./hybrid "restart" > output 2> error &
