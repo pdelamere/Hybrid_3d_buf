@@ -2177,9 +2177,6 @@ c use for periodic boundary conditions
       cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
 
 
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-
       where (cnt(:,:,:) .gt. 0.0)
          ct(:,:,:,1) = ct(:,:,:,1)/cnt(:,:,:)
          ct(:,:,:,2) = ct(:,:,:,2)/cnt(:,:,:)

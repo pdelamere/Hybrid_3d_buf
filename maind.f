@@ -146,9 +146,6 @@ c----------------------------------------------------------------------
 
       filenum = int_to_str(my_rank+1)
 
-      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-
-
       write(*,*) 'filenum...',filenum,my_rank+1
 
       call MPI_COMM_SIZE(MPI_COMM_WORLD, procnum, ierr)
