@@ -148,6 +148,8 @@ c----------------------------------------------------------------------
       real rho2
       real x,y,z
 
+      real bpu
+
 
       call Neut_Center(cx,cy,cz)
 
@@ -173,7 +175,11 @@ c get source density
                rho2 = y**2 + z**2
                r = sqrt(x**2+rho2)
              
-               bpu = 0.1
+               if(r .le. 2) then
+                   bpu = 0.1
+               else
+                   bpu = 0.2
+               endif
 
                cur_micro = np(i,j,k)*vol
                new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
