@@ -27,32 +27,30 @@ c----------------------------------------------------------------------
 
 c---------------------------------------------------------------------
       real FUNCTION neutral_density(i,j,k)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-
       integer i,j,k
-      real x,y,z
-      real cx,cy,cz
-      real r,a
-      real nn0
+      neutral_density = neutral_density_continuous(qx(i),qy(j),qz(k))
+      return
+      end FUNCTION neutral_density
+c---------------------------------------------------------------------
 
+      real FUNCTION neutral_density_continuous(x,y,z)
+      real x,y,z
+      real xx,yy,zz
+      real cx,cy,cz
 
       call Neut_Center(cx,cy,cz)
-      x = qx(i)-cx
-      y = qy(j)-cy
-      z = gz(k)-cz ! global z
-      rho2 = y**2 + z**2
-      r = sqrt(x**2+rho2)
-      a = atan2(sqrt(rho2), x)
-
+      xx = x - cx
+      yy = y - cy
+      zz = z - cz
+      r = sqrt(xx**2 + yy**2 + zz*2)
       if( r .lt. S_radius ) then
-          neutral_density=atmosphere(r) !neut_corona(a, max(r,cap_r))
+          neutral_density_continuous = atmosphere(r)
       else
-          neutral_density=0
+          neutral_density_continuous = 0
       endif
 
       return
-      end FUNCTION neutral_density
+      end FUNCTION neutral_density_continuous
 c----------------------------------------------------------------------
 
       SUBROUTINE Ionization(np,xp,vp,vp1)
@@ -84,7 +82,7 @@ c      include 'incurv.h'
       
       do l = 1,Ni_tot 
          vrel = sqrt(vp(l,1)**2 + vp(l,2)**2 + vp(l,3)**2)
-         nn = neutral_density(ijkp(l,1),ijkp(l,2),ijkp(l,3))
+         nn = neutral_density_continuous(xp(l,1),xp(l,2),xp(l,3))
 
          ! one over the time constant
          chex_inv_tau = (nn*sigma_chex*vrel)
@@ -101,7 +99,8 @@ c      include 'incurv.h'
             vp(l,:) = 0.0
             vp1(l,:) = 0.0
             mrat(l) = 1./m_pu
-            beta_p(l) = 1.0
+            ! beta_p stays the same
+            tags(l) = pluto_chex_CH4_tag
          endif
 
 
@@ -148,7 +147,9 @@ c----------------------------------------------------------------------
       real rho2
       real x,y,z
 
-      real bpu
+      real pu_beta_p
+      real pu_tag
+
 
 
       call Neut_Center(cx,cy,cz)
@@ -176,17 +177,19 @@ c get source density
                r = sqrt(x**2+rho2)
              
                if(r .le. 2) then
-                   bpu = 0.1
+                   pu_beta_p = 0.1
+                   pu_tag = pluto_stagnant_photoionize_CH4_tag
                else
-                   bpu = 0.2
+                   pu_beta_p = 2.0
+                   pu_tag = pluto_photoionize_CH4_tag
                endif
 
                cur_micro = np(i,j,k)*vol
                new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
                if((cur_micro+new_micro)/vol .le. max_ion_density) then
-                   new_macro = new_micro*beta*bpu
+                   new_macro = new_micro*beta*pu_beta_p
                else
-                   new_macro = (max_ion_density*vol-cur_micro)*beta*bpu
+                   new_macro = (max_ion_density*vol-cur_micro)*beta*pu_beta_p
                endif
 
                do ll = 1,min(nint(new_macro), Ni_max - Ni_tot)
@@ -221,8 +224,8 @@ c get source density
                   ijkp(l,3)= kk
 
                   mrat(l) = 1.0/m_pu
-                  beta_p(l) = bpu
-                  tags(l) = 1
+                  beta_p(l) = pu_beta_p
+                  tags(l) = pu_tag
                   Ni_tot = l
                   do m=1,3
                      vp1(l,m) = vp(l,m)
@@ -270,8 +273,8 @@ c get source density
                       ijkp(l,3)= kk
                       
                       mrat(l) = 1.0/m_pu
-                      beta_p(l) = bpu
-                      tags(l) = 1
+                      beta_p(l) = pu_beta_p
+                      tags(l) = pu_tag
                       Ni_tot = l
                       do m=1,3
                          vp1(l,m) = vp(l,m)
