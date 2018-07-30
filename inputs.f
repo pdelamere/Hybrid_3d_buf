@@ -137,6 +137,20 @@ c solar wind composition
       PARAMETER (r_thin = 3.0*Rpluto)
 
       real max_ion_density
+
+      real dummy_particle_tag
+      real sw_thermal_H_tag
+      real sw_thermal_He_tag
+      real sw_shell_H_tag
+      real pluto_main_CH4_tag
+      real pluto_stagnant_CH4_tag
+      PARAMETER (dummy_particle_tag = 0)
+      PARAMETER (sw_thermal_H_tag = 1)
+      PARAMETER (sw_thermal_He_tag = 2)
+      PARAMETER (sw_shell_H_tag = 3)
+      PARAMETER (pluto_photoionize_CH4_tag = 4)
+      PARAMETER (pluto_stagnant_photoionize_CH4_tag = 5)
+      PARAMETER (pluto_chex_CH4_tag = 6)
       CONTAINS
 
 c----------------------------------------------------------------      
