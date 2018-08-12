@@ -21,8 +21,8 @@ c raw grid coordinate data
       real xrat(nx), yrat(ny), zrat(nz)
       
 c Total number of ions produced at a given time during the simulation
-      integer*4 Ni_tot, Nn_tot, Ni_tot_sys, Ni_tot_sw, Ni_tot_buf,
-     x          Ni_tot_out_buf       
+      integer Ni_tot, Ni_tot_0, Ni_tot_buf, Ni_tot_out_buf       
+      integer Ni_thermal_H, Ni_thermal_He, Ni_shell_H
 
 c Location (indices) of particles with the grid
       integer ijkp(Ni_max,3)

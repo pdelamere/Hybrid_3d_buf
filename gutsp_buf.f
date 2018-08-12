@@ -21,15 +21,24 @@ c----------------------------------------------------------------------
       integer flg
       integer Ni_tot_buf_1
 
+      integer Ni_thermal_H_buf
+      integer Ni_thermal_He_buf
+      integer Ni_shell_H_buf
+      integer Ni_tot_buf
+
       vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
 
-      Ni_tot_buf = nint(nf_init*vol_buf*beta)
+      Ni_thermal_H_buf = nint(nf_init*vol_buf*beta)
+      Ni_thermal_He_buf = b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H
+      Ni_shell_H_buf = b_sw_shell_H*f_sw_shell_H*Ni_thermal_H
+
+      Ni_tot_buf = Ni_thermal_H_buf + Ni_thermal_He_buf + Ni_shell_H_buf
 
       
 
 c initialize protons
 
-      do 10 l = 1,Ni_tot_buf
+      do 10 l = 1,Ni_thermal_H_buf
 
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
@@ -43,22 +52,16 @@ c initialize protons
          vp_buf(l,1) = -vsw + vx 
          vp_buf(l,2) = vy 
          vp_buf(l,3) = vz 
+
+         mrat_buf(l) = 1.0
+         beta_p_buf(l) = b_sw_thermal_H
+         tags_buf(l) = sw_thermal_H_tag
 
  10   continue
          
-      
-      mrat_buf(1:Ni_tot_buf) = 1.0
-      mrat_buf(Ni_tot_buf+1:) = 1.0/m_pu       
-      beta_p_buf(1:Ni_tot_buf) = 1.0
-      beta_p_buf(Ni_tot_buf+1:) = 1.0
-      tags_buf(1:Ni_tot_buf) = 1
-
 c initialize He++ (m/q =2) 
 
-      Ni_tot_buf_1 = Ni_tot_buf
-      Ni_tot_buf = Ni_tot_buf_1 + f_mq_2*Ni_tot_buf_1
-
-      do 20 l = Ni_tot_buf_1+1,Ni_tot_buf
+      do 20 l = Ni_thermal_H_buf+1,Ni_thermal_H_buf+Ni_thermal_He_buf
 
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
@@ -74,39 +77,35 @@ c initialize He++ (m/q =2)
          vp_buf(l,2) = vy 
          vp_buf(l,3) = vz 
 
-         mrat_buf(l) = 1./2.
-         beta_p_buf(l) = b_mq_2
-         tags_buf(l) = 1
+         mrat_buf(l) = 1.0/2.0
+         beta_p_buf(l) = b_sw_thermal_He
+         tags_buf(l) = sw_thermal_He_tag
 
  20   continue
          
 c add shell distribution
 
-c      Ni_tot_buf_1 = Ni_tot_buf 
-c      
-c      Ni_tot_buf = Ni_tot_buf_1 + f_shl*Ni_tot_buf_1
-c      
-c      do 69 l = Ni_tot_buf_1+1,Ni_tot_buf
-c         
-c         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
-c         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-c         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-c         
-c         mrat_buf(l) = 1.0
-c         beta_p_buf(l) = b_shl
-c         tags_buf(l) = 1
-c         
-c         vz = pad_ranf()*2 - 1
-c         tmp = sqrt(1-vz**2)
-c         phi = 2*PI*pad_ranf()
-c         vx = tmp*cos(phi)
-c         vy = tmp*sin(phi)
-c         
-c         vp_buf(l,1) = -vsw+vsw*vx !+dvx
-c         vp_buf(l,2) = vsw*vy !+dvz 
-c         vp_buf(l,3) = vsw*vz
-c         
-c 69   enddo
+      do 69 l = Ni_thermal_H_buf+Ni_thermal_He_buf+1,Ni_tot_buf
+         
+         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
+         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
+         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
+         
+         mrat_buf(l) = 1.0
+         beta_p_buf(l) = b_sw_shell_H
+         tags_buf(l) = sw_shell_H_tag
+         
+         vz = pad_ranf()*2 - 1
+         tmp = sqrt(1-vz**2)
+         phi = 2*PI*pad_ranf()
+         vx = tmp*cos(phi)
+         vy = tmp*sin(phi)
+         
+         vp_buf(l,1) = -vsw+vsw*vx !+dvx
+         vp_buf(l,2) = vsw*vy !+dvz 
+         vp_buf(l,3) = vsw*vz
+         
+ 69   enddo
 
 
       return

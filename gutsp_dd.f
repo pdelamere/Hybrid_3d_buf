@@ -144,7 +144,7 @@ c----------------------------------------------------------------------
 
                      mrat(l) = 1.0
                      beta_p(l) = 1.0
-                     tags(l) = 0
+                     tags(l) = dummy_particle_tag
                      Ni_tot = Ni_tot + 1
                   enddo
                endif

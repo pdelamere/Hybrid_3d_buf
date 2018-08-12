@@ -112,11 +112,19 @@ c domain decompostion parameters
 
 
 c solar wind composition
-      real f_mq_2,b_mq_2,f_shl,b_shl
-      PARAMETER (b_mq_2 = 2.0)
-      PARAMETER (f_mq_2 = 0.1*b_mq_2) 
-      PARAMETER (b_shl = 2.0)
-      PARAMETER (f_shl = 0.1*b_shl)
+      real b_sw_thermal_H, b_sw_thermal_He, b_sw_shell_H
+      real f_sw_thermal_H, f_sw_thermal_He, f_sw_shell_H
+      PARAMETER (b_sw_thermal_H = 1.0)
+      PARAMETER (b_sw_thermal_He = 2.0)
+      PARAMETER (b_sw_shell_H = 5.0)
+      PARAMETER (f_sw_thermal_He = 0.08) 
+      PARAMETER (f_sw_shell_H = 0.038) 
+      PARAMETER (f_sw_thermal_H = 1.0 - f_sw_thermal_He - f_sw_shell_H) 
+c      real f_mq_2,b_mq_2,f_shl,b_shl
+c      PARAMETER (b_mq_2 = 2.0)
+c      PARAMETER (f_mq_2 = 0.1*b_mq_2) 
+c      PARAMETER (b_shl = 2.0)
+c      PARAMETER (f_shl = 0.1*b_shl)
 
       real moment
       real surf_field
@@ -248,7 +256,6 @@ c----------------------------------------------------------------
       cwpi = 3e8/sqrt((np_bottom/1e9)*q*q/(epsilon0*m_bottom))
       write(*,*) 'Ion inertial length...',cwpi/1e3,cwpi/1e3/dx
 
-c      write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*nz)
 
       write(*,*) ' '
       write(*,*) 'Top parameters...'

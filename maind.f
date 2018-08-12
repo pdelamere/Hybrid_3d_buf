@@ -176,14 +176,24 @@ c----------------------------------------------------------------------
       call get_command_argument(number=1,value=arg,status=ierr)
       restart = (trim(arg) == "restart")
 
-      Ni_tot = Ni_tot_0
-      Ni_tot_sw = Ni_tot
-      Ni_tot_sys = Ni_tot
-      print *,'Ni_tot_sys, Ni_tot..',Ni_tot_sys,Ni_tot,Ni_tot_sw
+
+      Ni_thermal_H = 
+     x  Ni_tot_0/(1 
+     x            + b_sw_thermal_He*f_sw_thermal_He 
+     x            + b_sw_shell_H*f_sw_shell_H)
+
+      Ni_thermal_He = b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H
+      Ni_shell_H = b_sw_shell_H*f_sw_shell_H*Ni_thermal_H
+
+      ! Due to round off this will be very close to, but not exactly
+      ! Ni_tot_0
+      Ni_tot = Ni_thermal_H + Ni_thermal_He + Ni_shell_H
+
+      print *,'Ni_tot_0, Ni_tot',Ni_tot_0,Ni_tot
       
       if (my_rank .eq. 0) then
          call check_inputs(my_rank)
-         write(*,*) 'Particles per cell....',Ni_tot_sys/(nx*ny*nz)
+         write(*,*) 'Particles per cell....',Ni_tot/(nx*ny*nz)
          write(*,*) ' '
       endif
          
@@ -211,14 +221,6 @@ c initialize seed for each processor
       input_E = 0.0
       input_chex = 0.0
       input_bill = 0.0
-
-
-      if (.not.(restart)) then
-         mrat(1:Ni_tot) = 1.0
-         mrat(Ni_tot+1:) = 1.0/m_pu !mass N_2+ = 28.0
-         beta_p(1:Ni_tot) = 1.0
-         beta_p(Ni_tot+1:) = beta_pu
-      endif
 
       call grd_no_strech()
       call get_nu(nu)
@@ -282,7 +284,7 @@ c----------------------------------------------------------------------
           write(*,*) 'reading restart.part......',filenum
           read(1000+my_rank) vp,vp1,
      x         xp,Ni_tot,
-     x         Ni_tot_sys,
+     x         Ni_tot_0,
      x         mrat, tags
 
           close(1000+my_rank)
@@ -715,7 +717,7 @@ c----------------------------------------------------------------------
      x             status='unknown',form='unformatted')
           write(1000+my_rank) vp,vp1,
      x             xp,Ni_tot,
-     x             Ni_tot_sys,
+     x             Ni_tot_0,
      x             mrat, tags
 
           close(1000+my_rank)
