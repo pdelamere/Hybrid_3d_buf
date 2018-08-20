@@ -1,7 +1,8 @@
 #F77 = mpif90 -i4 -r4 -O2 -byteswapio
 FC=mpif90
-FFLAGS=-mcmodel=medium -O2
-#FFLAGS=-mcmodel=medium -i4 -real-size 32 -O0 -g -traceback -check all -check uninit -ftrapuv
+#FFLAGS=-mcmodel=medium -O2
+FFLAGS=-mcmodel=medium -i4 -real-size 32 -O0 -g -traceback -check all -check uninit -ftrapuv
+#FFLAGS=-mcmodel=medium -i4 -real-size 32 -O0 -g -traceback -check all -check uninit -ftrapuv -warn all
 
 FILES = dimensions.f inputs.f global.f misc.f  boundary.f grid_interp.f gutsp_dd.f  gutsp_dd.f  gutsf.f part_init.f gutsp_buf.f chem_rates.f maind.f 
 DEBUG = -check all -g -warn

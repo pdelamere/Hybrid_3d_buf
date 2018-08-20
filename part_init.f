@@ -8,8 +8,6 @@
       USE mpi
       USE iso_fortran_env, only: output_unit,error_unit
 
-      implicit none
-
       contains
 
 
@@ -209,7 +207,7 @@ c Initialize Thermal H+
             vp1(l,m) = vp(l,m)
             input_E = input_E + 
      x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x           (beta*bwght)
+     x           (beta*beta_p(l))
  20      continue
                  
  10      continue
@@ -320,7 +318,7 @@ c add shell distribution
                vp1(l,m) = vp(l,m)
                input_E = input_E + 
      x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x              (beta*b_shl)
+     x              (beta*beta_p(l))
             enddo
             
 

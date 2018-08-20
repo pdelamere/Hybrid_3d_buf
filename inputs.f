@@ -41,25 +41,17 @@ c logical variable for restart
 c neutral cloud expansion characteristics
       real vtop,vbottom
 
-c max number of ion particles to be produced.  This parameter
-c is used to dimension the particle arrays.
-      integer*4 Ni_tot_0
-
-
 c misc constants
-      real*8 mu0,epsilon0,pi,rtod,mO,mBa,km_to_m,kboltz,melec
+      real*8 mu0,epsilon0,pi,rtod,mO,km_to_m,kboltz,melec
       real*8 tempf0,m_pu
+      real mpu
       real*8 mproton, eoverm, O_to_Ba
       PARAMETER (pi = 3.14159)
       PARAMETER (rtod = 180.0/pi)    !radians to degreesc
       PARAMETER (mu0 = pi*4.0e-7)    !magnetic permeability of free space
       PARAMETER (epsilon0 = 8.85e-12) !dielectric constant
 
-c      PARAMETER (m_pu = 64.0)
       PARAMETER (mproton = 1.67e-27)
-c      PARAMETER (mO = 2.3e-25)    !mass of Ba (kg)
-c      PARAMETER (mBa = m_pu*mO)    !mass of Ba (kg)
-c      PARAMETER (O_to_Ba = mO/mBa) !convert E and B for particle move
 
       PARAMETER (km_to_m = 1e3)       !km to meters conversion
       PARAMETER (kboltz = 1.38e-29)   !kg km^2 / s^2 / K
@@ -115,8 +107,8 @@ c solar wind composition
       real b_sw_thermal_H, b_sw_thermal_He, b_sw_shell_H
       real f_sw_thermal_H, f_sw_thermal_He, f_sw_shell_H
       PARAMETER (b_sw_thermal_H = 1.0)
-      PARAMETER (b_sw_thermal_He = 2.0)
-      PARAMETER (b_sw_shell_H = 5.0)
+      PARAMETER (b_sw_thermal_He = 5.0)
+      PARAMETER (b_sw_shell_H = 10.0)
       PARAMETER (f_sw_thermal_He = 0.08) 
       PARAMETER (f_sw_shell_H = 0.038) 
       PARAMETER (f_sw_thermal_H = 1.0 - f_sw_thermal_He - f_sw_shell_H) 
@@ -150,8 +142,9 @@ c      PARAMETER (f_shl = 0.1*b_shl)
       real sw_thermal_H_tag
       real sw_thermal_He_tag
       real sw_shell_H_tag
-      real pluto_main_CH4_tag
-      real pluto_stagnant_CH4_tag
+      real pluto_photoionize_CH4_tag
+      real pluto_stagnant_photoionize_CH4_tag
+      real pluto_chex_CH4_tag
       PARAMETER (dummy_particle_tag = 0)
       PARAMETER (sw_thermal_H_tag = 1)
       PARAMETER (sw_thermal_He_tag = 2)

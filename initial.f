@@ -52,8 +52,6 @@ c----------------------------------------------------------------
 
       mO = mion    !mass of H (kg)
 
-      mBa = m_pu*mO    !mass of Ba (kg)
-
       eoverm = q/mO
 
       m_heavy = 1.0

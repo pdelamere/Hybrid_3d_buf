@@ -107,6 +107,7 @@ c----------------------------------------------------------------------
      x              (np(i,j,k) .le. 2.0*den_part)) .and.
      x              (Ni_tot + 1 .lt. Ni_max)) then
                   npart = nint(minden/(np(i,j,k)))
+                  write(*,*) npart, "dummy particles added"
                   do ipart = 1,npart 
                      l=Ni_tot + 1 !beginning array element for new borns    
                   
@@ -2112,9 +2113,8 @@ c----------------------------------------------------------------------
       up_ave(:,:,:,:) = 0.0
       ct(:,:,:,:) = 0.0
 
-
       do m = 1,3 
-         mvp(:,m) = vp(:,m)/sqrt(mrat(:))
+         mvp(1:Ni_tot,m) = vp(1:Ni_tot,m)/sqrt(mrat(1:Ni_tot))
       enddo
 
 
@@ -2365,7 +2365,7 @@ c----------------------------------------------------------------------
 
 
       do m = 1,3 
-         mvp(:,m) = vp(:,m)/sqrt(mrat(:))
+         mvp(1:Ni_tot,m) = vp(1:Ni_tot,m)/sqrt(mrat(1:Ni_tot))
       enddo
 
 
