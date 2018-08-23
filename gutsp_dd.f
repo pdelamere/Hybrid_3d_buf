@@ -726,8 +726,7 @@ c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x     E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x     B_out_buf,mrat_out_buf, save_unit) 
+     x     E,Bt, save_unit) 
 c----------------------------------------------------------------------
 c Exchange ions from the main domain to the outflow buffer (delete them)
 
@@ -738,11 +737,6 @@ c Exchange ions from the main domain to the outflow buffer (delete them)
       real vp_buf(Ni_max_buf,3)
       real E(nx,ny,nz,3)
       real Bt(nx,ny,nz,3)
-      real xp_out_buf(Ni_max_buf,3)
-      real vp_out_buf(Ni_max_buf,3)
-      real E_out_buf(Ni_max_buf,3)
-      real B_out_buf(Ni_max_buf,3)
-      real mrat_out_buf(Ni_max_buf)
 
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
@@ -820,22 +814,6 @@ c Exchange ions from the main domain to the outflow buffer (delete them)
       write(save_unit) pack(out_mrat,   out_mrat<0.1)
       write(save_unit) pack(out_beta_p, out_mrat<0.1)
       write(save_unit) pack(out_tags,   out_mrat<0.1)
-      
-      call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-      do m = 1,3
-         xp_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out,m) = 
-     x        out_xp(1:Ni_out,m)
-         vp_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out,m) = 
-     x        out_vp(1:Ni_out,m)
-         E_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out,m) = 
-     x        out_E(1:Ni_out,m)
-         B_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out,m) = 
-     x        out_B(1:Ni_out,m)
-      enddo
-      
-      mrat_out_buf(Ni_tot_out_buf+1:Ni_tot_out_buf+Ni_out) = 
-     x     out_mrat(:)
       
       call pack_pd(mrat, in_bounds, 1)
       call pack_pd(beta_p, in_bounds, 1)

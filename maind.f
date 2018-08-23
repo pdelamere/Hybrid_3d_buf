@@ -69,12 +69,6 @@ c----------------------------------------------------------------------
       real vplus_buf(Ni_max_buf,3)
       real vminus_buf(Ni_max_buf,3)
 
-      real xp_out_buf(Ni_max_buf,3)
-      real vp_out_buf(Ni_max_buf,3)
-      real E_out_buf(Ni_max_buf,3)
-      real B_out_buf(Ni_max_buf,3)
-      real mrat_out_buf(Ni_max_buf)
-
       real temp_p(nx,ny,nz)
       real temp_tot(nx,ny,nz)
       real temp_h(nx,ny,nz)
@@ -549,8 +543,7 @@ c======================================================================
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
          call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf, 9000)
+     x        E,Bt,9000)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
@@ -660,8 +653,7 @@ c**********************************************************************
          
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
          call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x        E,Bt,xp_out_buf,vp_out_buf,E_out_buf,
-     x        B_out_buf,mrat_out_buf,9000)
+     x        E,Bt,9000)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
