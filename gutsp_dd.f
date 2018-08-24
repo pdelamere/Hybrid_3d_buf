@@ -1817,7 +1817,7 @@ c----------------------------------------------------------------------
 
       real np(nx,ny,nz)
       real us(ny,nz)
-      logical mask(Ni_max)
+      logical mask(:)
 
       real xp(Ni_max,3)
       real vp(Ni_max,3)
@@ -2318,7 +2318,7 @@ c----------------------------------------------------------------------
      x     up_ave(nx,ny,nz,3),
      x     up2(nx,ny,nz,3),
      x     temp_p(nx,ny,nz)
-      logical mask(Ni_max)
+      logical mask(:)
 
       integer dest, source
       real out_buf_z(nx,ny,3)

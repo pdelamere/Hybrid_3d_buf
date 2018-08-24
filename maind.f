@@ -723,9 +723,9 @@ c save 3d arrays------------------------
                if ( my_rank .gt. procnum/2 - 15 .and.
      x              my_rank .lt. procnum/2 + 15) then
                    write(307) m
-                   write(307) xp(:Ni_tot,:)
+                   write(307) ((xp(i,j), i=1,Ni_tot),j=1,3)
                    write(310) m
-                   write(310) vp(:Ni_tot,:)
+                   write(310) ((vp(i,j), i=1,Ni_tot),j=1,3)
                    write(311) m
                    write(311) tags(:Ni_tot)
                    write(315) m

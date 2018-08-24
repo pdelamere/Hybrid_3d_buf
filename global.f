@@ -77,6 +77,4 @@ c Tags for particle origin
       real vsw_us(ny,nz,3)
       real b0_us(ny,nz,3)
 
-
-
       end MODULE GLOBAL
