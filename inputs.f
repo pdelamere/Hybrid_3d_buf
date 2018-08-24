@@ -24,7 +24,7 @@
 
 c grid parameters
 
-      real dx,dy, delz, dx_buf, dt, dtsub_init
+      real dx,dy, delz, dt, dtsub_init
 
 c time stepping parameters
       PARAMETER (ntsub = 10.0)        !number of subcycle time steps

@@ -63,12 +63,6 @@ c----------------------------------------------------------------------
      x     E(nx,ny,nz,3)     !electric field from electron mom eqn
 
 
-      real xp_buf(Ni_max_buf,3)
-      real vp_buf(Ni_max_buf,3)
-      real Ep_buf(Ni_max_buf,3)
-      real vplus_buf(Ni_max_buf,3)
-      real vminus_buf(Ni_max_buf,3)
-
       real temp_p(nx,ny,nz)
       real temp_tot(nx,ny,nz)
       real temp_h(nx,ny,nz)
@@ -232,6 +226,7 @@ c initialize seed for each processor
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
 
+      call initialize_buffer()
 c----------------------------------------------------------------------
 
 

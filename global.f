@@ -21,13 +21,12 @@ c raw grid coordinate data
       real xrat(nx), yrat(ny), zrat(nz)
       
 c Total number of ions produced at a given time during the simulation
-      integer Ni_tot, Ni_tot_0, Ni_tot_buf
+      integer Ni_tot, Ni_tot_0
       integer Ni_thermal_H, Ni_thermal_He, Ni_shell_H
 
 c Location (indices) of particles with the grid
       integer ijkp(Ni_max,3)
       logical in_bounds(Ni_max)
-      logical in_bounds_buf(Ni_max_buf)
 
 c Random seed
       integer*4 seed
@@ -61,8 +60,7 @@ c variable for particle scale
       real beta, beta_p(Ni_max)
 
 c mass array for multi-ion species
-      real mrat(Ni_max), mrat_buf(Ni_max_buf)
-      real beta_p_buf(Ni_max_buf)
+      real mrat(Ni_max)
 
 c mixing array
       real mixed(nx,ny,nz)
@@ -72,9 +70,36 @@ c parallel processor info
 
 c Tags for particle origin
       real tags(Ni_max)
-      real tags_buf(Ni_max_buf)
 
       real vsw_us(ny,nz,3)
       real b0_us(ny,nz,3)
+
+c Buffer variables
+      real, dimension(:,:), allocatable :: xp_buf
+      real, dimension(:,:), allocatable :: vp_buf
+      real, dimension(:), allocatable :: mrat_buf
+      real, dimension(:), allocatable :: beta_p_buf
+      real, dimension(:), allocatable :: tags_buf
+
+      real, dimension(:,:), allocatable :: Ep_buf
+      real, dimension(:,:), allocatable :: vplus_buf
+      real, dimension(:,:), allocatable :: vminus_buf
+
+      real, dimension(:,:), allocatable :: xp_out_buf
+      real, dimension(:,:), allocatable :: vp_out_buf
+      real, dimension(:,:), allocatable :: E_out_buf
+      real, dimension(:,:), allocatable :: B_out_buf
+      real, dimension(:), allocatable :: mrat_out_buf
+      logical, dimension(:), allocatable :: in_bounds_buf
+
+c Computed constants for the buffer
+      real dx_buf
+      real vol_buf
+
+      integer Ni_thermal_H_buf
+      integer Ni_thermal_He_buf
+      integer Ni_shell_H_buf
+      integer Ni_tot_buf
+      integer Ni_max_buf
 
       end MODULE GLOBAL

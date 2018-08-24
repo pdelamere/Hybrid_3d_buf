@@ -21,21 +21,6 @@ c----------------------------------------------------------------------
       integer flg
       integer Ni_tot_buf_1
 
-      integer Ni_thermal_H_buf
-      integer Ni_thermal_He_buf
-      integer Ni_shell_H_buf
-      integer Ni_tot_buf
-
-      vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
-
-      Ni_thermal_H_buf = nint(nf_init*vol_buf*beta)
-      Ni_thermal_He_buf = b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H
-      Ni_shell_H_buf = b_sw_shell_H*f_sw_shell_H*Ni_thermal_H
-
-      Ni_tot_buf = Ni_thermal_H_buf + Ni_thermal_He_buf + Ni_shell_H_buf
-
-      
-
 c initialize protons
 
       do 10 l = 1,Ni_thermal_H_buf

@@ -30,7 +30,6 @@ c----------------------------------------------------------------
 
       print*, 'dx....',dx
 
-      dx_buf = 3*dx
 
 
       dt = dt_frac*mion/(q*b0_init)     !main time step
@@ -89,6 +88,43 @@ c----------------------------------------------------------------
 
       end subroutine initparameters
 c----------------------------------------------------------------      
+      SUBROUTINE initialize_buffer()
+      ! Buffer parameters
+
+      ! The fastest ions are at double sw speed, but they only move
+      ! half of a timestep before the buffer is reinitialized.
+      ! Thus to make the buffer large enough to hold the fastest ion
+      ! it needs to have a depth of 2*vsw*dt/2 == vsw*dt
+      dx_buf = vsw*dt 
+
+      vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
+
+      Ni_thermal_H_buf = nint(nf_init*vol_buf*beta)
+      Ni_thermal_He_buf = b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H
+      Ni_shell_H_buf = b_sw_shell_H*f_sw_shell_H*Ni_thermal_H
+
+      Ni_tot_buf = Ni_thermal_H_buf + Ni_thermal_He_buf + Ni_shell_H_buf
+
+      Ni_max_buf = Ni_tot_buf ! number of particles in the buffer is always the same
+
+      allocate(xp_buf(Ni_max_buf,3))
+      allocate(vp_buf(Ni_max_buf,3))
+      allocate(mrat_buf(Ni_max_buf))
+      allocate(beta_p_buf(Ni_max_buf))
+      allocate(tags_buf(Ni_max_buf))
+
+      allocate(Ep_buf(Ni_max_buf,3))
+      allocate(vplus_buf(Ni_max_buf,3))
+      allocate(vminus_buf(Ni_max_buf,3))
+
+      allocate(xp_out_buf(Ni_max_buf,3))
+      allocate(vp_out_buf(Ni_max_buf,3))
+      allocate(E_out_buf(Ni_max_buf,3))
+      allocate(B_out_buf(Ni_max_buf,3))
+      allocate(mrat_out_buf(Ni_max_buf))
+      allocate(in_bounds_buf(Ni_max_buf))
+
+      end subroutine initialize_buffer
 
 c----------------------------------------------------------------------
       SUBROUTINE grd6_setup(b0,b1,bt)
