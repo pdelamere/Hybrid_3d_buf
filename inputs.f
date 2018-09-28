@@ -109,8 +109,8 @@ c solar wind composition
       PARAMETER (b_sw_thermal_H = 1.0)
       PARAMETER (b_sw_thermal_He = 5.0)
       PARAMETER (b_sw_shell_H = 10.0)
-      PARAMETER (f_sw_thermal_He = 0.08) 
-      PARAMETER (f_sw_shell_H = 0.038) 
+      PARAMETER (f_sw_thermal_He = 0.03596) 
+      PARAMETER (f_sw_shell_H = 0.01779) 
       PARAMETER (f_sw_thermal_H = 1.0 - f_sw_thermal_He - f_sw_shell_H) 
 c      real f_mq_2,b_mq_2,f_shl,b_shl
 c      PARAMETER (b_mq_2 = 2.0)
