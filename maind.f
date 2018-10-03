@@ -696,6 +696,8 @@ c save 3d arrays------------------------
                write(132) b0
                write(133) m
                write(133) bt
+               write(150) m
+               write(150) E
                write(181) m
                write(181) up
                write(300) m
