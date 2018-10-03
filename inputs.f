@@ -7,6 +7,7 @@
       real b0_init
       integer ion_amu
       integer mp
+      real n_H_therm_init
       real nf_init
       real dt_frac
       integer nt
@@ -166,7 +167,10 @@ c----------------------------------------------------------------
       read(100,*) m_pu
       write(*,*) 'mpu...............',m_pu
       mpu = m_pu ! mpu is depreciated
-      read(100,*) nf_init
+      read(100,*) n_H_therm_init
+      write(*,*) 'Thermal H density...........',n_H_therm_init
+      ! The total initial density needs to be calculated
+      nf_init = n_H_therm_init/f_sw_thermal_H
       write(*,*) 'nf_init...........',nf_init
       read(100,*) dt_frac
       write(*,*) 'dt_frac...........',dt_frac
