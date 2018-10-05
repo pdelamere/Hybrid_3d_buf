@@ -43,7 +43,7 @@ c---------------------------------------------------------------------
       xx = x - cx
       yy = y - cy
       zz = z - cz
-      r = sqrt(xx**2 + yy**2 + zz*2)
+      r = sqrt(xx**2 + yy**2 + zz**2)
       if( r .lt. S_radius ) then
           neutral_density_continuous = atmosphere(r)
       else
