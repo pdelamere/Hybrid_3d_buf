@@ -1,8 +1,14 @@
 #F77 = mpif90 -i4 -r4 -O2 -byteswapio
 FC=mpif90
-#FFLAGS=-mcmodel=medium -O2
-FFLAGS=-mcmodel=medium -i4 -real-size 32 -O0 -g -traceback -check all -check uninit -ftrapuv
-#FFLAGS=-mcmodel=medium -i4 -real-size 32 -O0 -g -traceback -check all -check uninit -ftrapuv -warn all
+
+# Release
+FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source
+
+# Maximum Debug
+#FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check all -warn all -warn errors -warn stderrors -std90
+
+# Normal Debug
+#FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check uninit -check arg_temp_created -check bounds -check uninit -warn truncated_source -warn errors
 
 FILES = dimensions.f inputs.f global.f misc.f  boundary.f grid_interp.f gutsp_dd.f  gutsp_dd.f  gutsf.f part_init.f gutsp_buf.f chem_rates.f maind.f 
 DEBUG = -check all -g -warn

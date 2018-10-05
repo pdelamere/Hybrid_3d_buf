@@ -31,6 +31,7 @@ c---------------------------------------------------------------------
 CVD$F VECTOR
 c      include 'incurv.h'
 
+      integer ierr
       real b(nx,ny,nz,3)
       real us(ny,nz,3) ! upstream condition
 
@@ -104,6 +105,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c      include 'incurv.h'
 
+      integer ierr
       real b(nx,ny,nz)
 
       integer stats(MPI_STATUS_SIZE,2), reqs(2)
@@ -154,6 +156,7 @@ c---------------------------------------------------------------------
 c      include 'incurv.h'
 
       real b(nx,ny,nz,3)
+      integer j,k
 
 c normal x components
       do 10 j=2,ny-1
@@ -240,6 +243,7 @@ c---------------------------------------------------------------------
 c      include 'incurv.h'
 
       real E(nx,ny,nz,3)
+      integer j,k
 
 c     i = 2 & i = nx
       do 10 j=2,ny     !periodic boundary conditions
@@ -297,6 +301,8 @@ c at a given time t.
 c----------------------------------------------------------------------
 CVD$F NOVECTOR
 c      include 'incurv.h'
+      real cx, cy, cz
+      real x0, y0, z0
 
 c      t = m*dt + tstart          !0.2 reflects canister evacuation time
 c      cx = qx(ri) + vsat*(t-0.2) !release point + cloud expansion

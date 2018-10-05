@@ -56,7 +56,6 @@ c----------------------------------------------------------------
       m_heavy = 1.0
       np_top = nf_init
       np_bottom = nf_init/m_heavy
-      f_proton_top = 0.5       !fraction relative to top
       b0_top = 1.0*b0_init
       b0_bottom = b0_init
       vth_top = vth
@@ -142,6 +141,10 @@ c----------------------------------------------------------------------
       real phi
 
       real cx, cy, cz
+      real x,y,z
+      real r
+
+      integer i,j,k,m
 
       mO_q = mO/q
 
@@ -208,6 +211,7 @@ c----------------------------------------------------------------------
 
       SUBROUTINE get_nu(nu)
       real nu(nx,ny,nz)
+      integer i,j,k
       do 60 i=1,nx
        do 60 j=1,ny
           do 60 k=1,nz
@@ -223,6 +227,9 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
 
+      integer i,j,k
+      integer ind
+      integer nrgrd
       parameter(nrgrd = 0)
 
 c      rk=nz/2
@@ -319,6 +326,8 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       integer nrgrd
+      integer ind
+      integer i,j,k
 
       real zplus,zminus,xplus, xminus, yplus, yminus
       real zsf,xsf,ysf
@@ -525,6 +534,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
       integer nrgrd
+      integer i,j,k
+      integer ind
 
       real zplus,zminus,xplus, xminus, yplus, yminus
       real zsf,xsf,ysf
@@ -718,6 +729,9 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
+      integer i,j,k
+      integer ind
+      integer nrgrd
       parameter(nrgrd = 40)
 
       rk=(nz/2)! - 35

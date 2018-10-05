@@ -92,6 +92,10 @@ c----------------------------------------------------------------------
       real time
       integer ierr
 
+      integer ndiag
+      integer ndiag_part
+      integer n
+
       real ndot(nx,ny,nz)
       
       integer seedsize

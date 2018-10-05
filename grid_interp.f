@@ -43,6 +43,7 @@ c      real zrat           !ratio for doing linear interpolation
 c                          !to grid point position.
       real zplus, zminus  !position of main cell edges up and down
       real b1,b2
+      integer i,j,k
 
       call boundaries(bt, us)
 
@@ -110,6 +111,7 @@ c----------------------------------------------------------------------
       real vc(nx,ny,nz,3)       !vector at cell center
       real us(ny,nz,3)       !vector upstream
       real usc(ny,nz,3)       !vector upstream at cell center
+      integer i,j,k
 c      real zfrc(nz)             !0.5*dz_grid(k)/dz_cell(k)
 
 c      do 5 k=1,nz

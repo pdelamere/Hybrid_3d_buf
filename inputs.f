@@ -4,6 +4,9 @@
       USE mpi
       save
 
+      real va
+      real cwpi
+
       real b0_init
       integer ion_amu
       integer mp
@@ -28,6 +31,7 @@ c grid parameters
       real dx,dy, delz, dt, dtsub_init
 
 c time stepping parameters
+      integer ntsub
       PARAMETER (ntsub = 10.0)        !number of subcycle time steps
 
 c output directory

@@ -130,7 +130,10 @@ c----------------------------------------------------------------------
       real exb_flux
 
       real mO_q
+      integer i,j,k,m
+
       mO_q = mO/q
+
 
 
 c Energy flux through boundary faces

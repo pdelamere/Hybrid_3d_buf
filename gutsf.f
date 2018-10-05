@@ -43,6 +43,7 @@ c----------------------------------------------------------------------
 
       real ax,ay,az,bx,by,bz    !dummy vars
 
+      integer i,j,k
 
       call boundaries(aa, aus)
       call boundaries(btc, bus)
@@ -97,6 +98,7 @@ c     x     nf(nx,ny,nz),
 
       real curl_B(nx,ny,nz,3)      !dummy for holding curl vector
       real ntot(nx,ny,nz,3)        !total density, np + nf
+      integer i,j,k
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
@@ -164,6 +166,7 @@ c      include 'incurv.h'
       real E(nx,ny,nz,3)      !E field, main cell contravarient
       real curl_E(nx,ny,nz,3) !curl of E, main cell covarient
       real lx, ly, lz         !lengths of dual cell edges
+      integer i,j,k
 
 c      call periodic(E)
 
@@ -202,6 +205,7 @@ c----------------------------------------------------------------------
       real E(nx,ny,nz,3)      !E field, main cell contravarient
       real curl_E(nx,ny,nz,3) !curl of E, main cell covarient
       real lx, ly, lz         !lengths of dual cell edges
+      integer i,j,k
 
 c      call periodic(E)
 
@@ -999,6 +1003,7 @@ c     x     gradP(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)   !curl of E
       real bus(ny,nz,3)
+      integer i,j,k,m
 
 c      call cov_to_contra(bt,btmf) 
 c      call edge_to_center(bt,btc)
@@ -1067,6 +1072,7 @@ c----------------------------------------------------------------------
       real ntot(3)            !total density np + nf
       real fnp(3),fnf(3)      !fraction np and nf of n
       real npave(3)
+      integer i,j,k
 
       do 5 k=1,nz
          do 5 j=1,ny
@@ -1123,6 +1129,7 @@ c     x     bdp(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)            !curl of E
       real bus(ny,nz,3)
+      integer i,j,k,m
 
       call get_Ep1(E,b0,b1,b1p2,aj,up,np,nu)  
                                                    !E at time level m 
@@ -1168,8 +1175,10 @@ c----------------------------------------------------------------
       real b1(nx,ny,nz,3)
       real bt(nx,ny,nz,3)
       real np(nx,ny,nz)
+      real ak, btot, a1, a2, womega, phi, deltat
       integer error_file
       integer step
+      integer i,j,k
 
       do i = 1,nx
          do j = 1,ny

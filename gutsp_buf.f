@@ -17,9 +17,12 @@ c----------------------------------------------------------------------
       real rnd,f,v
       real vx,vy,vz
       real vol_buf
+      real tmp
+      real phi
 
       integer flg
       integer Ni_tot_buf_1
+      integer l
 
 c initialize protons
 
@@ -102,6 +105,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c      include 'incurv.h'
 
+      integer j,k,l,m
       real Ep_buf(Ni_max_buf,3)
       real b0(nx,ny,nz,3)
       real xp_buf(Ni_max_buf,3)
@@ -200,6 +204,7 @@ c      include 'incurv.h'
      x     vminus_buf_dot_B     !v- . B
 
       real btc3(3)
+      integer l,m
       
       do 10 m=1,3
          do 10 l=1,Ni_tot_buf 
@@ -256,6 +261,7 @@ c      include 'incurv.h'
       real Ep_buf(Ni_max_buf,3),
      x     vp_buf(Ni_max_buf,3),    !particle velocities at t level n+1/2
      x     vplus_buf(Ni_max_buf,3)
+      integer l,m
 
       do 10 m=1,3
          do 10 l = 1,Ni_tot_buf
@@ -284,6 +290,8 @@ c Exchange ions from the inflow buffer into the main domain.
       real, dimension(:), allocatable :: out_mrat
       real, dimension(:), allocatable :: out_beta_p
       real, dimension(:), allocatable :: out_tags
+      integer l,m
+      integer ii,jj,kk
 
       in_bounds_buf(1:Ni_tot_buf) = .true.
       in_bounds_buf(Ni_tot_buf+1:) = .false.
@@ -411,6 +419,8 @@ c----------------------------------------------------------------------
       real, dimension(:,:), allocatable :: out_xp
       real, dimension(:,:), allocatable :: out_vp
       real, dimension(:), allocatable :: out_mrat
+
+      integer l
 
       dth = dt/2
 

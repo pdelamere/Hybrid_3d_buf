@@ -37,6 +37,7 @@ c---------------------------------------------------------------------
       real x,y,z
       real xx,yy,zz
       real cx,cy,cz
+      real r
 
       call Neut_Center(cx,cy,cz)
       xx = x - cx
@@ -74,6 +75,8 @@ c      include 'incurv.h'
       real cx,cy,cz,r,vrel
       real nn !,neutral_density
       real chex_inv_tau,chex_prob
+
+      integer l,m
 
       real sigma_chex
       PARAMETER (sigma_chex = 1e-25)  !10 A^2 in units of km^2
@@ -149,6 +152,8 @@ c----------------------------------------------------------------------
 
       real pu_beta_p
       real pu_tag
+      integer i,j,k,l,m
+      integer ii,jj,kk,ll
 
 
 

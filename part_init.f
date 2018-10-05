@@ -36,6 +36,16 @@ c----------------------------------------------------------------------
 
       integer c                 !counter
       real mO_q                 !proton mass to charge ratio
+
+      integer i,j,k,l,m
+      integer ierr
+
+      real S_EB1
+      real S_EE
+      real S_Evp
+      real S_input_E
+      real S_bndry_Eflux
+
       c = 1
       mO_q = mion/q
 
@@ -152,6 +162,8 @@ c      include 'incurv.h'
       real up(nx,ny,nz,3)
       real phi,theta,tmp
       real vx,vy,vz
+      integer i,j,k,l,m
+      integer ii,kk
 
 
 

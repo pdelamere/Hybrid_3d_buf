@@ -20,6 +20,7 @@ c----------------------------------------------------------------------
       real vp1(Ni_max,3)
       integer ion_l
       integer, optional :: separate
+      integer l,m
 
       do 5 m=1,3   !remove ion energy from total input energy
          input_E = input_E
@@ -93,6 +94,9 @@ c----------------------------------------------------------------------
       real den_part ! density of 1 particle per cell
       real ak
       real btot,a1,a2,womega,phi,deltat
+      integer i,j,k,l,m
+      integer ii,jj,kk
+      integer ierr
 
       den_part = 1/(beta*dx**3)
 
@@ -381,6 +385,7 @@ c      include 'incurv.h'
      x     np(nx,ny,nz)
       
       real v_at_n(Ni_max,3)
+      integer l,m
 
       do 10 m=1,3
          do 10 l=1,Ni_tot
@@ -424,6 +429,8 @@ c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
      x     btc3(3),gradP3(3)
       real np_at_Ba               !particle density at particle pos
       real nf_at_Ba
+      integer i,j,k,l,m
+      integer ip,jp,kp
 
       us = 0.0
       call face_to_center(aj,ajc,us)! only if upstream B is const
@@ -503,6 +510,8 @@ c----------------------------------------------------------------------
 
       real btc3(3)
       
+      integer i,j,k,l,m
+      integer ip,jp,kp
 
       do 10 m=1,3
          do 10 l=1,Ni_tot 
@@ -580,6 +589,7 @@ c      include 'incurv.h'
      x     vminus(Ni_max,3),
      x     up(nx,ny,nz,3),
      x     np(nx,ny,nz)
+      integer l,m
 
       do 10 m=1,3
          do 10 l = 1,Ni_tot
@@ -603,6 +613,7 @@ c      include 'incurv.h'
      x     vp(Ni_max,3),    !particle velocities at t level n+1/2
      x     vp1(Ni_max,3),   !particle velocity at t level n-1/2
      x     vplus(Ni_max,3)
+      integer l,m
 
       do 10 m=1,3
          do 10 l = 1,Ni_tot
@@ -636,6 +647,7 @@ c Exchange ions from the main domain into the inflow buffer
       integer, dimension(:,:), allocatable :: out_ijkp
       integer Ni_tot_in, Ni_out
       integer :: cnt
+      integer l,m
 
 
       in_bounds(1:Ni_tot) = .true.
@@ -749,6 +761,7 @@ c Exchange ions from the main domain to the outflow buffer (delete them)
       integer Ni_tot_in, Ni_out
       integer :: cnt
       integer :: save_unit
+      integer l,m
 
 
       in_bounds(1:Ni_tot) = .true.
@@ -878,6 +891,9 @@ c----------------------------------------------------------------------
       real, dimension(:), allocatable :: in_tags
       real, dimension(:), allocatable :: vsqrd_out
       integer :: cnt
+      integer l,m
+      integer ierr
+      real xp0,vp0
 
 
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
@@ -1381,6 +1397,8 @@ c      include 'incurv.h'
 
       real xp(Ni_max,3)
       real x1,x2,y1,y2,z1,z2,vol
+      integer i,j,k,l
+      integer ierr
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -1676,6 +1694,8 @@ c----------------------------------------------------------------------
 
       real xp(Ni_max,3)
       real x1,x2,y1,y2,z1,z2,vol
+      integer i,j,k,l
+      integer ierr
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -1760,6 +1780,9 @@ c----------------------------------------------------------------------
       real vp(Ni_max,3)
       real vp1(Ni_max,3)
 
+      integer i,j,k,l
+      integer ierr
+
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -1824,6 +1847,8 @@ c----------------------------------------------------------------------
       real vp1(Ni_max,3)
 
       real volb
+      integer i,j,k,l
+      integer ierr
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       
@@ -1902,6 +1927,8 @@ c      include 'incurv.h'
       integer cnt_buf_z
       integer reqs(2)
       integer stats(MPI_STATUS_SIZE,2)
+      integer i,j,k,l,m
+      integer ierr
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -2012,6 +2039,7 @@ c----------------------------------------------------------------------
       integer cnt_buf_z
       integer reqs(2)
       integer stats(MPI_STATUS_SIZE,2)
+      integer ierr
 
       cnt_buf_z = nx*ny
 
@@ -2040,10 +2068,11 @@ c----------------------------------------------------------------------
 c replaces the f90 pack function
 c----------------------------------------------------------------------
       
-      integer*4 sz
+      integer sz
       real arr(Ni_max,sz)
       logical larr(Ni_max)
-      integer*4 cnt
+      integer cnt
+      integer l
 
       cnt = 1
       do l = 1,Ni_tot
@@ -2082,6 +2111,9 @@ c----------------------------------------------------------------------
       real mvp(Ni_max,3)
 
       real volb,nvolb      !np times vol times beta
+      integer i,j,k,l,m
+      integer ip,jp,kp
+      integer ierr
 
       cnt_buf_z = nx*ny*3
 
@@ -2332,6 +2364,9 @@ c----------------------------------------------------------------------
       real mvp(Ni_max,3)
 
       real volb,nvolb      !np times vol times beta
+      integer i,j,k,l,m
+      integer ip,jp,kp
+      integer ierr
 
       cnt_buf_z = nx*ny*3
 
