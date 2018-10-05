@@ -191,7 +191,7 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real Ep_buf(Ni_max_buf,3),
-     x     vp_buf(Ni_max_buf,3),      !particle velocities at t level n-1/2
+     x     vp_buf(Ni_max_buf,3),  !particle velocities at t level n-1/2
      x     vplus_buf(Ni_max_buf,3),
      x     vminus_buf(Ni_max_buf,3),
      x     b0(nx,ny,nz,3)
@@ -218,20 +218,20 @@ c      include 'incurv.h'
          btc3(2) = b0(1,1,1,2)!b0_init*eoverm
          btc3(3) = b0(1,1,1,3)!0.0
 
-         vminus_buf_x_B(1) = vminus_buf(l,2)*btc3(3)*mrat_buf(l) - !O_to_Ba - 
-     x                     vminus_buf(l,3)*btc3(2)*mrat_buf(l)   !O_to_Ba
-         vminus_buf_x_B(2) = vminus_buf(l,3)*btc3(1)*mrat_buf(l) - !O_to_Ba - 
-     x                     vminus_buf(l,1)*btc3(3)*mrat_buf(l)   !O_to_Ba
-         vminus_buf_x_B(3) = vminus_buf(l,1)*btc3(2)*mrat_buf(l) - !O_to_Ba -
-     x                     vminus_buf(l,2)*btc3(1)*mrat_buf(l)   !O_to_Ba
+         vminus_buf_x_B(1) = vminus_buf(l,2)*btc3(3)*mrat_buf(l) -
+     x                     vminus_buf(l,3)*btc3(2)*mrat_buf(l)
+         vminus_buf_x_B(2) = vminus_buf(l,3)*btc3(1)*mrat_buf(l) -
+     x                     vminus_buf(l,1)*btc3(3)*mrat_buf(l)
+         vminus_buf_x_B(3) = vminus_buf(l,1)*btc3(2)*mrat_buf(l) -
+     x                     vminus_buf(l,2)*btc3(1)*mrat_buf(l)
 
-         vminus_buf_dot_B = vminus_buf(l,1)*btc3(1)*mrat_buf(l) + !O_to_Ba +
-     x                     vminus_buf(l,2)*btc3(2)*mrat_buf(l) + !O_to_Ba +
-     x                     vminus_buf(l,3)*btc3(3)*mrat_buf(l)   !O_to_Ba
+         vminus_buf_dot_B = vminus_buf(l,1)*btc3(1)*mrat_buf(l) +
+     x                     vminus_buf(l,2)*btc3(2)*mrat_buf(l) +
+     x                     vminus_buf(l,3)*btc3(3)*mrat_buf(l)
 
-         Bx = btc3(1)*mrat_buf(l) !O_to_Ba
-         By = btc3(2)*mrat_buf(l) !O_to_Ba
-         Bz = btc3(3)*mrat_buf(l) !O_to_Ba
+         Bx = btc3(1)*mrat_buf(l)
+         By = btc3(2)*mrat_buf(l)
+         Bz = btc3(3)*mrat_buf(l)
       
          B2 = Bx**2 + By**2 + Bz**2
          dt2 = dt**2
@@ -242,7 +242,7 @@ c      include 'incurv.h'
          a3 = 0.5*dt2 / a_d
 
          do 40 m=1,3
-            vplus_buf(l,m) = a1*vminus_buf(l,m) + a2*vminus_buf_x_B(m) + 
+            vplus_buf(l,m) = a1*vminus_buf(l,m) + a2*vminus_buf_x_B(m) +
      x           a3*vminus_buf_dot_B*btc3(m)*mrat_buf(l) !O_to_Ba
  40      continue
 
@@ -259,7 +259,7 @@ c----------------------------------------------------------------------
 c      include 'incurv.h'
 
       real Ep_buf(Ni_max_buf,3),
-     x     vp_buf(Ni_max_buf,3),    !particle velocities at t level n+1/2
+     x     vp_buf(Ni_max_buf,3),  !particle velocities at t level n+1/2
      x     vplus_buf(Ni_max_buf,3)
       integer l,m
 

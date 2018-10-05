@@ -44,13 +44,20 @@ c----------------------------------------------------------------------
      x     b1p2(nx,ny,nz,3),  !temporary b1 at time level m+1
      x     bt(nx,ny,nz,3),    !total magnetic field..mc covarient
      x     btc(nx,ny,nz,3),   !btmf at cell center for particle move
-     x     np(nx,ny,nz),      !total ion number density at time level n, n+1/2
-     x     np_tot(nx,ny,nz),      !total ion number density at time level n, n+1/2
-     x     np_H(nx,ny,nz),    !proton number density at time level n, n+1/2
-     x     np_He(nx,ny,nz),   !He++ number density at time level n, n+1/2
-     x     np_shell(nx,ny,nz),   !shell number density at time level n, n+1/2
-     x     np_sw(nx,ny,nz),   !solar wind number density at time level n, n+1/2
-     x     np_CH4(nx,ny,nz),  !CH4+ number density at time level n, n+1/2
+     x     np(nx,ny,nz),      !ion number density at time 
+                              !level n, n+1/2 including dummies
+     x     np_tot(nx,ny,nz),  !ion number density at time 
+                              !level n, n+1/2
+     x     np_H(nx,ny,nz),    !proton number density at time 
+                              !level n, n+1/2
+     x     np_He(nx,ny,nz),   !He++ number density at time 
+                              !level n, n+1/2
+     x     np_shell(nx,ny,nz),   !shell number density at time 
+                                 !level n, n+1/2
+     x     np_sw(nx,ny,nz),   !solar wind number density at time 
+                              !level n, n+1/2
+     x     np_CH4(nx,ny,nz),  !CH4+ number density at time 
+                              !level n, n+1/2
      x     vp(Ni_max,3),      !particle velocity at t level n+1/2
      x     vp1(Ni_max,3),     !particle velocity at t level n
      x     vplus(Ni_max,3),   !v+ used in velocity update
@@ -202,8 +209,8 @@ c initialize seed for each processor
 
       seed = t1 +my_rank*100
 
-      ! Make sure all ranks are initialized and sychronized before attempting
-      ! to make a system call
+      ! Make sure all ranks are initialized and sychronized 
+      ! before attempting to make a system call
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
       
       call get_command_argument(number=1,value=arg,status=ierr)

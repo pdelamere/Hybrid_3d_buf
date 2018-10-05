@@ -113,7 +113,7 @@ c----------------------------------------------------------------------
                   npart = nint(minden/(np(i,j,k)))
                   write(*,*) npart, "dummy particles added"
                   do ipart = 1,npart 
-                     l=Ni_tot + 1 !beginning array element for new borns    
+                     l=Ni_tot + 1 !beginning array element for new borns
                   
                      vp(l,1) = up(i,j,k,1)
                      vp(l,2) = up(i,j,k,2)
@@ -122,26 +122,29 @@ c----------------------------------------------------------------------
                      xp(l,2) = qy(j) + (0.5-pad_ranf())*dy_grid(j)
                      xp(l,3) = qz(k) + (0.5-pad_ranf())*dz_grid(k)
                      
+                     !find i on non-uniform 
                      ii=0
  16                  continue
                      ii = ii + 1
-                     if (xp(l,1) .gt. qx(ii)) go to 16 !find i on non-uniform 
+                     if (xp(l,1) .gt. qx(ii)) go to 16 
                      ii = ii-1
                      ijkp(l,1)= ii
                      
                      
+                     !find j on non-uniform 
                      jj=0
  18                  continue
                      jj = jj + 1
-                     if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
+                     if (xp(l,2) .gt. qy(jj)) go to 18
                      jj = jj-1
                      ijkp(l,2)= jj
                      
                      
+                     !find k on non-uniform
                      kk=0
  15                  continue
                      kk = kk + 1
-                     if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
+                     if (xp(l,3) .gt. qz(kk)) go to 15
                      kk = kk-1
                      ijkp(l,3)= kk
 
@@ -1754,10 +1757,6 @@ c         vol = 1.0/(dx*dy*(qz(k+1)-qz(k)))
          wght(l,7) = x2*y1*z1*vol
          wght(l,8) = x1*y1*z1*vol
 
-c         wght(l,:) = wght(l,:)/beta_p(l)  !scale for non equal particle weights
-c         if (beta_p(l) .ne. 1.0) then
-c            write(*,*) 'beta_p....',beta_p(l)
-c         endif
 
  10   continue
 

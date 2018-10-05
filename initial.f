@@ -82,7 +82,7 @@ c----------------------------------------------------------------
       max_ion_density = PCE_coef*sqrt(atmosphere(r_thin))
       write(*,*) 'max_ion_density...', max_ion_density
 
-      ! Variable needs to be initialized so it can act as an accumulator.
+      ! Variable needs to be initialized so it can act as an accumulator
       bndry_Eflux = 0
 
       end subroutine initparameters
@@ -104,7 +104,8 @@ c----------------------------------------------------------------
 
       Ni_tot_buf = Ni_thermal_H_buf + Ni_thermal_He_buf + Ni_shell_H_buf
 
-      Ni_max_buf = Ni_tot_buf ! number of particles in the buffer is always the same
+      ! number of particles in the buffer is always the same
+      Ni_max_buf = Ni_tot_buf
 
       allocate(xp_buf(Ni_max_buf,3))
       allocate(vp_buf(Ni_max_buf,3))

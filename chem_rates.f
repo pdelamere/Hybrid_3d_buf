@@ -192,9 +192,9 @@ c get source density
                cur_micro = np(i,j,k)*vol
                new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
                if((cur_micro+new_micro)/vol .le. max_ion_density) then
-                   new_macro = new_micro*beta*pu_beta_p
+               new_macro = new_micro*beta*pu_beta_p
                else
-                   new_macro = (max_ion_density*vol-cur_micro)*beta*pu_beta_p
+               new_macro=(max_ion_density*vol-cur_micro)*beta*pu_beta_p
                endif
 
                do ll = 1,min(nint(new_macro), Ni_max - Ni_tot)
@@ -207,24 +207,27 @@ c get source density
                   xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
                   xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
+                  !find i on non-uniform 
                   ii=0
  26               continue
                   ii = ii + 1
-                  if (xp(l,1) .gt. qx(ii)) go to 26 !find i on non-uniform 
+                  if (xp(l,1) .gt. qx(ii)) go to 26
                   ii = ii-1
                   ijkp(l,1)= ii
 
+                  !find j on non-uniform 
                   jj=0
  18               continue
                   jj = jj + 1
-                  if (xp(l,2) .gt. qy(jj)) go to 18 !find j on non-uniform 
+                  if (xp(l,2) .gt. qy(jj)) go to 18
                   jj = jj-1
                   ijkp(l,2)= jj
 
+                  !find k on non-uniform 
                   kk=2
  15               continue
                   kk = kk + 1
-                  if (xp(l,3) .gt. qz(kk)) go to 15 !find k on non-uniform 
+                  if (xp(l,3) .gt. qz(kk)) go to 15
                   kk = kk-1
                   ijkp(l,3)= kk
 
@@ -255,25 +258,28 @@ c get source density
                       xp(l,3) = qz(k) + (pad_ranf()-0.5)*dz_grid(k)
 
 
+                      !find i on non-uniform 
                       ii=0
  27                   continue
                       ii = ii + 1
-                      if (xp(l,1) .gt. qx(ii)) go to 27 !find i on non-uniform 
+                      if (xp(l,1) .gt. qx(ii)) go to 27
                       ii = ii-1
                       ijkp(l,1)= ii
 
 
+                      !find i on non-uniform 
                       jj=0
  17                   continue
                       jj = jj + 1
-                      if (xp(l,2) .gt. qy(jj)) go to 17 !find i on non-uniform 
+                      if (xp(l,2) .gt. qy(jj)) go to 17
                       jj = jj-1
                       ijkp(l,2)= jj                     
 
+                      !find k on non-uniform 
                       kk=2
  16                   continue
                       kk = kk + 1
-                      if (xp(l,3) .gt. qz(kk)) go to 16 !find k on non-uniform 
+                      if (xp(l,3) .gt. qz(kk)) go to 16
                       kk = kk-1
                       ijkp(l,3)= kk
                       

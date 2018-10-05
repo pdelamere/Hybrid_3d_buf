@@ -53,7 +53,7 @@ c misc constants
       real*8 mproton, eoverm, O_to_Ba
       PARAMETER (pi = 3.14159)
       PARAMETER (rtod = 180.0/pi)    !radians to degreesc
-      PARAMETER (mu0 = pi*4.0e-7)    !magnetic permeability of free space
+      PARAMETER (mu0 = pi*4.0e-7)!magnetic permeability of free space
       PARAMETER (epsilon0 = 8.85e-12) !dielectric constant
 
       PARAMETER (mproton = 1.67e-27)
@@ -71,21 +71,21 @@ c electron ion collision frequency
       real nu_init,lww1,lww2
 
       PARAMETER (lww2 = 1.0)           !must be less than 1.0
-      PARAMETER (lww1 = (1-lww2)/6.0)  !divide by six for nearest neighbor
+      !divide by six for nearest neighbor
+      PARAMETER (lww1 = (1-lww2)/6.0)  
 
 c density scaling parameter, alpha, and ion particle array dims
        
       real*8 alpha, beta_pu  
       PARAMETER (beta_pu = 0.1)
 
-      integer ri0 ! Number of grid cells pluto is offset from the center.
+      integer ri0 ! Number of cells pluto is offset from the center.
 
       real Qo, vrad, N_o, RIo, Rpluto, tau_photo, k_rec
       real S_radius
       PARAMETER (Qo = 3e27)       !neutral source rate
       PARAMETER (vrad = 0.05)     !escape velocity
-c      PARAMETER (N_o = 5e34)     !Steady state neutral particle constant
-      PARAMETER (N_o = 1e33)      !Steady state neutral particle constant
+      PARAMETER (N_o = 1e33)   !Steady state neutral particle constant
       PARAMETER (RIo = 1200.0)    !Io radius
       PARAMETER (Rpluto = 1184.0) !Pluto radius
       PARAMETER (tau_photo = 1.5e9)
@@ -159,9 +159,9 @@ c      PARAMETER (f_shl = 0.1*b_shl)
       PARAMETER (pluto_chex_CH4_tag = 6)
       CONTAINS
 
-c----------------------------------------------------------------      
+c----------------------------------------------------------------
       subroutine readInputs()
-c----------------------------------------------------------------      
+c----------------------------------------------------------------
       open(unit=100, file='inputs.dat', status='old')
       
       read(100,*) b0_init
@@ -212,11 +212,11 @@ c      write(*,*) 'Ni_max....',Ni_max
      
       close(100)
       end subroutine readInputs
-c----------------------------------------------------------------      
+c----------------------------------------------------------------
 
-c----------------------------------------------------------------      
+c----------------------------------------------------------------
       subroutine check_inputs(my_rank)
-c----------------------------------------------------------------      
+c----------------------------------------------------------------
       integer :: my_rank
 
       real*8 ak, btot, a1, a2, womega, phi, deltat
