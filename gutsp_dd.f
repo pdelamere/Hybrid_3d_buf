@@ -704,7 +704,7 @@ c Exchange ions from the main domain into the inflow buffer
       call pack_pd(tags, in_bounds, 1)
             
       do m = 1,3
-         xp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_xp(:,m)
+         xp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_xp(:Ni_tot,m)
          vp_buf(Ni_tot_buf+1:Ni_tot_buf+Ni_out,m) = out_vp(:,m)
       enddo
       
@@ -919,12 +919,12 @@ c----------------------------------------------------------------------
 
 
 
-      where (xp(:,2) .gt. qy(ny-1))
-         xp(:,2) = qy(1) + ( xp(:,2) - qy(ny-1) )
+      where (xp(:Ni_tot,2) .gt. qy(ny-1))
+         xp(:Ni_tot,2) = qy(1) + ( xp(:Ni_tot,2) - qy(ny-1) )
       endwhere
 
-      where (xp(:,2) .le. qy(1)) 
-         xp(:,2) = qy(ny-1) - (qy(1) - xp(:,2))
+      where (xp(:Ni_tot,2) .le. qy(1)) 
+         xp(:Ni_tot,2) = qy(ny-1) - (qy(1) - xp(:Ni_tot,2))
       endwhere
 
 

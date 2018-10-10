@@ -227,7 +227,7 @@ c initialize seed for each processor
 
       call grd_no_strech()
       call get_nu(nu)
-      call grd6_setup(b0,b1,bt)
+      call grd6_setup(b0,b1,b1p2,bt)
       call get_beta()
 
 
@@ -566,54 +566,54 @@ c======================================================================
 
                ! total
                call separate_temperature(xp,vp,np,temp_tot,
-     x                   (tags==sw_thermal_H_tag 
-     x               .or. tags==sw_thermal_He_tag
-     x               .or. tags==sw_shell_H_tag
-     x               .or. tags==pluto_photoionize_CH4_tag
-     x               .or. tags==pluto_stagnant_photoionize_CH4_tag
-     x               .or. tags==pluto_chex_CH4_tag))
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
+     x           .or. tags(:Ni_tot)==sw_thermal_He_tag
+     x           .or. tags(:Ni_tot)==sw_shell_H_tag
+     x           .or. tags(:Ni_tot)==pluto_photoionize_CH4_tag
+     x           .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
+     x           .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
                ! Thermal H
                call separate_temperature(xp,vp,np,temp_H,
-     x                   (tags==sw_thermal_H_tag ))
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
                ! He
                call separate_temperature(xp,vp,np,temp_He,
-     x                   (tags==sw_thermal_He_tag ))
+     x                   (tags(:Ni_tot)==sw_thermal_He_tag ))
                ! Shell H
                call separate_temperature(xp,vp,np,temp_shell,
-     x                   (tags==sw_shell_H_tag ))
+     x                   (tags(:Ni_tot)==sw_shell_H_tag ))
                ! Solar wind
                call separate_temperature(xp,vp,np,temp_sw,
-     x                   (tags==sw_thermal_H_tag 
-     x               .or. tags==sw_thermal_He_tag
-     x               .or. tags==sw_shell_H_tag))
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
+     x               .or. tags(:Ni_tot)==sw_thermal_He_tag
+     x               .or. tags(:Ni_tot)==sw_shell_H_tag))
                ! CH4
                call separate_temperature(xp,vp,np,temp_CH4,
-     x                   (tags==pluto_photoionize_CH4_tag
-     x               .or. tags==pluto_stagnant_photoionize_CH4_tag
-     x               .or. tags==pluto_chex_CH4_tag))
+     x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
 
                ! total
                call separate_np(np_tot,
-     x                   (tags==sw_thermal_H_tag 
-     x               .or. tags==sw_thermal_He_tag
-     x               .or. tags==sw_shell_H_tag
-     x               .or. tags==pluto_photoionize_CH4_tag
-     x               .or. tags==pluto_stagnant_photoionize_CH4_tag
-     x               .or. tags==pluto_chex_CH4_tag))
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
+     x          .or. tags(:Ni_tot)==sw_thermal_He_tag
+     x          .or. tags(:Ni_tot)==sw_shell_H_tag
+     x          .or. tags(:Ni_tot)==pluto_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
                call separate_np(np_H,
-     x                   (tags==sw_thermal_H_tag ))
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
                call separate_np(np_He,
-     x                   (tags==sw_thermal_He_tag))
+     x                   (tags(:Ni_tot)==sw_thermal_He_tag))
                call separate_np(np_shell,
-     x                   (tags==sw_shell_H_tag))
+     x                   (tags(:Ni_tot)==sw_shell_H_tag))
                call separate_np(np_sw,
-     x                   (tags==sw_thermal_H_tag 
-     x               .or. tags==sw_thermal_He_tag
-     x               .or. tags==sw_shell_H_tag))
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
+     x               .or. tags(:Ni_tot)==sw_thermal_He_tag
+     x               .or. tags(:Ni_tot)==sw_shell_H_tag))
                call separate_np(np_CH4,
-     x                   (tags==pluto_photoionize_CH4_tag
-     x               .or. tags==pluto_stagnant_photoionize_CH4_tag
-     x               .or. tags==pluto_chex_CH4_tag))
+     x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
 
          endif
          
