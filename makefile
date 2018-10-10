@@ -8,7 +8,13 @@ FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source
 #FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check all -warn all -warn errors -warn stderrors -std90
 
 # Normal Debug
-#FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check uninit -check arg_temp_created -check bounds -check uninit -warn truncated_source -warn errors
+#FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check arg_temp_created -check bounds -check uninit -warn truncated_source -warn errors
+
+# check fpe
+#FFLAGS=-mcmodel=medium -O0 -implicitnone -fpe0 -g -traceback -check bounds -check uninit -warn truncated_source -warn errors
+
+# check uninit
+#FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check bounds -check uninit -warn truncated_source -warn errors
 
 FILES = dimensions.f inputs.f global.f misc.f  boundary.f grid_interp.f gutsp_dd.f  gutsp_dd.f  gutsf.f part_init.f gutsp_buf.f chem_rates.f maind.f 
 DEBUG = -check all -g -warn
