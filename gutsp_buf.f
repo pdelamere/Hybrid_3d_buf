@@ -23,8 +23,9 @@ c----------------------------------------------------------------------
       integer Ni_tot_buf_1
       integer l
 
-c initialize protons
+      Ni_tot_buf = Ni_max_buf
 
+c initialize protons
       do 10 l = 1,Ni_thermal_H_buf
 
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
