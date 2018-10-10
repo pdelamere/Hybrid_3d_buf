@@ -96,16 +96,17 @@ c----------------------------------------------------------------
       ! it needs to have a depth of 2*vsw*dt/2 == vsw*dt
       dx_buf = vsw*dt 
 
-      vol_buf = (qy(ny-1)-qy(1))*(qz(nz-1)-qz(1))*dx_buf
-
-      Ni_thermal_H_buf = nint(nf_init*vol_buf*beta)
-      Ni_thermal_He_buf = b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H
-      Ni_shell_H_buf = b_sw_shell_H*f_sw_shell_H*Ni_thermal_H
-
-      Ni_tot_buf = Ni_thermal_H_buf + Ni_thermal_He_buf + Ni_shell_H_buf
-
+      Ni_tot_buf = Ni_tot_0*dx_buf/(qx(nx-1)-qx(1))
       ! number of particles in the buffer is always the same
       Ni_max_buf = Ni_tot_buf
+
+      Ni_thermal_H_buf = 
+     x  Ni_tot_buf/(1 
+     x            + b_sw_thermal_He*f_sw_thermal_He 
+     x            + b_sw_shell_H*f_sw_shell_H)
+
+      Ni_thermal_He_buf=b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H_buf
+      Ni_shell_H_buf=b_sw_shell_H*f_sw_shell_H*Ni_thermal_H_buf
 
       allocate(xp_buf(Ni_max_buf,3))
       allocate(vp_buf(Ni_max_buf,3))

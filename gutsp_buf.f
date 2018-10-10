@@ -16,7 +16,6 @@ c----------------------------------------------------------------------
       real xp_buf(Ni_max_buf,3)
       real rnd,f,v
       real vx,vy,vz
-      real vol_buf
       real tmp
       real phi
 

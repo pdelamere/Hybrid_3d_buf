@@ -94,7 +94,6 @@ c Buffer variables
 
 c Computed constants for the buffer
       real dx_buf
-      real vol_buf
 
       integer Ni_thermal_H_buf
       integer Ni_thermal_He_buf
