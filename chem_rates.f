@@ -42,7 +42,10 @@ c---------------------------------------------------------------------
       call Neut_Center(cx,cy,cz)
       xx = x - cx
       yy = y - cy
-      zz = z - cz
+      ! zz is computed differently since we need to convert z (which is
+      ! local) to a global z.
+      zz = (z + (procnum-(cart_rank+1))*qz(nz-1)) - cz
+
       r = sqrt(xx**2 + yy**2 + zz**2)
       if( r .lt. S_radius ) then
           neutral_density_continuous = atmosphere(r)
