@@ -50,7 +50,7 @@ c---------------------------------------------------------------------
       if( r .lt. S_radius ) then
           neutral_density_continuous = atmosphere(r)
       else
-          neutral_density_continuous = 0
+          neutral_density_continuous = 0.0
       endif
 
       return
