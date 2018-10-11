@@ -57,14 +57,14 @@ c---------------------------------------------------------------------
       end FUNCTION neutral_density_continuous
 c----------------------------------------------------------------------
 
-      SUBROUTINE Ionization(np,xp,vp,vp1)
+      SUBROUTINE ionization(np,xp,vp,vp1)
           real np(nx,ny,nz)
           real xp(Ni_max,3)
           real vp(Ni_max,3)
           real vp1(Ni_max,3)
           call charge_exchange_ionization(xp,vp,vp1)
           call photoionization(np,xp,vp,vp1)
-      end SUBROUTINE Ionization
+      end SUBROUTINE ionization
 
 c----------------------------------------------------------------------
       SUBROUTINE charge_exchange_ionization(xp,vp,vp1)
