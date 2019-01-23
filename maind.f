@@ -525,7 +525,7 @@ c======================================================================
          call update_np_boundary(np)
          call update_up(vp,np,up)       !up at n+1/2
 
-         call ionization(np,xp,vp,vp1)
+         !call ionization(np,xp,vp,vp1)
 
 
          call curlB(b1,np,aj)
@@ -548,8 +548,9 @@ c======================================================================
          call get_vp_buf_final(Ep_buf,vp_buf,vplus_buf)
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
-         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x        E,Bt,9000)
+!         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
+!     x        E,Bt,9000)
+         call reflect_boundary(xp,vp,vp1)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
@@ -658,8 +659,9 @@ c**********************************************************************
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
-         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x        E,Bt,9000)
+!         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
+!     x        E,Bt,9000)
+         call reflect_boundary(xp,vp,vp1)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 

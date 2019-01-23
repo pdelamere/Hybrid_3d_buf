@@ -737,7 +737,17 @@ c     remove energy
       end SUBROUTINE exchange_ion_in
 c----------------------------------------------------------------------
 
+      SUBROUTINE reflect_boundary(xp,vp,vp1)
+      real xp(Ni_max,3)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
 
+      where(xp(1:Ni_tot,1) .le. qx(1))
+          xp(1:Ni_tot,1) = qx(1) + (qx(1) - xp(1:Ni_tot,1))
+          vp(1:Ni_tot,1) = -vp(1:Ni_tot,1)
+          vp1(1:Ni_tot,1) = -vp1(1:Ni_tot,1)
+      endwhere         
+      end SUBROUTINE reflect_boundary
 
 c----------------------------------------------------------------------
       SUBROUTINE exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,

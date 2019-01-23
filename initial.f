@@ -94,8 +94,12 @@ c----------------------------------------------------------------
       ! half of a timestep before the buffer is reinitialized.
       ! Thus to make the buffer large enough to hold the fastest ion
       ! it needs to have a depth of 2*vsw*dt/2 == vsw*dt
-      dx_buf = vsw*dt 
+      !dx_buf = vsw*dt 
+      dx_buf = dx 
 
+      write(*,*) "init function: Ni_tot_0", Ni_tot_0
+      write(*,*) "init function: dx_buf", dx_buf
+      write(*,*) "init f: formula", Ni_tot_0*dx_buf/(qx(nx-1)-qx(1))
       Ni_tot_buf = Ni_tot_0*dx_buf/(qx(nx-1)-qx(1))
       ! number of particles in the buffer is always the same
       Ni_max_buf = Ni_tot_buf
@@ -124,6 +128,10 @@ c----------------------------------------------------------------
       allocate(B_out_buf(Ni_max_buf,3))
       allocate(mrat_out_buf(Ni_max_buf))
       allocate(in_bounds_buf(Ni_max_buf))
+
+      write(*,*) "init function: Ni_tot_buf", Ni_tot_buf
+      write(*,*) "init function: Ni_thermal_H_buf", Ni_thermal_H_buf
+      write(*,*) "init function: Ni_thermal_He_buf", Ni_thermal_He_buf
 
       end subroutine initialize_buffer
 
