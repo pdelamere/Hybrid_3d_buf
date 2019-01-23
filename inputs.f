@@ -90,7 +90,7 @@ c density scaling parameter, alpha, and ion particle array dims
       PARAMETER (Rpluto = 1184.0) !Pluto radius
       PARAMETER (tau_photo = 1.5e9)
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
-      PARAMETER (S_radius = 30*Rpluto)
+      PARAMETER (S_radius = 300*Rpluto)
 
 c domain decompostion parameters
 
