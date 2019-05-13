@@ -76,19 +76,25 @@
 
         subroutine sphere(r, x, y, z)
         ! Select a random point from the surface of a sphere with radius
-        ! r. Returns its coordinates in x, y, z
+        ! r. Returns its coordinates in x, y, z.
+        ! This is the method due to Marsaglia (1972) in Ann Math Stat Vol. 42
         real, intent(in) :: r
         real, intent(out) :: x, y, z
-        real :: nrm, s1, s2, s3
+        real :: v1, v2, S
+        real :: rt
+        do
+          v1 = 2*ranf() - 1
+          v2 = 2*ranf() - 1
+          S = v1**2 + v2**2
+          if (S .lt. 1.0) exit
+        end do
 
-        s1 = std_norm()
-        s2 = std_norm()
-        s3 = std_norm()
-        nrm = r/sqrt(s1**2 + s2**2 + s3**2)
+        rt = sqrt(1-S)
 
-        x = nrm*s1
-        y = nrm*s2
-        z = nrm*s3
+        x = r*2.0*v1*rt
+        y = r*2.0*v2*rt
+        z = r*1.0-2.0*S
+
         end subroutine
 
         subroutine shell(u_inj, r, lambda, theta, vx, vy, vz)
