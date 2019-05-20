@@ -2,6 +2,7 @@
       MODULE misc
 
       USE global
+      USE random_utils, notpi => pi
 
       contains
 
@@ -108,17 +109,6 @@ c----------------------------------------------------------------------
       end function int_to_str
 
 c----------------------------------------------------------------------
-      real FUNCTION ranf()
-c This is the random number generator that works on foo.
-c----------------------------------------------------------------------
-
-      call random_number(ranf)
-
-      return
-      end FUNCTION ranf
-c----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
       SUBROUTINE get_bndry_Eflux(b1,E)
 c----------------------------------------------------------------------
      
@@ -223,12 +213,11 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE get_beta()
 c----------------------------------------------------------------------
+      ! This isn't really used anymore, the whole beta value is in the
+      ! array beta_p, so we set beta=1.0
 
 
-      beta = (Ni_thermal_H/((qx(nx)-qx(1))*(qy(ny-1)-qy(1))*
-     x                    (qz(nz-1)-qz(1))))/nf_init
-
-      write(*,*) 'beta....',beta
+      beta = 1.0
 
       return
       end SUBROUTINE get_beta
