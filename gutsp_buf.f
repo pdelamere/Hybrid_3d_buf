@@ -23,79 +23,34 @@ c----------------------------------------------------------------------
       integer Ni_tot_buf_1
       integer l
 
-      Ni_tot_buf = Ni_max_buf
+      Ni_tot_buf = Ni_tot_buf_0
+      Ni_thermal_H_buf  = Ni_thermal_H_buf_0
+      Ni_thermal_He_buf = Ni_thermal_He_buf_0
+      Ni_shell_H_buf    = Ni_shell_H_buf_0
+      Ni_shell_He_buf   = Ni_shell_He_buf_0
 
-c initialize protons
-      do 10 l = 1,Ni_thermal_H_buf
+c Initialize Thermal H+
+      call insert_maxwl_buf(1, Ni_thermal_H_buf, -vsw, vth, vp_buf,
+     x        xp_buf, 1.0, b_sw_thermal_H, sw_thermal_H_tag)
 
-         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
-         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-         
-         vth = 0.5*(vth_top + vth_bottom) + 
-     x     0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
+c initialize Thermal He++
+      call insert_maxwl_buf(Ni_thermal_H_buf+1,
+     x  Ni_thermal_H_buf+Ni_thermal_He_buf,
+     x  -vsw, vth, vp_buf, xp_buf, 0.5, b_sw_thermal_He, 
+     x  sw_thermal_He_tag)
 
-         call maxwl_init(vth,vx,vy,vz)
+c initialize Shell H+
+      call insert_shell_buf(Ni_thermal_H_buf+Ni_thermal_He_buf+1,
+     x         Ni_thermal_H_buf+Ni_thermal_He_buf+Ni_shell_H_buf,
+     x                  -vsw, vsw, vp_buf, xp_buf,1.0, 
+     x                  b_sw_shell_H, sw_shell_H_tag)
 
-         vp_buf(l,1) = -vsw + vx 
-         vp_buf(l,2) = vy 
-         vp_buf(l,3) = vz 
-
-         mrat_buf(l) = 1.0
-         beta_p_buf(l) = b_sw_thermal_H
-         tags_buf(l) = sw_thermal_H_tag
-
- 10   continue
-         
-c initialize He++ (m/q =2) 
-
-      do 20 l = Ni_thermal_H_buf+1,Ni_thermal_H_buf+Ni_thermal_He_buf
-
-         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
-         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-         
-         vth = 0.5*(vth_top + vth_bottom) + 
-     x     0.5*(vth_top - vth_bottom)*tanh((qz(ijkp(l,3))-qz(nz/2))/Lo)
-
-         call maxwl_init(vth,vx,vy,vz)
-
-
-         vp_buf(l,1) = -vsw + vx 
-         vp_buf(l,2) = vy 
-         vp_buf(l,3) = vz 
-
-         mrat_buf(l) = 1.0/2.0
-         beta_p_buf(l) = b_sw_thermal_He
-         tags_buf(l) = sw_thermal_He_tag
-
- 20   continue
-         
-c add shell distribution
-
-      do 69 l = Ni_thermal_H_buf+Ni_thermal_He_buf+1,Ni_tot_buf
-         
-         xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
-         xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
-         xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-         
-         mrat_buf(l) = 1.0
-         beta_p_buf(l) = b_sw_shell_H
-         tags_buf(l) = sw_shell_H_tag
-         
-         vz = pad_ranf()*2 - 1
-         tmp = sqrt(1-vz**2)
-         phi = 2*PI*pad_ranf()
-         vx = tmp*cos(phi)
-         vy = tmp*sin(phi)
-         
-         vp_buf(l,1) = -vsw+vsw*vx !+dvx
-         vp_buf(l,2) = vsw*vy !+dvz 
-         vp_buf(l,3) = vsw*vz
-         
- 69   enddo
-
-
+c initialize Shell He+
+      call insert_shell_buf(Ni_thermal_H_buf
+     x                  +Ni_thermal_He_buf+Ni_shell_H_buf+1,
+     x                  Ni_Max_buf,
+     x                  -vsw, vsw, vp_buf,xp_buf, 0.25, 
+     x                  b_sw_shell_He, sw_shell_He_tag)
       return
       end SUBROUTINE part_setup_buf
 c----------------------------------------------------------------------

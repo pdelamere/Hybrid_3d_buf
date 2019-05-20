@@ -1,6 +1,5 @@
       MODULE gutsp_dd
 
-      USE global
       USE misc
       USE mpi
       USE boundary
@@ -917,14 +916,11 @@ c----------------------------------------------------------------------
 
          xp0 = xp(l,1)
          vp0 = vp(l,1)
+
          xp(l,1) = xp(l,1) + dth*vp(l,1)
-
- 
-
-
          xp(l,2) = xp(l,2) + dth*vp(l,2)
-
          xp(l,3) = xp(l,3) + dth*vp(l,3)
+
  10      continue
 
 

@@ -121,19 +121,19 @@ c      character filenum
       character(len=10) :: acc
       character(len=7) :: stat
 
+      ! extra clock stuff
+      integer(kind=8) :: sys_count, sys_rate, sys_max
+      real :: cpu_start, cpu_end
+
       logical ex
       integer para_dat_version
-      para_dat_version = 3
-
-
-
+      para_dat_version = 4
 
 c----------------------------------------------------------------------
 
       call readInputs()
+      write(*,*) 'initializing variables...'
       call initparameters()
-
-
 
       call MPI_INIT(ierr)
       call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
@@ -170,33 +170,15 @@ c create virtual topology (set dimensions in para.h)
 
       call system_clock(t1,cnt_rt)
 
-c----------------------------------------------------------------------
-c Initialize all variables
-c----------------------------------------------------------------------
-      write(*,*) 'initializing variables...'
-
 
       call get_command_argument(number=1,value=arg,status=ierr)
       restart = (trim(arg) == "restart")
-
-
-      Ni_thermal_H = 
-     x  Ni_tot_0/(1 
-     x            + b_sw_thermal_He*f_sw_thermal_He 
-     x            + b_sw_shell_H*f_sw_shell_H)
-
-      Ni_thermal_He = b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H
-      Ni_shell_H = b_sw_shell_H*f_sw_shell_H*Ni_thermal_H
-
-      ! Due to round off this will be very close to, but not exactly
-      ! Ni_tot_0
-      Ni_tot = Ni_thermal_H + Ni_thermal_He + Ni_shell_H
 
       print *,'Ni_tot_0, Ni_tot',Ni_tot_0,Ni_tot
       
       if (my_rank .eq. 0) then
          call check_inputs(my_rank)
-         write(*,*) 'Particles per cell....',Ni_tot/(nx*ny*nz)
+         write(*,*) 'Total Particles per cell....',Ni_tot/(nx*ny*nz)
          write(*,*) ' '
       endif
          
@@ -232,7 +214,11 @@ c initialize seed for each processor
 
 
       if (.not.(restart)) then
-         call sw_part_setup_maxwl(np,vp,vp1,xp,up)
+         call cpu_time(cpu_start)
+         call sw_part_setup(np,vp,vp1,xp,up)
+         call cpu_time(cpu_end)
+         write(*,*) "Particle setup time = ",cpu_end-cpu_start,
+     x              "seconds"
 
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
@@ -525,7 +511,7 @@ c======================================================================
          call update_np_boundary(np)
          call update_up(vp,np,up)       !up at n+1/2
 
-         !call ionization(np,xp,vp,vp1)
+         call ionization(np,xp,vp,vp1)
 
 
          call curlB(b1,np,aj)
@@ -548,9 +534,9 @@ c======================================================================
          call get_vp_buf_final(Ep_buf,vp_buf,vplus_buf)
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
-!         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-!     x        E,Bt,9000)
-         call reflect_boundary(xp,vp,vp1)
+         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
+     x        E,Bt,9000)
+!         call reflect_boundary(xp,vp,vp1)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 
@@ -659,9 +645,9 @@ c**********************************************************************
          call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
          
          call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
-!         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-!     x        E,Bt,9000)
-         call reflect_boundary(xp,vp,vp1)
+         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
+     x        E,Bt,9000)
+!         call reflect_boundary(xp,vp,vp1)
 
          call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
 

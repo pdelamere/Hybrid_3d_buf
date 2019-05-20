@@ -22,7 +22,19 @@ c raw grid coordinate data
       
 c Total number of ions produced at a given time during the simulation
       integer Ni_tot, Ni_tot_0
-      integer Ni_thermal_H, Ni_thermal_He, Ni_shell_H
+      integer Ni_tot_buf
+      integer Ni_tot_buf_0
+      integer Ni_thermal_H, Ni_thermal_He, Ni_shell_H, Ni_shell_He
+      integer Ni_thermal_H_buf, Ni_thermal_He_buf
+      integer Ni_shell_H_buf, Ni_shell_He_buf
+      integer Ni_thermal_H_buf_0, Ni_thermal_He_buf_0
+      integer Ni_shell_H_buf_0, Ni_shell_He_buf_0
+
+      ! Ni_s(1) === number of thermal H macroparticles
+      ! Ni_s(2) === number of thermal He macroparticles
+      ! Ni_s(3) === number of shell H macroparticles
+      ! Ni_s(4) === number of shell He macroparticles
+      integer, dimension(4) :: Ni_s
 
 c Location (indices) of particles with the grid
       integer ijkp(Ni_max,3)
@@ -95,10 +107,9 @@ c Buffer variables
 c Computed constants for the buffer
       real dx_buf
 
-      integer Ni_thermal_H_buf
-      integer Ni_thermal_He_buf
-      integer Ni_shell_H_buf
-      integer Ni_tot_buf
       integer Ni_max_buf
+
+c beta_p values for the various subpopulations
+      real b_sw_thermal_H, b_sw_thermal_He, b_sw_shell_H, b_sw_shell_He
 
       end MODULE GLOBAL

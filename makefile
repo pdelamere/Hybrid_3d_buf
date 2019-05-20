@@ -8,7 +8,7 @@ FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source
 #FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check all -warn all -warn errors -warn stderrors -std90
 
 # Normal Debug
-#FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check arg_temp_created -check bounds -check uninit -warn truncated_source -warn errors
+#FFLAGS=-mcmodel=large -O0 -implicitnone -init=snan,arrays -g -traceback -check arg_temp_created -check bounds -check uninit -warn truncated_source -warn errors
 
 # check fpe
 #FFLAGS=-mcmodel=medium -O0 -implicitnone -fpe0 -g -traceback -check bounds -check uninit -warn truncated_source -warn errors
@@ -16,10 +16,10 @@ FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source
 # check uninit
 #FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check bounds -check uninit -warn truncated_source -warn errors
 
-FILES = dimensions.f inputs.f global.f misc.f  boundary.f grid_interp.f gutsp_dd.f  gutsp_dd.f  gutsf.f part_init.f gutsp_buf.f chem_rates.f maind.f 
+FILES = dimensions.f random_utils.f inputs.f global.f misc.f  boundary.f grid_interp.f gutsp_dd.f  gutsp_dd.f  gutsf.f part_init.f gutsp_buf.f chem_rates.f maind.f 
 DEBUG = -check all -g -warn
 INCLUDE = incurv.h para.h
-OBJECTS = dimensions.o inputs.o global.o misc.o boundary.o grid_interp.o gutsp_dd.o   gutsf.o   part_init.o initial.o gutsp_buf.o chem_rates.o maind.o
+OBJECTS = dimensions.o random_utils.o inputs.o global.o misc.o boundary.o grid_interp.o gutsp_dd.o   gutsf.o   part_init.o initial.o gutsp_buf.o chem_rates.o maind.o
 
 hybrid:	$(OBJECTS) 
 	$(FC) $(FFLAGS) -o hybrid $(OBJECTS) 
@@ -39,7 +39,7 @@ gutsf.o:gutsf.f global.o boundary.o grid_interp.o  $(INCLUDE)
 gutsp_dd.o:gutsp_dd.f global.o misc.o boundary.o grid_interp.o $(INCLUDE)
 	$(FC) $(FFLAGS) -c gutsp_dd.f
 
-misc.o:misc.f global.o $(INCLUDE)
+misc.o:misc.f random_utils.o global.o $(INCLUDE)
 	$(FC) $(FFLAGS) -c misc.f
 
 boundary.o:boundary.f global.o $(INCLUDE)
@@ -59,6 +59,9 @@ chem_rates.o:chem_rates.f global.o inputs.o gutsp_dd.o grid_interp.o $(INCLUDE)
 
 dimensions.o:dimensions.f $(INCLUDE)
 	$(FC) $(FFLAGS) -c dimensions.f
+
+random_utils.o:random_utils.f
+	$(FC) $(FFLAGS) -c random_utils.f
 
 inputs.o:inputs.f dimensions.o $(INCLUDE)
 	$(FC) $(FFLAGS) -c inputs.f
