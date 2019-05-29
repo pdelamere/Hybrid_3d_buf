@@ -117,9 +117,6 @@ c----------------------------------------------------------------
      x     Ni_tot, Ni_max
       stop
       endif
-      if(Ni_tot .gt. Ni_tot_0) then
-      write(error_unit,*) 'Warning: Ni_tot > Ni_tot_0', Ni_tot, Ni_tot_0
-      endif
 
       end subroutine initparameters
 c----------------------------------------------------------------      
