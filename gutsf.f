@@ -4,6 +4,7 @@
       USE global
       USE boundary
       USE grid_interp
+      USE iso_fortran_env, only: error_unit
       
       contains
 
@@ -1212,7 +1213,8 @@ c----------------------------------------------------------------
       enddo
 
       if (ntf .gt. 100) then 
-         ntf = 100
+          write(error_unit,*) 'Aborting due to excesive subcycling'
+          stop
       endif
       
       return
