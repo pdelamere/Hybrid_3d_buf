@@ -185,10 +185,10 @@ c get source density
                r = sqrt(x**2+rho2)
              
                if(r .le. 2) then
-                   pu_beta_p = 0.1
+                   pu_beta_p = 0.1*b_sw_thermal_H 
                    pu_tag = pluto_stagnant_photoionize_CH4_tag
                else
-                   pu_beta_p = 2.0
+                   pu_beta_p = 2.0*b_sw_thermal_H 
                    pu_tag = pluto_photoionize_CH4_tag
                endif
 
