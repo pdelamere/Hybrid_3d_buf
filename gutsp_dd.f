@@ -90,70 +90,65 @@ c----------------------------------------------------------------------
       real, dimension(:), allocatable :: vsqrd_out
 
       real minden !minimum wake density 
-      real den_part ! density of 1 particle per cell
       real ak
       real btot,a1,a2,womega,phi,deltat
       integer i,j,k,l,m
       integer ii,jj,kk
       integer ierr
+      real delta_np
+      real vol
 
-      den_part = 1/(beta*dx**3)
-
-      minden = nf_init/10.0
+      minden = nf_init/300.0
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1
                if (Ni_tot+1 .ge. Ni_max) then
                    write(*,*) "Warning: Ni_max ions. Minden failed"
                endif
-               if (((np(i,j,k) .le. minden) .or. 
-     x              (np(i,j,k) .le. 2.0*den_part)) .and.
-     x              (Ni_tot + 1 .lt. Ni_max)) then
-                  npart = nint(minden/(np(i,j,k)))
-                  write(*,*) npart, "dummy particles added"
-                  do ipart = 1,npart 
-                     l=Ni_tot + 1 !beginning array element for new borns
+               if ((np(i,j,k) .lt. minden)
+     x              .and. (Ni_tot + 1 .lt. Ni_max)) then
+                  vol = dx_grid(i)*dy_grid(j)*dz_grid(k)
+                  delta_np = minden - np(i,j,k)
+                  write(*,*) "dummy particle added"
+                  l=Ni_tot + 1 !beginning array element for new borns
                   
-                     vp(l,1) = up(i,j,k,1)
-                     vp(l,2) = up(i,j,k,2)
-                     vp(l,3) = up(i,j,k,3)
-                     xp(l,1) = qx(i) + (0.5-pad_ranf())*dx_grid(i)
-                     xp(l,2) = qy(j) + (0.5-pad_ranf())*dy_grid(j)
-                     xp(l,3) = qz(k) + (0.5-pad_ranf())*dz_grid(k)
-                     
-                     !find i on non-uniform 
-                     ii=0
- 16                  continue
-                     ii = ii + 1
-                     if (xp(l,1) .gt. qx(ii)) go to 16 
-                     ii = ii-1
-                     ijkp(l,1)= ii
-                     
-                     
-                     !find j on non-uniform 
-                     jj=0
- 18                  continue
-                     jj = jj + 1
-                     if (xp(l,2) .gt. qy(jj)) go to 18
-                     jj = jj-1
-                     ijkp(l,2)= jj
-                     
-                     
-                     !find k on non-uniform
-                     kk=0
- 15                  continue
-                     kk = kk + 1
-                     if (xp(l,3) .gt. qz(kk)) go to 15
-                     kk = kk-1
-                     ijkp(l,3)= kk
+                  vp(l,1) = up(i,j,k,1)
+                  vp(l,2) = up(i,j,k,2)
+                  vp(l,3) = up(i,j,k,3)
+                  xp(l,1) = qx(i) + (0.5-pad_ranf())*dx_grid(i)
+                  xp(l,2) = qy(j) + (0.5-pad_ranf())*dy_grid(j)
+                  xp(l,3) = qz(k) + (0.5-pad_ranf())*dz_grid(k)
+                  
+                  !find i on non-uniform 
+                  ii=0
+ 16               continue
+                  ii = ii + 1
+                  if (xp(l,1) .gt. qx(ii)) go to 16 
+                  ii = ii-1
+                  ijkp(l,1)= ii
+                  
+                  
+                  !find j on non-uniform 
+                  jj=0
+ 18               continue
+                  jj = jj + 1
+                  if (xp(l,2) .gt. qy(jj)) go to 18
+                  jj = jj-1
+                  ijkp(l,2)= jj
+                  
+                  
+                  !find k on non-uniform
+                  kk=0
+ 15               continue
+                  kk = kk + 1
+                  if (xp(l,3) .gt. qz(kk)) go to 15
+                  kk = kk-1
+                  ijkp(l,3)= kk
 
-
-
-                     mrat(l) = 1.0
-                     beta_p(l) = 1.0
-                     tags(l) = dummy_particle_tag
-                     Ni_tot = Ni_tot + 1
-                  enddo
+                  mrat(l) = 1.0
+                  beta_p(l) = 1.0/(delta_np*vol)
+                  tags(l) = dummy_particle_tag
+                  Ni_tot = Ni_tot + 1
                endif
             enddo
          enddo
