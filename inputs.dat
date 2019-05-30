@@ -9,7 +9,7 @@
 5                     !sw thermal He ppc
 10                    !sw shell H ppc
 15                    !sw shell He ppc
-0.00025                  !particle time step (fraction of omega_i)
+0.01                  !particle time step (fraction of omega_i)
 1000000                  !number of time steps
 100                     !grid data output interval
 1000                    !particle data output interval
@@ -21,7 +21,7 @@
 0.02 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './data/'             !output directory 
 5000                !mrestart
-20                  !pluto_offset
+27                  !pluto_offset
 0.0               !pluto surface field (Tesla)
 90                 !IMF theta
 90                  !IMF phi
