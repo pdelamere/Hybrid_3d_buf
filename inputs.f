@@ -73,6 +73,9 @@ c misc constants
       real b0_top,b0_bottom,Lo,vth_top,vth_bottom,vth_max
       real m_top, m_bottom,m_heavy,np_bottom_proton
 
+c V&S shell distribution parameters
+      real H_shell_b, He_shell_b
+      PARAMETER (H_shell_b=0.2544, He_shell_b = 0.02038)
 
 c electron ion collision frequency
       real nu_init,lww1,lww2
