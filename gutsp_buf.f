@@ -42,14 +42,14 @@ c initialize Thermal He++
 c initialize Shell H+
       call insert_shell_buf(Ni_thermal_H_buf+Ni_thermal_He_buf+1,
      x         Ni_thermal_H_buf+Ni_thermal_He_buf+Ni_shell_H_buf,
-     x                  -vsw, vsw,H_shell_b, vp_buf, xp_buf,1.0, 
+     x                  -vsw, vsw, vp_buf, xp_buf,1.0, 
      x                  b_sw_shell_H, sw_shell_H_tag)
 
 c initialize Shell He+
       call insert_shell_buf(Ni_thermal_H_buf
      x                  +Ni_thermal_He_buf+Ni_shell_H_buf+1,
      x                  Ni_Max_buf,
-     x                  -vsw, vsw, He_shell_B, vp_buf,xp_buf, 0.25, 
+     x                  -vsw, vsw, vp_buf,xp_buf, 0.25, 
      x                  b_sw_shell_He, sw_shell_He_tag)
       return
       end SUBROUTINE part_setup_buf

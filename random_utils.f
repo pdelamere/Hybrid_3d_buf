@@ -1,7 +1,4 @@
         Module random_utils
-        use arms_interface
-        use, intrinsic :: iso_c_binding, only: c_ptr, c_double
-        use, intrinsic :: iso_fortran_env, only: error_unit
         implicit none
         real :: pi
         parameter( pi = 3.14159 )
@@ -83,43 +80,8 @@
         ! A sampling algorithm for the V&S shell distribution. It uses
         ! sphere sampling to sample isotropically, and sets a radius by
         ! sampling from the V&S 'shell' distribution.
-        ! A complication is that the sampling algorithm is adaptive and
-        ! requires us to hang onto a pointer unique for each b. There's
-        ! some extra logic to handle that. It's set up so that
-        ! arms_inst(i) is the pointer that cooresponds with the arms
-        ! instance for bs(i).
         real, intent(in)  :: u_inj, b
         real, intent(out) :: vx, vy, vz
-        real :: samp(1) ! Only make one sample at a time
-
-        integer, parameter :: max_instances = 5
-        integer, save :: N_instances = 0
-        real, save :: bs(max_instances)
-        type(c_ptr), save :: arms_inst(max_instances)
-        integer i,ind
-
-        ! Check if b is in bs
-        ind = -1
-        do i=1, N_instances
-        if (b .eq. bs(i)) then
-            ind = i
-            exit
-        endif
-        enddo
-        ! Setup an arms instance if b isn't found in bs
-        if (ind .eq. -1) then
-            N_instances = N_instances + 1
-            ind = N_instances
-            if(N_instances .gt. max_instances) then
-            write(error_unit,*) "More than the maximum arms instances"
-            stop
-            endif
-            call arms_vs_setup(3, real(b, c_double), arms_inst(ind))
-            bs(ind) = b
-        endif
-
-        ! Actual random sampling happens here
-        call arms_sample_sp(samp, 1, arms_inst(ind))
-        call sphere(u_inj*samp(1), vx, vy, vz)
+        call sphere(u_inj*VS_dist(b), vx, vy, vz)
         end subroutine
         end Module

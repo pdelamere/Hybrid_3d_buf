@@ -3,7 +3,6 @@ FC=mpif90
 
 # Release
 FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source
-CFLAGS=-D__PURE_INTEL_C99_HEADERS__ -O3
 
 # Maximum Debug
 #FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check all -warn all -warn errors -warn stderrors -std90
@@ -20,7 +19,7 @@ CFLAGS=-D__PURE_INTEL_C99_HEADERS__ -O3
 FILES = dimensions.f random_utils.f inputs.f global.f misc.f  boundary.f grid_interp.f gutsp_dd.f  gutsp_dd.f  gutsf.f part_init.f gutsp_buf.f chem_rates.f maind.f 
 DEBUG = -check all -g -warn
 INCLUDE = incurv.h para.h
-OBJECTS = dimensions.o random_utils.o inputs.o global.o misc.o boundary.o grid_interp.o gutsp_dd.o gutsf.o part_init.o initial.o gutsp_buf.o chem_rates.o maind.o arms_interface.o arms.o fort_compat_arms.o
+OBJECTS = dimensions.o random_utils.o inputs.o global.o misc.o boundary.o grid_interp.o gutsp_dd.o   gutsf.o   part_init.o initial.o gutsp_buf.o chem_rates.o maind.o
 
 hybrid:	$(OBJECTS) 
 	$(FC) $(FFLAGS) -o hybrid $(OBJECTS) 
@@ -61,7 +60,7 @@ chem_rates.o:chem_rates.f global.o inputs.o gutsp_dd.o grid_interp.o $(INCLUDE)
 dimensions.o:dimensions.f $(INCLUDE)
 	$(FC) $(FFLAGS) -c dimensions.f
 
-random_utils.o:random_utils.f arms_interface.o
+random_utils.o:random_utils.f
 	$(FC) $(FFLAGS) -c random_utils.f
 
 inputs.o:inputs.f dimensions.o $(INCLUDE)
@@ -72,13 +71,3 @@ global.o:global.f inputs.o dimensions.o $(INCLUDE)
 
 grid_interp.o:grid_interp.f global.o dimensions.o boundary.o $(INCLUDE)
 	$(FC) $(FFLAGS) -c grid_interp.f
-
-arms.o: arms.c arms.h
-	icc $(CFLAGS) -c arms.c
-
-fort_compat_arms.o: fort_compat_arms.c fort_compat_arms.h arms.o
-	icc $(CFLAGS) -c fort_compat_arms.c
-
-arms_interface.o: arms_interface.f
-	ifort $(FFLAGS) -c arms_interface.f
-

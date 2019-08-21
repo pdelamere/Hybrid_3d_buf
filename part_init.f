@@ -232,7 +232,7 @@ c----------------------------------------------------------------------
       enddo
       end SUBROUTINE insert_maxwl
 
-      SUBROUTINE insert_shell_buf(start_N,stop_N,drift,vinj,C,vp_buf,
+      SUBROUTINE insert_shell_buf(start_N, stop_N, drift, vinj, vp_buf,
      x        xp_buf, mr, b, t)
       integer start_N, stop_N
       real vp_buf(Ni_max_buf,3)
@@ -240,13 +240,12 @@ c----------------------------------------------------------------------
       integer l, m
       real mr, b, t !mrat, beta, and tag
       real drift, vinj
-      real C
 
       do l = start_N,stop_N
          xp_buf(l,1) = qx(nx)+(1.0-pad_ranf())*dx_buf
          xp_buf(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp_buf(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
-         call shell(vinj,C,vp_buf(l,1),vp_buf(l,2),vp_buf(l,3))
+         call sphere(vinj,vp_buf(l,1),vp_buf(l,2),vp_buf(l,3))
          vp_buf(l,1) = vp_buf(l,1) + drift
 
          mrat_buf(l) = mr
@@ -264,9 +263,6 @@ c----------------------------------------------------------------------
       integer l, m
       real mr, b, t !mrat, beta, and tag
       real drift, vinj
-      ! The argument C is what I usually refer to as 'b' in my
-      ! notes and in random_utils.f, but I've already used the variable
-      ! b for beta in this subroutine.
       real C
 
       do l = start_N,stop_N
@@ -274,7 +270,7 @@ c----------------------------------------------------------------------
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          ! Thin shell!
-         call shell(vinj, C, vp(l,1),vp(l,2),vp(l,3))
+         call sphere(vinj, vp(l,1),vp(l,2),vp(l,3))
          vp(l,1) = vp(l,1) + drift
          call locate_new(l, xp(l,1), xp(l,2), xp(l,3))
 
@@ -320,13 +316,13 @@ c initialize Thermal He++
 c initialize Shell H+
       call insert_shell(Ni_thermal_H+Ni_thermal_He+1,
      x                  Ni_thermal_H+Ni_thermal_He+Ni_shell_H,
-     x                  -vsw, vsw, H_shell_b, vp, vp1, xp, 1.0, 
+     x                  -vsw, vsw, 0.2544, vp, vp1, xp, 1.0, 
      x                  b_sw_shell_H, sw_shell_H_tag)
 
 c initialize Shell He+
       call insert_shell(Ni_thermal_H+Ni_thermal_He+Ni_shell_H+1,
      x                  Ni_tot,
-     x                  -vsw, vsw, He_shell_b, vp, vp1, xp, 0.25, 
+     x                  -vsw, vsw, 0.02038, vp, vp1, xp, 0.25, 
      x                  b_sw_shell_He, sw_shell_He_tag)
 
 
