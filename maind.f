@@ -52,11 +52,15 @@ c----------------------------------------------------------------------
                               !level n, n+1/2
      x     np_He(nx,ny,nz),   !He++ number density at time 
                               !level n, n+1/2
-     x     np_shell(nx,ny,nz),   !shell number density at time 
+     x     np_H_shell(nx,ny,nz),   !shell number density at time 
+                                 !level n, n+1/2
+     x     np_He_shell(nx,ny,nz),   !shell number density at time 
                                  !level n, n+1/2
      x     np_sw(nx,ny,nz),   !solar wind number density at time 
                               !level n, n+1/2
      x     np_CH4(nx,ny,nz),  !CH4+ number density at time 
+                              !level n, n+1/2
+     x     np_dummy(nx,ny,nz),  !CH4+ number density at time 
                               !level n, n+1/2
      x     vp(Ni_max,3),      !particle velocity at t level n+1/2
      x     vp1(Ni_max,3),     !particle velocity at t level n
@@ -357,7 +361,10 @@ c----------------------------------------------------------------------
      x     'c.np_He_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
       open(117,file=trim(out_dir)//'grid/'//
-     x     'c.np_shell_3d_'//filenum//'.dat', access= acc,
+     x     'c.np_H_shell_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(1175,file=trim(out_dir)//'grid/'//
+     x     'c.np_He_shell_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
       open(118,file=trim(out_dir)//'grid/'//
      x     'c.np_sw_3d_'//filenum//'.dat', access= acc,
@@ -367,6 +374,9 @@ c----------------------------------------------------------------------
      x     status=stat,form='unformatted')
       open(120,file=trim(out_dir)//'grid/'//
      x     'c.np_tot_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(121,file=trim(out_dir)//'grid/'//
+     x     'c.np_dummy_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
       open(130,file=trim(out_dir)//'grid/'//
@@ -581,26 +591,26 @@ c======================================================================
 
                ! total
                call separate_np(np_tot,
-     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
-     x          .or. tags(:Ni_tot)==sw_thermal_He_tag
-     x          .or. tags(:Ni_tot)==sw_shell_H_tag
-     x          .or. tags(:Ni_tot)==pluto_photoionize_CH4_tag
-     x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
-     x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
+     x                   (tags(:Ni_tot) .ne. dummy_particle_tag ))
                call separate_np(np_H,
      x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
                call separate_np(np_He,
      x                   (tags(:Ni_tot)==sw_thermal_He_tag))
-               call separate_np(np_shell,
+               call separate_np(np_H_shell,
      x                   (tags(:Ni_tot)==sw_shell_H_tag))
+               call separate_np(np_He_shell,
+     x                   (tags(:Ni_tot)==sw_shell_He_tag))
                call separate_np(np_sw,
      x                   (tags(:Ni_tot)==sw_thermal_H_tag 
      x               .or. tags(:Ni_tot)==sw_thermal_He_tag
-     x               .or. tags(:Ni_tot)==sw_shell_H_tag))
+     x               .or. tags(:Ni_tot)==sw_shell_H_tag
+     x               .or. tags(:Ni_tot)==sw_shell_He_tag))
                call separate_np(np_CH4,
      x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
      x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
      x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
+               call separate_np(np_dummy,
+     x                   (tags(:Ni_tot)==dummy_particle_tag ))
 
          endif
          
@@ -681,13 +691,17 @@ c save 3d arrays------------------------
                write(116) m
                write(116) np_He
                write(117) m
-               write(117) np_shell
+               write(117) np_H_shell
+               write(1175) m
+               write(1175) np_He_shell
                write(118) m
                write(118) np_sw
                write(119) m
                write(119) np_CH4
                write(120) m
                write(120) np_tot
+               write(121) m
+               write(121) np_dummy
 
                write(131) m
                write(131) b1

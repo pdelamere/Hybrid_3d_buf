@@ -98,7 +98,7 @@ c----------------------------------------------------------------------
       real delta_np
       real vol
 
-      minden = nf_init/300.0
+      minden = nf_init/10.0
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1
@@ -146,7 +146,10 @@ c----------------------------------------------------------------------
                   ijkp(l,3)= kk
 
                   mrat(l) = 1.0
-                  beta_p(l) = 1.0/(delta_np*vol)
+                  !The particle is weighted to be about three times
+                  !heavier than in needs to be to overcome the minimum
+                  !density problem.
+                  beta_p(l) = 0.3333/(delta_np*vol)
                   tags(l) = dummy_particle_tag
                   Ni_tot = Ni_tot + 1
                endif
