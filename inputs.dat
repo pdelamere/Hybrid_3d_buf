@@ -1,14 +1,14 @@
 0.1e-9               !magnetic field (Tesla)
-1                    !atomic mass for reference species
-16                    !mass of pickup ion species
+16                    !atomic mass for reference species
+137                    !mass of pickup ion species
 2.5e13               !sw thermal H density (km^-3)
 9.5e11               !sw thermal He density (km^-3)
 4.7e11               !sw shell H density (km^-3)
 4.7e10               !sw shell He density (km^-3)
-10                     !sw thermal H ppc
-10                     !sw thermal He ppc
-50                    !sw shell H ppc
-100                    !sw shell He ppc
+50                     !sw thermal H ppc
+0                     !sw thermal He ppc
+0                    !sw shell H ppc
+0                    !sw shell He ppc
 0.00016                  !particle time step (fraction of omega_i)
 1000                  !number of time steps
 10                     !grid data output interval
@@ -23,5 +23,5 @@
 5000                !mrestart
 0                  !pluto_offset
 0.0               !pluto surface field (Tesla)
-90                 !IMF theta
-90                  !IMF phi
+0                 !IMF theta
+0                  !IMF phi
