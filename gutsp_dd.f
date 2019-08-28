@@ -415,7 +415,6 @@ c     x     uf(nx,ny,nz,3),
      x     btc(nx,ny,nz,3),
      x     nu(nx,ny,nz)
 c     x     gradP(nx,ny,nz,3)
-      real us(ny,nz,3)
 
       real ajc(nx,ny,nz,3),       !aj at cell center
      x     upc(nx,ny,nz,3),       !up at cell center
@@ -432,8 +431,7 @@ c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
       integer i,j,k,l,m
       integer ip,jp,kp
 
-      us = 0.0
-      call face_to_center(aj,ajc,us)! only if upstream B is const
+      call face_to_center(aj,ajc)
 
       do 10 l=1,Ni_tot
 
@@ -923,10 +921,17 @@ c----------------------------------------------------------------------
 
 
 
+c     Periodic x
+      where (xp(:Ni_tot,1) .gt. qx(nx-1))
+         xp(:Ni_tot,1) = qx(1) + ( xp(:Ni_tot,1) - qx(nx-1) )
+      endwhere
+      where (xp(:Ni_tot,1) .le. qx(1)) 
+         xp(:Ni_tot,1) = qx(nx-1) - (qx(1) - xp(:Ni_tot,1))
+      endwhere
+c     Periodic y
       where (xp(:Ni_tot,2) .gt. qy(ny-1))
          xp(:Ni_tot,2) = qy(1) + ( xp(:Ni_tot,2) - qy(ny-1) )
       endwhere
-
       where (xp(:Ni_tot,2) .le. qy(1)) 
          xp(:Ni_tot,2) = qy(ny-1) - (qy(1) - xp(:Ni_tot,2))
       endwhere
@@ -1818,10 +1823,10 @@ c----------------------------------------------------------------------
       enddo
 
 c use for periodic boundary conditions
+         np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
          np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
 
-      us = nf_init
-      call boundary_scalar(np, us)
+      call periodic_scalar(np)
 
       return
       end SUBROUTINE update_np
@@ -1890,10 +1895,10 @@ c----------------------------------------------------------------------
  20   continue
       
 c     use for periodic boundary conditions
+      np(nx-1,:,:) = np(nx-1,:,:)+np(1,:,:)
       np(:,ny-1,:) = np(:,ny-1,:)+np(:,1,:)
       
-      us = nf_init
-      call boundary_scalar(np, us)
+      call periodic_scalar(np)
 
       call update_np_boundary(np)
 
@@ -1985,7 +1990,10 @@ c      include 'incurv.h'
 
  20   continue
 
-c use for periodic boundary conditions
+c use for periodic boundary conditions X
+      ct(nx-1,:,:,:) = ct(nx-1,:,:,:)+ct(1,:,:,:)
+      cnt(nx-1,:,:) = cnt(nx-1,:,:)+cnt(1,:,:)
+c use for periodic boundary conditions Y
       ct(:,ny-1,:,:) = ct(:,ny-1,:,:)+ct(:,1,:,:)
       cnt(:,ny-1,:) = cnt(:,ny-1,:)+cnt(:,1,:)
 
@@ -2012,7 +2020,7 @@ c use for periodic boundary conditions
 
       up = ct
 
-      call boundaries(up, vsw_us)
+      call periodic(up)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
@@ -2050,8 +2058,7 @@ c----------------------------------------------------------------------
       call MPI_WAITALL(2, reqs, stats, ierr)
       np(:,:,2) = np(:,:,2) + in_buf_z
  
-      us = nf_init
-      call boundary_scalar(np, us)
+      call periodic_scalar(np)
      
       return 
       end SUBROUTINE update_np_boundary

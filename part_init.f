@@ -211,7 +211,7 @@ c----------------------------------------------------------------------
 
 
       do l = start_N,stop_N
-         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
+         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx-1)-qx(1))
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          call maxwl_init(vthrm,vp(l,1),vp(l,2),vp(l,3))
@@ -266,7 +266,7 @@ c----------------------------------------------------------------------
       real C
 
       do l = start_N,stop_N
-         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx)-qx(1))
+         xp(l,1) = qx(1)+(1.0-pad_ranf())*(qx(nx-1)-qx(1))
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          ! Thin shell!

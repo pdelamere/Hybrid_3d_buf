@@ -6,26 +6,6 @@ c      USE chem_rates
       contains
 
 c---------------------------------------------------------------------
-      SUBROUTINE x_boundary(b, us)
-c---------------------------------------------------------------------
-      real b(nx,ny,nz,3)
-      real us(ny,nz,3) ! upstream condition
-c upstream is fixed
-      b(nx,:,:,:) = us
-c downstream is extrap
-      b(1,:,:,:) = b(2,:,:,:)
-      end SUBROUTINE
-c---------------------------------------------------------------------
-      SUBROUTINE boundaries(b, us)
-c---------------------------------------------------------------------
-      real b(nx,ny,nz,3)
-      real us(ny,nz,3) ! upstream condition
-      call x_boundary(b,us)
-      call periodic(b)
-      end SUBROUTINE
-c---------------------------------------------------------------------
-
-c---------------------------------------------------------------------
       SUBROUTINE periodic(b)
 c---------------------------------------------------------------------
 CVD$F VECTOR
@@ -42,8 +22,10 @@ c      include 'incurv.h'
       integer cnt_buf_z
       cnt_buf_z = nx*ny*3
 
+c x direction periodic
+      b(1,:,:,:) = b(nx-1,:,:,:)
+      b(nx,:,:,:) = b(2,:,:,:)
 c y direction periodic
-      
       b(:,1,:,:) = b(:,ny-1,:,:)
       b(:,ny,:,:) = b(:,2,:,:)
             
@@ -81,26 +63,6 @@ c z direction periodic, but has domain decomp
       end SUBROUTINE periodic
 c---------------------------------------------------------------------
 
-c---------------------------------------------------------------------
-      SUBROUTINE x_boundary_scalar(b, us)
-c---------------------------------------------------------------------
-      real b(nx,ny,nz)
-      real us(ny,nz) ! upstream condition
-c upstream is fixed
-      b(nx,:,:) = us
-c downstream is extrap
-      b(1,:,:) = b(2,:,:)
-      end SUBROUTINE
-c---------------------------------------------------------------------
-      SUBROUTINE boundary_scalar(b, us)
-c---------------------------------------------------------------------
-      real b(nx,ny,nz)
-      real us(ny,nz) ! upstream condition
-      call x_boundary_scalar(b,us)
-      call periodic_scalar(b)
-      end SUBROUTINE
-c---------------------------------------------------------------------
-
       SUBROUTINE periodic_scalar(b)
 c---------------------------------------------------------------------
 c      include 'incurv.h'
@@ -115,6 +77,9 @@ c      include 'incurv.h'
       integer cnt_buf_z
       cnt_buf_z = nx*ny
 
+c x surfaces
+      b(1,:,:) = b(nx-1,:,:)
+      b(nx,:,:) = b(2,:,:)
 c y surfaces
       b(:,1,:) = b(:,ny-1,:)
       b(:,ny,:) = b(:,2,:)

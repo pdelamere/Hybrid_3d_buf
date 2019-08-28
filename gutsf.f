@@ -27,7 +27,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
-      SUBROUTINE crossf2(aa, btc, aus, bus, cc)
+      SUBROUTINE crossf2(aa, btc, cc)
 c The cross product is formed at the main cell center.  aa and btc must
 c be given already extrapolated to the main cell center.
 c----------------------------------------------------------------------
@@ -37,8 +37,6 @@ c----------------------------------------------------------------------
       real btc(nx,ny,nz,3)      !main cell contravarient vector
       real cc(nx,ny,nz,3)        !cross product result, main cell
                                  !contravarient (cell face)
-      real aus(ny,nz,3)
-      real bus(ny,nz,3)
 
       real cus(ny,nz,3)
 
@@ -46,8 +44,8 @@ c----------------------------------------------------------------------
 
       integer i,j,k
 
-      call boundaries(aa, aus)
-      call boundaries(btc, bus)
+      call periodic(aa)
+      call periodic(btc)
 
       ct(:,:,:,1) = aa(:,:,:,2)*btc(:,:,:,3) - aa(:,:,:,3)*btc(:,:,:,2)
       ct(:,:,:,2) = aa(:,:,:,3)*btc(:,:,:,1) - aa(:,:,:,1)*btc(:,:,:,3)
@@ -73,7 +71,7 @@ c about the grid points.
  60            continue
 
       cus = ct(nx,:,:,:)
-      call boundaries(cc, cus)
+      call periodic(cc)
 
       return
       end SUBROUTINE crossf2
@@ -95,7 +93,6 @@ CVD$R VECTOR
 c     x     nf(nx,ny,nz),
      x     np(nx,ny,nz),
      x     aj(nx,ny,nz,3)
-      real us(ny,nz,3)
 
       real curl_B(nx,ny,nz,3)      !dummy for holding curl vector
       real ntot(nx,ny,nz,3)        !total density, np + nf
@@ -103,17 +100,12 @@ c     x     nf(nx,ny,nz),
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
-      us = 0.0
-      call boundaries(b1,us)
+      call periodic(b1)
 cc     call fix_normal_b(b1)
 
       do 10 k=2,nz-1   
          do 10 j=2,ny-1
-            us(j,k,1) = 0.5*(np(nx,j,k)+nf_init)
-            us(j,k,2) = 0.5*(np(nx,j,k)+np(nx,jp,k))
-            us(j,k,3) = 0.5*(np(nx,j,k)+np(nx,j,kp))
             do 10 i=2,nx-1
-
                ip = i+1
                jp = j+1
                kp = k+1
@@ -121,19 +113,10 @@ cc     call fix_normal_b(b1)
                ntot(i,j,k,2) = 0.5*(np(i,j,k)+np(i,jp,k))
                ntot(i,j,k,3) = 0.5*(np(i,j,k)+np(i,j,kp))
  10    continue
-      call boundaries(ntot, us)
+      call periodic(ntot)
 
       do 20 k=2,nz-1   
          do 20 j=2,ny-1
-            us(j,k,1) = (b1(nx,j,k,3) - 
-     x              b1(nx,j-1,k,3))/dy_cell(j) +
-     x              (b1(nx,j,k-1,2) - b1(nx,j,k,2))/dz_cell(k)
-            us(j,k,2) = (b1(nx,j,k,1) - 
-     x              b1(nx,j,k-1,1))/dz_cell(k) +
-     x              (b1(nx-1,j,k,3) - b1(nx,j,k,3))/dx_cell(nx)
-            us(j,k,3) = (b1(nx,j,k,2) - 
-     x              b1(nx-1,j,k,2))/dx_cell(nx) + 
-     x              (b1(nx,j-1,k,1) - b1(nx,j,k,1))/dy_cell(j)
             do 20 i=2,nx-1
                curl_B(i,j,k,1) = (b1(i,j,k,3) - 
      x              b1(i,j-1,k,3))/dy_cell(j) +
@@ -145,7 +128,7 @@ cc     call fix_normal_b(b1)
      x              b1(i-1,j,k,2))/dx_cell(i) + 
      x              (b1(i,j-1,k,1) - b1(i,j,k,1))/dy_cell(j)
  20            continue
-      call boundaries(curl_B, us)
+      call periodic(curl_B)
 
       if(any(ntot .le. nf_init/50.0)) then
           write(error_unit,*) "Density capped in curlB"
@@ -970,15 +953,12 @@ c----------------------------------------------------------------------
       real aa(nx,ny,nz,3)
       real us(ny,nz,3)
 
-      us = 0.0 ! only correct when b upstream is curl-free
-      call face_to_center(aj,aa,us)
+      call face_to_center(aj,aa)
 
       a = aa - up
 
-      aus = a(nx,:,:,:)
-      bus = b0(nx,:,:,:)
-      call edge_to_center(bt,btc, bus)
-      call crossf2(a,btc,aus,bus,c)
+      call edge_to_center(bt,btc)
+      call crossf2(a,btc,c)
 
       E = c + spread(nu, 4, 3)*aj
 
@@ -1042,8 +1022,7 @@ c     x                 2.0*dtsub*curl_E(i,j,k,m)
 
 c      call boundaries(b1p2)
 c      call damp(b1p2)
-      bus = 0.0
-      call boundaries(b1p2,bus)
+      call periodic(b1p2)
 c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
 
@@ -1098,16 +1077,12 @@ c----------------------------------------------------------------------
  5             continue
 
       call curlB(b1p1,np,aj)
-      aus = 0.0!not always correct
-      call face_to_center(aj,aa,aus)
+      call face_to_center(aj,aa)
       a = aa - up
 
-      aus = a(nx,:,:,:)!not always correct
-      bus = b0(nx,:,:,:)
+      call edge_to_center(btp1,btc)
 
-      call edge_to_center(btp1,btc,bus)
-
-      call crossf2(a,btc,aus,bus,c)
+      call crossf2(a,btc,c)
        
       E = c + spread(nu,4,3)*aj
 
@@ -1167,8 +1142,7 @@ c     x                 dtsub*curl_E(i,j,k,m)
 
 c      call boundaries(b1p2)
 c      call damp(b1p2)
-      bus = 0.0
-      call boundaries(b1p2, bus)
+      call periodic(b1p2)
 c      call obstacle_boundary_B(b0,b1p2)
 c      call fix_normal_b(b1p2)
 

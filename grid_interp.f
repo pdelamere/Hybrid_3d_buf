@@ -7,7 +7,7 @@
       contains
 
 c----------------------------------------------------------------------
-      SUBROUTINE edge_to_center(bt,btc, us)
+      SUBROUTINE edge_to_center(bt,btc)
 c----------------------------------------------------------------------
       real bt(nx,ny,nz,3),   !main cell edge
      x     btc(nx,ny,nz,3)   !main cell center
@@ -19,12 +19,12 @@ c                          !to grid point position.
       real b1,b2
       real btmf(nx,ny,nz,3)
 
-      call boundaries(bt, us)
+      call periodic(bt)
 
-      call edge_to_face(bt,btmf,us)
-      call face_to_center(btmf,btc, us)
+      call edge_to_face(bt,btmf)
+      call face_to_center(btmf,btc)
 
-      call boundaries(btc, us)
+      call periodic(btc)
       
       return
       end SUBROUTINE edge_to_center
@@ -32,12 +32,11 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE edge_to_face(bt,btmf, us)
+      SUBROUTINE edge_to_face(bt,btmf)
 c----------------------------------------------------------------------
       real bt(nx,ny,nz,3),   !main cell edge
      x     btmf(nx,ny,nz,3)
       real btc(nx,ny,nz,3)  !main cell center
-      real us(ny,nz,3)       !vector upstream main cell edge
 
 c      real zrat           !ratio for doing linear interpolation
 c                          !to grid point position.
@@ -45,7 +44,7 @@ c                          !to grid point position.
       real b1,b2
       integer i,j,k
 
-      call boundaries(bt, us)
+      call periodic(bt)
 
       do 10 k=2,nz
          do 10 j=2,ny
@@ -84,7 +83,7 @@ c     x              bt(im,jm,k,3) + bt(i,jm,k,3))
       
  10         continue
 
-      call boundaries(btc, us)
+      call periodic(btc)
 
       do 20 k=2,nz-1
          do 20 j=2,ny-1
@@ -103,7 +102,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE face_to_center(v,vc, us)
+      SUBROUTINE face_to_center(v,vc)
 c----------------------------------------------------------------------
       !!include 'incurv.h'
 
@@ -118,7 +117,7 @@ c      do 5 k=1,nz
 c         zfrc(k) = 0.5*dz_grid(k)/dz_cell(k)
 c 5       continue
 
-      call boundaries(v, us)
+      call periodic(v)
 
       do 10 i=2,nx
          do 10 j=2,ny
@@ -143,7 +142,7 @@ c               vc(i,j,k,2) = 0.5*(v(i,j,k,2) + v(i,jm,k,2))
      x                                v(i,j,km,3)
  10            continue
 
-      call boundaries(vc, us)
+      call periodic(vc)
 
       return
       end SUBROUTINE face_to_center

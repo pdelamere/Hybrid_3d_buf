@@ -227,7 +227,6 @@ c initialize seed for each processor
          call f_update_tlev(b1,b12,b1p2,bt,b0)
       endif
 
-      call initialize_buffer()
 c----------------------------------------------------------------------
 
 
@@ -525,7 +524,7 @@ c======================================================================
 
 
          call curlB(b1,np,aj)
-         call edge_to_center(bt,btc,b0_us)
+         call edge_to_center(bt,btc)
 
          call extrapol_up(up,vp,vp1,np)
          call get_Ep(Ep,aj,np,up,btc,nu)
@@ -536,21 +535,6 @@ c======================================================================
          call get_vp_final(Ep,vp,vp1,vplus)
          
          call move_ion_half(xp,vp,vp1,Ep)
-
-         call part_setup_buf(xp_buf,vp_buf)
-         call get_Ep_buf(Ep_buf,b0,xp_buf,up)
-         call get_vplus_vminus_buf(Ep_buf,vp_buf,vplus_buf,
-     x        vminus_buf,b0)
-         call get_vp_buf_final(Ep_buf,vp_buf,vplus_buf)
-         call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
-         call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
-         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x        E,Bt,9000)
-!         call reflect_boundary(xp,vp,vp1)
-
-         call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
-
-
 
          call get_interp_weights(xp)
          call update_np(xp, vp, vp1, np)             !np at n+1/2
@@ -650,17 +634,6 @@ c**********************************************************************
 
 
          call move_ion_half(xp,vp,vp1,Ep)
-
-         call part_setup_buf(xp_buf,vp_buf)
-         call move_ion_half_buf(xp_buf,vp_buf,xp,vp,vp1)
-         
-         call exchange_ion_in(xp,vp,vp1,xp_buf,vp_buf)
-         call exchange_ion_out(xp,vp,vp1,xp_buf,vp_buf,
-     x        E,Bt,9000)
-!         call reflect_boundary(xp,vp,vp1)
-
-         call exchange_ion_in_buf(xp_buf,vp_buf,xp,vp,vp1)
-
 
          call check_min_den(np,xp,vp,vp1,up,bt)
 
