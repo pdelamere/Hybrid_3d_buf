@@ -98,10 +98,7 @@ c     x     nf(nx,ny,nz),
       real ntot(nx,ny,nz,3)        !total density, np + nf
       integer i,j,k
 
-c      call periodic_scalar(np)
-c      call periodic_scalar(nf)
       call periodic(b1)
-cc     call fix_normal_b(b1)
 
       do 10 k=2,nz-1   
          do 10 j=2,ny-1
@@ -192,40 +189,15 @@ c E is dual cell covarient, and curl_E will be returned as main
 c cell covarient...as all magnetic fields are.  All i,j,k exclude
 c boundaries.  Boundaries are taken care of in main fluid code.
 c----------------------------------------------------------------------
-      !include 'incurv.h'
 
       real E(nx,ny,nz,3)      !E field, main cell contravarient
       real curl_E(nx,ny,nz,3) !curl of E, main cell covarient
       real lx, ly, lz         !lengths of dual cell edges
       integer i,j,k
 
-c      call periodic(E)
-
       do 10 i=2,nx-1
          do 10 j=2,ny-1
             do 10 k=2,nz-1
-
-c               lx = qx(i+1) - qx(i)
-c               ly = qy(j+1) - qy(j)
-c               lz = qz(k+1) - qz(k)
-
-c               lx = dx_grid(i)
-c               ly = dy_grid(j)
-c               lz = dz_grid(k)
-
-c               curl_E(i,j,k,1) =  (E(i,j+1,k,3)/dy_grid(j)) - 
-c     x              (E(i,j,k,3)/dy_grid(j))
-c     x              + (E(i,j,k,2)/dz_grid(k)) - 
-c     x              (E(i,j,k+1,2)/dz_grid(k))
-c               curl_E(i,j,k,2) =  (E(i,j,k,3)/dx_grid(i)) - 
-c     x              (E(i+1,j,k,3)/dx_grid(i))
-c     x              + (E(i,j,k+1,1)/dz_grid(k)) - 
-c     x              (E(i,j,k,1)/dz_grid(k))
-c               curl_E(i,j,k,3) =  (E(i,j,k,1)/dy_grid(j)) - 
-c     x              (E(i,j+1,k,1)/dy_grid(j))
-c     x              + (E(i+1,j,k,2)/dx_grid(i)) - 
-c     x              (E(i,j,k,2)/dx_grid(i))
-
 
                curl_E(i,j,k,1) =  (E(i,j+1,k,3)- 
      x              E(i,j,k,3))/dy_grid(j)
@@ -244,7 +216,6 @@ c     x              (E(i,j,k,2)/dx_grid(i))
 
  10          continue
 
-c      call periodic(curl_E)
 
       return
       end SUBROUTINE curlE
@@ -979,52 +950,30 @@ c      include 'incurv.h'
      x     b12(nx,ny,nz,3),
      x     b1p2(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
-c     x     btmf(nx,ny,nz,3),
      x     E(nx,ny,nz,3),
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
-c     x     uf(nx,ny,nz,3),
-c     x     uf2(nx,ny,nz,3),
      x     np(nx,ny,nz),
-c     x     nf(nx,ny,nz),
      x     nu(nx,ny,nz)
-c     x     gradP(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)   !curl of E
       real bus(ny,nz,3)
       integer i,j,k,m
 
-c      call cov_to_contra(bt,btmf) 
-c      call edge_to_center(bt,btc)
-c      call get_E(E,b0,bt,btmf,aj,up,np,nu)  !E at time level m 
       call get_E(E,b0,bt,aj,up,np,nu)  !E at time level m 
 
       call curlE(E,curl_E)
-c      call fix_tangential_E(E)
-c      call periodic(E)
-c      call fix_tangential_E(E)
 
       do 10 k=2,nz-1
          do 10 j=2,ny-1
             do 10 i=2,nx-1
                do 10 m=1,3
 
-c                  b1p2(i,j,k,m)=lww1*(b12(i+1,j,k,m)+
-c     x                 b12(i-1,j,k,m)+
-c     x                 b12(i,j+1,k,m)+b12(i,j-1,k,m)+
-c     x                 b12(i,j,k+1,m)+b12(i,j,k-1,m))+
-c     x                 lww2*b12(i,j,k,m) -
-c     x                 2.0*dtsub*curl_E(i,j,k,m)
-
                   b1p2(i,j,k,m) = b12(i,j,k,m) - 
      x                            2.0*dtsub*curl_E(i,j,k,m)
  10               continue
 
-c      call boundaries(b1p2)
-c      call damp(b1p2)
       call periodic(b1p2)
-c      call obstacle_boundary_B(b0,b1p2)
-c      call fix_normal_b(b1p2)
 
       return
       end SUBROUTINE predict_B
@@ -1095,8 +1044,6 @@ c----------------------------------------------------------------------
       SUBROUTINE correct_B(b0,b1,b1p2,E,aj,up,np,nu)
 c Corrector step in magnetic field update.
 c----------------------------------------------------------------------
-CVD$R VECTOR
-c      include 'incurv.h'
 
       real b0(nx,ny,nz,3),
      x     b1(nx,ny,nz,3),
@@ -1104,12 +1051,8 @@ c      include 'incurv.h'
      x     E(nx,ny,nz,3),
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
-c     x     uf(nx,ny,nz,3),
      x     np(nx,ny,nz),
-c     x     nf(nx,ny,nz),
      x     nu(nx,ny,nz)
-c     x     gradP(nx,ny,nz,3),
-c     x     bdp(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)            !curl of E
       real bus(ny,nz,3)
@@ -1119,32 +1062,16 @@ c     x     bdp(nx,ny,nz,3)
                                                    !E at time level m 
 
       call curlE(E,curl_E)
-c      call fix_tangential_E(E)
-c      call periodic(E)
-c      call fix_tangential_E(E)
-
-c      write(*,*) 'E cb...',E(23,8,14,1),E(23,8,14,2),E(23,8,14,3)
 
       do 10 k=2,nz-1
          do 10 j=2,ny-1
             do 10 i=2,nx-1
                do 10 m=1,3
-
-c                  b1p2(i,j,k,m)=lww1*(b1(i+1,j,k,m)+b1(i-1,j,k,m)+
-c     x                 b1(i,j+1,k,m)+b1(i,j-1,k,m)+
-c     x                 b1(i,j,k+1,m)+b1(i,j,k-1,m))+
-c     x                 lww2*b1(i,j,k,m) -
-c     x                 dtsub*curl_E(i,j,k,m)
-
                   b1p2(i,j,k,m) = b1(i,j,k,m) - 
      x                            dtsub*curl_E(i,j,k,m)
  10               continue
 
-c      call boundaries(b1p2)
-c      call damp(b1p2)
       call periodic(b1p2)
-c      call obstacle_boundary_B(b0,b1p2)
-c      call fix_normal_b(b1p2)
 
       return
       end SUBROUTINE correct_B

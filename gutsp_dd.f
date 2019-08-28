@@ -409,17 +409,13 @@ c      include 'incurv.h'
       real Ep(Ni_max,3),
      x     aj(nx,ny,nz,3),
      x     np(nx,ny,nz),
-c     x     nf(nx,ny,nz),
      x     up(nx,ny,nz,3),
-c     x     uf(nx,ny,nz,3),
      x     btc(nx,ny,nz,3),
      x     nu(nx,ny,nz)
-c     x     gradP(nx,ny,nz,3)
 
       real ajc(nx,ny,nz,3),       !aj at cell center
      x     upc(nx,ny,nz,3),       !up at cell center
      x     ufc(nx,ny,nz,3)       !uf at cell center
-c     x     gradPc(nx,ny,nz,3)     !gradP at cell center
 
       real aa(3), bb(3), cc(3)    !dummy vars for doing cross product
       real ntot                   !total plasma density
