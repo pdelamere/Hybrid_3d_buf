@@ -92,21 +92,6 @@ c----------------------------------------------------------------
       Ni_shell_He = shell_He_ppc*num_cells
       Ni_tot = Ni_thermal_H + Ni_thermal_He + Ni_shell_H + Ni_shell_He
 
-      Ni_thermal_H_buf  = therm_H_ppc*num_buf_cells
-      Ni_thermal_He_buf = therm_He_ppc*num_buf_cells
-      Ni_shell_H_buf    = shell_H_ppc*num_buf_cells
-      Ni_shell_He_buf   = shell_He_ppc*num_buf_cells
-
-      Ni_thermal_H_buf_0  = Ni_thermal_H_buf  
-      Ni_thermal_He_buf_0 = Ni_thermal_He_buf 
-      Ni_shell_H_buf_0    = Ni_shell_H_buf    
-      Ni_shell_He_buf_0   = Ni_shell_He_buf   
-
-      Ni_tot_buf = Ni_thermal_H_buf + Ni_thermal_He_buf 
-     x             + Ni_shell_H_buf + Ni_shell_He_buf
-
-      Ni_tot_buf_0 = Ni_tot_buf
-
       b_sw_thermal_H = therm_H_ppc/(n_H_therm_init*dx**3)
       b_sw_thermal_He = therm_He_ppc/(n_He_therm_init*dx**3)
       b_sw_shell_H = shell_H_ppc/(n_H_shell_init*dx**3)
@@ -120,56 +105,6 @@ c----------------------------------------------------------------
 
       end subroutine initparameters
 c----------------------------------------------------------------      
-      SUBROUTINE initialize_buffer()
-      ! Buffer parameters
-
-      ! The fastest ions are at double sw speed, but they only move
-      ! half of a timestep before the buffer is reinitialized.
-      ! Thus to make the buffer large enough to hold the fastest ion
-      ! it needs to have a depth of 2*vsw*dt/2 == vsw*dt
-      !dx_buf = vsw*dt 
-      dx_buf = dx 
-
-      write(*,*) "init function: Ni_tot_0", Ni_tot_0
-      write(*,*) "init function: dx_buf", dx_buf
-      write(*,*) "init f: formula", Ni_tot_0*dx_buf/(qx(nx-1)-qx(1))
-      ! number of particles in the buffer is always the same
-      Ni_max_buf = Ni_tot_buf
-
-!      Ni_thermal_H_buf = 
-!     x  Ni_tot_buf/(1 
-!     x            + b_sw_thermal_He*f_sw_thermal_He 
-!     x            + b_sw_shell_H*f_sw_shell_H)
-!
-!      Ni_thermal_He_buf=b_sw_thermal_He*f_sw_thermal_He*Ni_thermal_H_buf
-!      Ni_shell_H_buf=b_sw_shell_H*f_sw_shell_H*Ni_thermal_H_buf
-!      Ni_thermal_H_buf = 0.0
-!
-!      Ni_thermal_He_buf=0.0
-!      Ni_shell_H_buf=0.0
-
-      allocate(xp_buf(Ni_max_buf,3))
-      allocate(vp_buf(Ni_max_buf,3))
-      allocate(mrat_buf(Ni_max_buf))
-      allocate(beta_p_buf(Ni_max_buf))
-      allocate(tags_buf(Ni_max_buf))
-
-      allocate(Ep_buf(Ni_max_buf,3))
-      allocate(vplus_buf(Ni_max_buf,3))
-      allocate(vminus_buf(Ni_max_buf,3))
-
-      allocate(xp_out_buf(Ni_max_buf,3))
-      allocate(vp_out_buf(Ni_max_buf,3))
-      allocate(E_out_buf(Ni_max_buf,3))
-      allocate(B_out_buf(Ni_max_buf,3))
-      allocate(mrat_out_buf(Ni_max_buf))
-      allocate(in_bounds_buf(Ni_max_buf))
-
-      write(*,*) "init function: Ni_tot_buf", Ni_tot_buf
-      write(*,*) "init function: Ni_thermal_H_buf", Ni_thermal_H_buf
-      write(*,*) "init function: Ni_thermal_He_buf", Ni_thermal_He_buf
-
-      end subroutine initialize_buffer
 
 c----------------------------------------------------------------------
       SUBROUTINE grd6_setup(b0,b1,b1p2,bt)
