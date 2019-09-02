@@ -2322,7 +2322,7 @@ c use for periodic boundary conditions
       do i = 1,nx
          do j = 1,ny
             do k = 1,nz
-               temp_p(i,j,k) = (1./3.)*1e6*mproton*(up2(i,j,k,1)+
+               temp_p(i,j,k) = (1./3.)*1e6*mion*(up2(i,j,k,1)+
      x                              up2(i,j,k,2) + 
      x                              up2(i,j,k,3) - up_ave(i,j,k,1)**2 -
      x                              up_ave(i,j,k,2)**2 -
@@ -2583,7 +2583,7 @@ c use for periodic boundary conditions
       do i = 1,nx
          do j = 1,ny
             do k = 1,nz
-               temp_p(i,j,k) = (1./3.)*1e6*mproton*(up2(i,j,k,1)+
+               temp_p(i,j,k) = (1./3.)*1e6*mion*(up2(i,j,k,1)+
      x                              up2(i,j,k,2) + 
      x                              up2(i,j,k,3) - up_ave(i,j,k,1)**2 -
      x                              up_ave(i,j,k,2)**2 -

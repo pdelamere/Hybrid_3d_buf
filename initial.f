@@ -198,7 +198,7 @@ c----------------------------------------------------------------------
       do 60 i=1,nx
        do 60 j=1,ny
           do 60 k=1,nz
-             nu(i,j,k) = (q*b0_init/mproton)
+             nu(i,j,k) = (q*b0_init/mion)
 c     x            *exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
  60   continue
       end SUBROUTINE
