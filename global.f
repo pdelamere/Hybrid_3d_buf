@@ -7,6 +7,7 @@
 
 c contains the common data structures to be used by the various
 c simulation subroutines 
+      real simulated_time
 
 c raw grid coordinate data
       real gz(nz)

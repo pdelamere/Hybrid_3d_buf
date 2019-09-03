@@ -9,20 +9,28 @@
       contains
 
 c----------------------------------------------------------------------
-      real function neut_corona(a,r)
-          real a,r
-          real pi
-          pi = 3.14159
-          neut_corona = 
-     x         atmosphere(r)*((r/Rpluto)**(2*(tanh(5*(a-pi/2))+1)/2))
-      end function neut_corona
-
       real function atmosphere(r)
           real, intent(in) :: r
-          real rr
-          rr = max(r, 1.5*Rpluto)
-          atmosphere = 1e15*(Rpluto/rr)**25.0 + 5e9*(Rpluto/rr)**8.0
-          atmosphere = atmosphere*1e15
+          !! Delamere parameters
+          !real N0, vth_n
+          !real A
+          !real t
+          !t = simulated_time
+          !N0 = 2.6e24
+          !vth_n = 1.0
+          !A = N0/(4*pi*r**2*t*vth_n*sqrt(pi))
+          !! Matt parameters
+          real N0, vth_n, b
+          real A, alpha
+          real t
+          t = simulated_time
+          b = 1.0 ! km
+          N0 = 2.631e24 ! Barium ions
+          vth_n = 0.5 ! km/s
+          alpha = 2*sqrt(2*pi**3)*b**3
+          A = N0/alpha
+
+          atmosphere = A*exp(-r**2/(2*(vth_n*t + b)**2))
       end function atmosphere
 
 c---------------------------------------------------------------------
@@ -47,11 +55,7 @@ c---------------------------------------------------------------------
       zz = (z + (procnum-(cart_rank+1))*qz(nz-1)) - cz
 
       r = sqrt(xx**2 + yy**2 + zz**2)
-      if( r .lt. S_radius ) then
-          neutral_density_continuous = atmosphere(r)
-      else
-          neutral_density_continuous = 0.0
-      endif
+      neutral_density_continuous = atmosphere(r)
 
       return
       end FUNCTION neutral_density_continuous
@@ -62,59 +66,9 @@ c----------------------------------------------------------------------
           real xp(Ni_max,3)
           real vp(Ni_max,3)
           real vp1(Ni_max,3)
-          call charge_exchange_ionization(xp,vp,vp1)
+          !call charge_exchange_ionization(xp,vp,vp1)
           call photoionization(np,xp,vp,vp1)
       end SUBROUTINE ionization
-
-c----------------------------------------------------------------------
-      SUBROUTINE charge_exchange_ionization(xp,vp,vp1)
-c----------------------------------------------------------------------
-c      include 'incurv.h'
-
-      real xp(Ni_max,3)
-      real vp(Ni_max,3)
-      real vp1(Ni_max,3)
-
-      real cx,cy,cz,r,vrel
-      real nn !,neutral_density
-      real chex_inv_tau,chex_prob
-
-      integer l,m
-
-      real sigma_chex
-      PARAMETER (sigma_chex = 1e-25)  !10 A^2 in units of km^2
-
-      call Neut_Center(cx,cy,cz)
-      
-      do l = 1,Ni_tot 
-         vrel = sqrt(vp(l,1)**2 + vp(l,2)**2 + vp(l,3)**2)
-         nn = neutral_density_continuous(xp(l,1),xp(l,2),xp(l,3))
-
-         ! one over the time constant
-         chex_inv_tau = (nn*sigma_chex*vrel)
-
-         chex_prob = dt*chex_inv_tau
-
-         if (pad_ranf() .lt. chex_prob) then
-            do m=1,3
-               input_E = input_E - 
-     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x              beta*beta_p(l) 
-            enddo                     
-            
-            vp(l,:) = 0.0
-            vp1(l,:) = 0.0
-            mrat(l) = 1./m_pu
-            ! beta_p stays the same
-            tags(l) = pluto_chex_CH4_tag
-         endif
-
-
-      enddo
-
-      return
-      end SUBROUTINE charge_exchange_ionization
-c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE photoionization(np,xp,vp,vp1)
@@ -171,34 +125,18 @@ c get source density
          do j = 2,ny-1
             do k = 2,nz-1
 
-               if(np(i,j,k) .ge. max_ion_density) then
-                   ! Note that this check is not needed. whenever it is
-                   ! true new_macro would be negative and no new
-                   ! particles would be created anyway.
-                   continue
-               endif
-
                x = qx(i)-cx
                y = qy(j)-cy
                z = gz(k)-cz ! global z
                rho2 = y**2 + z**2
                r = sqrt(x**2+rho2)
              
-               if(r .le. 2) then
-                   pu_beta_p = 0.1*b_sw_thermal_H 
-                   pu_tag = pluto_stagnant_photoionize_CH4_tag
-               else
-                   pu_beta_p = 2.0*b_sw_thermal_H 
-                   pu_tag = pluto_photoionize_CH4_tag
-               endif
+               pu_beta_p = 2.0*b_sw_thermal_H 
+               pu_tag = pluto_photoionize_CH4_tag
 
                cur_micro = np(i,j,k)*vol
                new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
-               if((cur_micro+new_micro)/vol .le. max_ion_density) then
                new_macro = new_micro*beta*pu_beta_p
-               else
-               new_macro=(max_ion_density*vol-cur_micro)*beta*pu_beta_p
-               endif
 
                do ll = 1,min(nint(new_macro), Ni_max - Ni_tot)
                   l = Ni_tot + 1
