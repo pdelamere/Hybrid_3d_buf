@@ -131,7 +131,7 @@ c get source density
                rho2 = y**2 + z**2
                r = sqrt(x**2+rho2)
              
-               pu_beta_p = 2.0*b_sw_thermal_H 
+               pu_beta_p = b_sw_thermal_H 
                pu_tag = pluto_photoionize_CH4_tag
 
                cur_micro = np(i,j,k)*vol

@@ -80,9 +80,6 @@ c----------------------------------------------------------------
       b0_us(:,:,2) = sin(imf_phi)*sin(imf_theta)*b0_top*eoverm
       b0_us(:,:,3) = cos(imf_theta)*b0_top*eoverm
 
-      max_ion_density = PCE_coef*sqrt(atmosphere(r_thin))
-      write(*,*) 'max_ion_density...', max_ion_density
-
       ! Variable needs to be initialized so it can act as an accumulator
       bndry_Eflux = 0
 
@@ -174,8 +171,6 @@ c----------------------------------------------------------------------
 
                   bt(i,j,k,m) = b0(i,j,k,m)
                   vol = dx*dy*dz_cell(k)*km_to_m**3
-                  input_E = input_E + 
-     x                      (vol/(2.0*mu0))*(mO_q*b0(i,j,k,m))**2 
 
  20            continue
 

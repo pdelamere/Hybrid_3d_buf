@@ -69,7 +69,8 @@ c----------------------------------------------------------------------
       ! Then compute particle (kinetic) energy
       do 15 l=1,Ni_tot
          do 15 m=1,3
-            Evp = Evp + 0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+            Evp = Evp + 
+     x           0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
      x           (beta*beta_p(l))
  15   continue
 
@@ -121,6 +122,11 @@ c----------------------------------------------------------------------
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       if (my_rank .eq. 0) then
 
+      write(*,*) 'Particle energy.........', S_Evp
+      write(*,*) 'Input particle energy...', S_input_E
+      write(*,*) 'Magnetic energy.........', S_EB1
+      write(*,*) 'Electric energy.........', S_EE
+      write(*,*) 'Total boundary E flux...', S_bndry_Eflux
       write(*,*) 'Normalized particle energy...',S_Evp/S_input_E
       write(*,*) 'Normalized total energy......',actual_E/supposed_E
 
@@ -208,6 +214,7 @@ c----------------------------------------------------------------------
       integer l, m
       real mr, b, t !mrat, beta, and tag
       real drift, vthrm
+      integer ierr
 
 
       do l = start_N,stop_N
@@ -308,22 +315,22 @@ c Initialize Thermal H+
       call insert_maxwl(1, Ni_thermal_H, -vsw, vth, vp, vp1,
      x        xp, 1.0, b_sw_thermal_H, sw_thermal_H_tag)
 
-c initialize Thermal He++
-      call insert_maxwl(Ni_thermal_H+1, Ni_thermal_H+Ni_thermal_He,
-     x  -vsw, vth, vp, vp1, xp, 0.5, b_sw_thermal_He, 
-     x  sw_thermal_He_tag)
-
-c initialize Shell H+
-      call insert_shell(Ni_thermal_H+Ni_thermal_He+1,
-     x                  Ni_thermal_H+Ni_thermal_He+Ni_shell_H,
-     x                  -vsw, vsw, 0.2544, vp, vp1, xp, 1.0, 
-     x                  b_sw_shell_H, sw_shell_H_tag)
-
-c initialize Shell He+
-      call insert_shell(Ni_thermal_H+Ni_thermal_He+Ni_shell_H+1,
-     x                  Ni_tot,
-     x                  -vsw, vsw, 0.02038, vp, vp1, xp, 0.25, 
-     x                  b_sw_shell_He, sw_shell_He_tag)
+cc initialize Thermal He++
+c      call insert_maxwl(Ni_thermal_H+1, Ni_thermal_H+Ni_thermal_He,
+c     x  -vsw, vth, vp, vp1, xp, 0.5, b_sw_thermal_He, 
+c     x  sw_thermal_He_tag)
+c
+cc initialize Shell H+
+c      call insert_shell(Ni_thermal_H+Ni_thermal_He+1,
+c     x                  Ni_thermal_H+Ni_thermal_He+Ni_shell_H,
+c     x                  -vsw, vsw, 0.2544, vp, vp1, xp, 1.0, 
+c     x                  b_sw_shell_H, sw_shell_H_tag)
+c
+cc initialize Shell He+
+c      call insert_shell(Ni_thermal_H+Ni_thermal_He+Ni_shell_H+1,
+c     x                  Ni_tot,
+c     x                  -vsw, vsw, 0.02038, vp, vp1, xp, 0.25, 
+c     x                  b_sw_shell_He, sw_shell_He_tag)
 
 
       write(*,*) 'get interp weights...'
