@@ -9,9 +9,9 @@
 0                     !sw thermal He ppc
 0                    !sw shell H ppc
 0                    !sw shell He ppc
-0.030                  !particle time step (fraction of omega_i)
+0.1                  !particle time step (fraction of omega_i)
 50000                  !number of time steps
-500                     !grid data output interval
+250                     !grid data output interval
 1000000                    !particle data output interval
 0                  !data output wait steps
 2.5                   !flow speed (km/s)
