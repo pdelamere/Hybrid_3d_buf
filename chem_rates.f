@@ -11,26 +11,20 @@
 c----------------------------------------------------------------------
       real function atmosphere(r)
           real, intent(in) :: r
-          !! Delamere parameters
-          !real N0, vth_n
-          !real A
-          !real t
-          !t = simulated_time
-          !N0 = 2.6e24
-          !vth_n = 1.0
-          !A = N0/(4*pi*r**2*t*vth_n*sqrt(pi))
-          !! Matt parameters
-          real N0, vth_n, b
-          real A, alpha
+          !! gaussian barium release
+          real N0, N
+          real vth_n
+          real A
           real t
-          t = simulated_time
-          b = 1.0 ! km
-          N0 = 2.631e24 ! Barium ions
-          vth_n = 0.5 ! km/s
-          alpha = 2*sqrt(2*pi**3)*b**3
-          A = N0/alpha
+          real tstart
+          tstart = 0.2
+          N0 = 2.631e24
+          vth_n = 0.5
+          t = simulated_time + tstart
+          N = N0*exp(-t/tau_photo)
+          A = N/((sqrt(pi)*vth_n*t)**3)
 
-          atmosphere = A*exp(-r**2/(2*(vth_n*t + b)**2))
+          atmosphere = A*exp(-r**2/((vth_n*t)**2))
       end function atmosphere
 
 c---------------------------------------------------------------------
