@@ -164,7 +164,7 @@ c get source density
                   kk = kk-1
                   ijkp(l,3)= kk
 
-                  mrat(l) = 1.0/m_pu
+                  mrat(l) = ion_amu/m_pu
                   beta_p(l) = pu_beta_p
                   tags(l) = pu_tag
                   Ni_tot = l
@@ -216,7 +216,7 @@ c get source density
                       kk = kk-1
                       ijkp(l,3)= kk
                       
-                      mrat(l) = 1.0/m_pu
+                      mrat(l) = ion_amu/m_pu
                       beta_p(l) = pu_beta_p
                       tags(l) = pu_tag
                       Ni_tot = l
