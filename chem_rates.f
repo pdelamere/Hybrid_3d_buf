@@ -98,7 +98,6 @@ c----------------------------------------------------------------------
       integer rijk
       integer l1
 
-      real rho2
       real x,y,z
 
       real pu_beta_p
@@ -122,8 +121,7 @@ c get source density
                x = qx(i)-cx
                y = qy(j)-cy
                z = gz(k)-cz ! global z
-               rho2 = y**2 + z**2
-               r = sqrt(x**2+rho2)
+               r = sqrt(x**2+y**2+z**2)
              
                pu_beta_p = b_sw_thermal_H 
                pu_tag = pluto_photoionize_CH4_tag
@@ -134,9 +132,9 @@ c get source density
 
                do ll = 1,min(nint(new_macro), Ni_max - Ni_tot)
                   l = Ni_tot + 1
-                  vp(l,1) = 0.0
-                  vp(l,2) = 0.0
-                  vp(l,3) = 0.0                        
+                  vp(l,1) = x/simulated_time
+                  vp(l,2) = y/simulated_time
+                  vp(l,3) = z/simulated_time
 
                   xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
                   xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
