@@ -191,7 +191,7 @@ c create virtual topology (set dimensions in para.h)
       
       if (my_rank .eq. 0) then
          call check_inputs(my_rank)
-         write(*,*) 'Total Particles per cell....',Ni_tot/(nx*ny*nz)
+         write(*,*) 'Total Particles per cell....',Ni_tot/num_cells
          write(*,*) ' '
       endif
          
