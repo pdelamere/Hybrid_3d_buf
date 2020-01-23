@@ -67,6 +67,15 @@ c----------------------------------------------------------------------
      x     vplus(Ni_max,3),   !v+ used in velocity update
      x     vminus(Ni_max,3),  !v- used in velocity update
      x     up(nx,ny,nz,3),    !particle flow at time level n, n+1/2
+     x     up_tot(nx,ny,nz,3),
+     x     up_H(nx,ny,nz,3),
+     x     up_He(nx,ny,nz,3),
+     x     up_H_shell(nx,ny,nz,3),
+     x     up_He_shell(nx,ny,nz,3),
+     x     up_sw(nx,ny,nz,3),
+     x     up_CH4(nx,ny,nz,3),
+     x     up_dummy(nx,ny,nz,3),  
+
      x     xp(Ni_max,3),      !coordinates of ion particles
      x     aj(nx,ny,nz,3),    !curlB/(alpha*n) 
      x     nu(nx,ny,nz),      !collision frequency
@@ -379,6 +388,31 @@ c----------------------------------------------------------------------
      x     'c.np_dummy_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
+      open(9115,file=trim(out_dir)//'grid/'//
+     x     'c.up_H_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9116,file=trim(out_dir)//'grid/'//
+     x     'c.up_He_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9117,file=trim(out_dir)//'grid/'//
+     x     'c.up_H_shell_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(91175,file=trim(out_dir)//'grid/'//
+     x     'c.up_He_shell_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9118,file=trim(out_dir)//'grid/'//
+     x     'c.up_sw_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9119,file=trim(out_dir)//'grid/'//
+     x     'c.up_CH4_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9120,file=trim(out_dir)//'grid/'//
+     x     'c.up_tot_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9121,file=trim(out_dir)//'grid/'//
+     x     'c.up_dummy_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+
       open(130,file=trim(out_dir)//'grid/'//
      x     'c.b1_'//filenum//'.dat',
      x     status=stat, access= acc,
@@ -611,6 +645,27 @@ c======================================================================
      x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
                call separate_np(np_dummy,
      x                   (tags(:Ni_tot)==dummy_particle_tag ))
+               call separate_up(vp,up_tot,
+     x                   (tags(:Ni_tot) .ne. dummy_particle_tag ))
+               call separate_up(vp,up_H,
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
+               call separate_up(vp,up_He,
+     x                   (tags(:Ni_tot)==sw_thermal_He_tag))
+               call separate_up(vp,up_H_shell,
+     x                   (tags(:Ni_tot)==sw_shell_H_tag))
+               call separate_up(vp,up_He_shell,
+     x                   (tags(:Ni_tot)==sw_shell_He_tag))
+               call separate_up(vp,up_sw,
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
+     x               .or. tags(:Ni_tot)==sw_thermal_He_tag
+     x               .or. tags(:Ni_tot)==sw_shell_H_tag
+     x               .or. tags(:Ni_tot)==sw_shell_He_tag))
+               call separate_up(vp,up_CH4,
+     x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
+               call separate_up(vp,up_dummy,
+     x                   (tags(:Ni_tot)==dummy_particle_tag ))
 
          endif
          
@@ -702,6 +757,23 @@ c save 3d arrays------------------------
                write(120) np_tot
                write(121) m
                write(121) np_dummy
+
+               write(9115) m
+               write(9115) up_H
+               write(9116) m
+               write(9116) up_He
+               write(9117) m
+               write(9117) up_H_shell
+               write(91175) m
+               write(91175) up_He_shell
+               write(9118) m
+               write(9118) up_sw
+               write(9119) m
+               write(9119) up_CH4
+               write(9120) m
+               write(9120) up_tot
+               write(9121) m
+               write(9121) up_dummy
 
                write(131) m
                write(131) b1
