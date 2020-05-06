@@ -855,6 +855,18 @@ c----------------------------------------------------------------------
      x             mrat, tags
 
           close(1000+my_rank)
+
+          ! Barrier to make sure all processors are done writing.
+          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+          ! Delete the .old files.
+          open(1000+my_rank,
+     x      file=trim(out_dir)//'restart.vars'//filenum//'.old',
+     x      status='unknown',form='unformatted')
+          close(1000+my_rank, status='delete')
+          open(1000+my_rank,
+     x      file=trim(out_dir)//'restart.part'//filenum//'.old',
+     x      status='unknown',form='unformatted')
+          close(1000+my_rank, status='delete')
                   
           restart_counter = restart_counter + mrestart
 
