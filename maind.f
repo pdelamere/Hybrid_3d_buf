@@ -802,8 +802,8 @@ c save 3d arrays------------------------
 
                ! Only output particle data only near pluto
                if ( ndiag_part .ge. part_nout ) then
-               if ( my_rank .gt. procnum/2 - 15 .and.
-     x              my_rank .lt. procnum/2 + 15) then
+               if ( my_rank .gt. procnum/2 - 30 .and.
+     x              my_rank .lt. procnum/2 + 30) then
                    write(307) m
                    write(307) ((xp(i,j), i=1,Ni_tot),j=1,3)
                    write(310) m
