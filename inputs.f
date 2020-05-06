@@ -176,7 +176,8 @@ c----------------------------------------------------------------
       read(100,*) n_He_shell_init
       write(*,*) 'Shell He density...........',n_He_shell_init
       ! The total initial density needs to be calculated
-      nf_init = n_H_therm_init + n_He_therm_init + n_H_shell_init
+      nf_init = n_H_therm_init + n_He_therm_init + n_H_shell_init+
+     x          n_He_shell_init
       read(100,*) therm_H_ppc
       write(*,*) 'Thermal H ppc...........',therm_H_ppc
       read(100,*) therm_He_ppc
