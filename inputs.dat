@@ -1,4 +1,4 @@
-0.1e-9               !magnetic field (Tesla)
+0.05e-9               !magnetic field (Tesla)
 1                    !atomic mass for reference species
 16                    !mass of pickup ion species
 2.5e13               !sw thermal H density (km^-3)
@@ -9,16 +9,16 @@
 10                     !sw thermal He ppc
 50                    !sw shell H ppc
 100                    !sw shell He ppc
-0.00016                  !particle time step (fraction of omega_i)
-140000                  !number of time steps
+0.00008                  !particle time step (fraction of omega_i)
+140001                  !number of time steps
 5000                     !grid data output interval
-30000                    !particle data output interval
-80000                  !data output wait steps
+10000                    !particle data output interval
+50001                  !data output wait steps
 403                   !flow speed (km/s) 
 11.2                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
 0.08                   !Ni_tot initial (fraction of Ni_max)
 0.5                   !grid size as fraction of lambda_i
-0.1875 		      !nu_init_frac, fraction of gyrofrequency for nu_init
+0.2 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './data/'             !output directory 
 5000                !mrestart
 27                  !pluto_offset
