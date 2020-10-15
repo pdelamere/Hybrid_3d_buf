@@ -906,7 +906,7 @@ cc----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE get_E(E,b0,bt,aj,up,np,nu)
+      SUBROUTINE get_E(E,b0,bt,aj,up,np,nu, grad_P)
       real E(nx,ny,nz,3),
      x     b0(nx,ny,nz,3),
      x     bt(nx,ny,nz,3),
@@ -931,7 +931,7 @@ c----------------------------------------------------------------------
       call edge_to_center(bt,btc)
       call crossf2(a,btc,c)
 
-      E = c + spread(nu, 4, 3)*aj
+      E = c + spread(nu, 4, 3)*aj - grad_P
 
       return
       end SUBROUTINE get_E
@@ -939,7 +939,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu)
+      SUBROUTINE predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu,grad_P)
 c Predictor step in magnetic field update.
 c----------------------------------------------------------------------
 CVD$R VECTOR
@@ -954,13 +954,14 @@ c      include 'incurv.h'
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
      x     np(nx,ny,nz),
-     x     nu(nx,ny,nz)
+     x     nu(nx,ny,nz),
+     x     grad_P(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)   !curl of E
       real bus(ny,nz,3)
       integer i,j,k,m
 
-      call get_E(E,b0,bt,aj,up,np,nu)  !E at time level m 
+      call get_E(E,b0,bt,aj,up,np,nu,grad_P)  !E at time level m 
 
       call curlE(E,curl_E)
 
@@ -981,7 +982,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE get_Ep1(E,b0,b1,b1p2,aj,up,np,nu)
+      SUBROUTINE get_Ep1(E,b0,b1,b1p2,aj,up,np,nu,grad_P)
 c The main feature here is that E must be calculated at time level
 c m + 1/2.  That means that we need B at m + 1/2.  So b1p1 is
 c calculated as 0.5*(b1 + b1p2).  uf and np are already at time level
@@ -995,7 +996,8 @@ c----------------------------------------------------------------------
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
      x     np(nx,ny,nz),
-     x     nu(nx,ny,nz)
+     x     nu(nx,ny,nz),
+     x     grad_P(nx,ny,nz,3)
 
       real b1p1(nx,ny,nz,3)   !b1 at time level m + 1/2
       real btp1(nx,ny,nz,3)   !bt at time level m + 1/2
@@ -1033,7 +1035,7 @@ c----------------------------------------------------------------------
 
       call crossf2(a,btc,c)
        
-      E = c + spread(nu,4,3)*aj
+      E = c + spread(nu,4,3)*aj - grad_P
 
       return
       end SUBROUTINE get_Ep1
@@ -1041,7 +1043,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE correct_B(b0,b1,b1p2,E,aj,up,np,nu)
+      SUBROUTINE correct_B(b0,b1,b1p2,E,aj,up,np,nu,grad_P)
 c Corrector step in magnetic field update.
 c----------------------------------------------------------------------
 
@@ -1052,13 +1054,14 @@ c----------------------------------------------------------------------
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
      x     np(nx,ny,nz),
-     x     nu(nx,ny,nz)
+     x     nu(nx,ny,nz),
+     x     grad_P(nx,ny,nz,3)
 
       real curl_E(nx,ny,nz,3)            !curl of E
       real bus(ny,nz,3)
       integer i,j,k,m
 
-      call get_Ep1(E,b0,b1,b1p2,aj,up,np,nu)  
+      call get_Ep1(E,b0,b1,b1p2,aj,up,np,nu,grad_P)  
                                                    !E at time level m 
 
       call curlE(E,curl_E)

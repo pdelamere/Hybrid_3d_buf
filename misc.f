@@ -223,4 +223,41 @@ c----------------------------------------------------------------------
       end SUBROUTINE get_beta
 cc----------------------------------------------------------------------
 
+      SUBROUTINE get_grad_P(np, grad_P)
+      ! grad_P is filled with the pressure term that is needed for the
+      ! generalized ohms law in the normalized units of the simulation.
+      ! It is NOT just the gradient of P. It is poorly named, so keep
+      ! that in mind any time you see grad_P in the hybrid code.
+      real np(nx,ny,nz)
+      real grad_P(nx,ny,nz,3)
+
+      real np1, gdnp, a0
+
+      integer :: i,j,k
+
+      do i=2,nx-1
+      do j=2,ny-1
+      do k=2,nz-1
+        np1  = 0.5*(np(i+1,j,k)+np(i,j,k))
+        gdnp = (np(i+1,j,k)-np(i,j,k))/dx_grid(i)
+        a0 = kboltz*e_temperature/(mion*np1)
+        grad_P(i,j,k,1) = a0*gdnp
+
+        np1  = 0.5*(np(i,j+1,k)+np(i,j,k))
+        gdnp = (np(i,j+1,k)-np(i,j,k))/dx_grid(i)
+        a0 = kboltz*e_temperature/(mion*np1)
+        grad_P(i,j,k,2) = a0*gdnp
+
+        np1  = 0.5*(np(i,j,k+1)+np(i,j,k))
+        gdnp = (np(i,j,k+1)-np(i,j,k))/dx_grid(i)
+        a0 = kboltz*e_temperature/(mion*np1)
+        grad_P(i,j,k,3) = a0*gdnp
+      enddo
+      enddo
+      enddo
+      call periodic(grad_P)
+      
+
+      end SUBROUTINE get_grad_P
+
       end MODULE misc

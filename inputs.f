@@ -151,6 +151,8 @@ c solar wind composition
       PARAMETER (pluto_photoionize_CH4_tag = 5)
       PARAMETER (pluto_stagnant_photoionize_CH4_tag = 6)
       PARAMETER (pluto_chex_CH4_tag = 7)
+
+      real e_temperature
       CONTAINS
 
 c----------------------------------------------------------------
@@ -218,6 +220,8 @@ c      write(*,*) 'Ni_max....',Ni_max
       read(100,*) imf_theta
       read(100,*) imf_phi
       write(*,*) 'IMF direction.......',imf_theta, imf_phi
+      read(100,*) e_temperature
+      write(*,*) 'Electron temperature (K)...', e_temperature
      
       close(100)
       end subroutine readInputs

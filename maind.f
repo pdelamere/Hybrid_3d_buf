@@ -71,7 +71,8 @@ c----------------------------------------------------------------------
      x     aj(nx,ny,nz,3),    !curlB/(alpha*n) 
      x     nu(nx,ny,nz),      !collision frequency
      x     Ep(Ni_max,3),      !Ion particle electric field
-     x     E(nx,ny,nz,3)     !electric field from electron mom eqn
+     x     E(nx,ny,nz,3),     !electric field from electron mom eqn
+     x     grad_P(nx,ny,nz,3)  !electron pressure gradient
 
 
       real temp_p(nx,ny,nz)
@@ -528,10 +529,11 @@ c======================================================================
          call edge_to_center(bt,btc)
 
          call extrapol_up(up,vp,vp1,np)
-         call get_Ep(Ep,aj,np,up,btc,nu)
+         call get_grad_P(np, grad_P)
+         call get_Ep(Ep,aj,np,up,btc,nu,grad_P)
          call get_vplus_vminus(Ep,btc,vp,vplus,vminus)
          call improve_up(vp1,vplus,vminus,up,np)
-         call get_Ep(Ep,aj,np,up,btc,nu)
+         call get_Ep(Ep,aj,np,up,btc,nu,grad_P)
          call get_vplus_vminus(Ep,btc,vp,vplus,vminus)
          call get_vp_final(Ep,vp,vp1,vplus)
          
@@ -541,6 +543,7 @@ c======================================================================
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_up(vp,np,up)       !up at n+1/2
          call update_np_boundary(np)
+         call get_grad_P(np, grad_P)
          ! These variables do not impact the simulation and only need
          ! to be updated on the output step
          if (ndiag .eq. nout) then
@@ -624,7 +627,7 @@ c**********************************************************************
 
 
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
-         call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
+         call correct_B(b0,b1,b1p2,E,aj,up,np,nu, grad_P)
 
 
          call f_update_tlev(b1,b12,b1p2,bt,b0)

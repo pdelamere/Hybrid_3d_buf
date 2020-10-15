@@ -25,3 +25,4 @@
 0.0               !pluto surface field (Tesla)
 0                 !IMF theta
 0                  !IMF phi
+116045                 !Electron temperature in Kelvin

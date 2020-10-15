@@ -401,7 +401,7 @@ c----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      SUBROUTINE get_Ep(Ep,aj,np,up,btc,nu)
+      SUBROUTINE get_Ep(Ep,aj,np,up,btc,nu,grad_P)
 c----------------------------------------------------------------------
 CVD$F VECTOR
 c      include 'incurv.h'
@@ -411,11 +411,13 @@ c      include 'incurv.h'
      x     np(nx,ny,nz),
      x     up(nx,ny,nz,3),
      x     btc(nx,ny,nz,3),
-     x     nu(nx,ny,nz)
+     x     nu(nx,ny,nz),
+     x     grad_P(nx,ny,nz,3)
 
       real ajc(nx,ny,nz,3),       !aj at cell center
      x     upc(nx,ny,nz,3),       !up at cell center
-     x     ufc(nx,ny,nz,3)       !uf at cell center
+     x     ufc(nx,ny,nz,3),       !uf at cell center
+     x     gpc(nx,ny,nz,3)        !grad_P at cell center
 
       real aa(3), bb(3), cc(3)    !dummy vars for doing cross product
       real ntot                   !total plasma density
@@ -428,6 +430,7 @@ c      include 'incurv.h'
       integer ip,jp,kp
 
       call face_to_center(aj,ajc)
+      call face_to_center(grad_P, gpc)
 
       do 10 l=1,Ni_tot
 
@@ -459,6 +462,15 @@ c      include 'incurv.h'
      x               + btc(i,jp,kp,m)*wght(l,7) 
      x               + btc(ip,jp,kp,m)*wght(l,8)
 
+            gradP3(m) = gpc(i,j,k,m)*wght(l,1) 
+     x                + gpc(ip,j,k,m)*wght(l,2) 
+     x                + gpc(i,j,kp,m)*wght(l,3) 
+     x                + gpc(ip,j,kp,m)*wght(l,4)
+     x                + gpc(i,jp,k,m)*wght(l,5) 
+     x                + gpc(ip,jp,k,m)*wght(l,6)
+     x                + gpc(i,jp,kp,m)*wght(l,7) 
+     x                + gpc(ip,jp,kp,m)*wght(l,8)
+
  15         continue
 
          do 20 m=1,3
@@ -472,8 +484,8 @@ c      include 'incurv.h'
          cc(3) = aa(1)*bb(2) - aa(2)*bb(1)
 
          do 30 m=1,3
-            Ep(l,m) = cc(m) 
-            Ep(l,m) = Ep(l,m)*mrat(l) !O_to_Ba
+            Ep(l,m) = cc(m) - gradP3(m)
+            Ep(l,m) = Ep(l,m)*mrat(l)
 
  30         continue
 
