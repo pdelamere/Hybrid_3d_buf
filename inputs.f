@@ -66,7 +66,7 @@ c misc constants
       PARAMETER (mproton = 1.67e-27)
 
       PARAMETER (km_to_m = 1e3)       !km to meters conversion
-      PARAMETER (kboltz = 1.38e-29)   !kg km^2 / s^2 / K
+      PARAMETER (kboltz = 1.381e-29)   !kg km^2 / s^2 / K
       PARAMETER (tempf0 = 50*11600.)  !K
 
       real np_top,np_bottom
