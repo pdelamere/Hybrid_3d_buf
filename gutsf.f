@@ -913,7 +913,8 @@ c----------------------------------------------------------------------
      x     aj(nx,ny,nz,3),
      x     up(nx,ny,nz,3),
      x     np(nx,ny,nz),
-     x     nu(nx,ny,nz)
+     x     nu(nx,ny,nz),
+     x     grad_P(nx,ny,nz,3)
 
       real btc(nx,ny,nz,3)
       real aus(ny,nz,3)
