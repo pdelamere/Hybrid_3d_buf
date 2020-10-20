@@ -2,6 +2,7 @@
       MODULE misc
 
       USE global
+      USE boundary
       USE random_utils, notpi => pi
 
       contains
