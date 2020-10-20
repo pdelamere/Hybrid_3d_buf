@@ -734,13 +734,11 @@ c----------------------------------------------------------------------
          call Energy_diag(vp,b0,b1,E,Evp,EB1,EE,
      x                    nu,up,np)
 
+         !if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
          if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
 
 c save 3d arrays------------------------
                ! Output grid data for the whole domain
-               write(111) m
-               write(111) np
-
                write(115) m
                write(115) np_H
                write(116) m
@@ -775,16 +773,10 @@ c save 3d arrays------------------------
                write(9121) m
                write(9121) up_dummy
 
-               write(131) m
-               write(131) b1
-               write(132) m
-               write(132) b0
                write(133) m
                write(133) bt
                write(150) m
                write(150) E
-               write(181) m
-               write(181) up
                write(300) m
                write(300) temp_p/1.6e-19
                write(301) m
@@ -800,8 +792,11 @@ c save 3d arrays------------------------
                write(306) m
                write(306) temp_ch4/1.6e-19
 
+               ndiag = 0
+
+         endif
                ! Only output particle data only near pluto
-               if ( ndiag_part .ge. part_nout ) then
+         if ( m .eq. nt-1 ) then
                if ( my_rank .gt. procnum/2 - 30 .and.
      x              my_rank .lt. procnum/2 + 30) then
                    write(307) m
@@ -817,9 +812,6 @@ c save 3d arrays------------------------
                    ndiag_part = 0
                endif
                endif
-               ndiag = 0
-
-         endif
 
 c----------------------------------------------------------------------
 
