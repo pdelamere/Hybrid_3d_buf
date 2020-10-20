@@ -626,7 +626,7 @@ c**********************************************************************
          call curlB(b1,np,aj)
 
 
-         call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
+         call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu, grad_P)
          call correct_B(b0,b1,b1p2,E,aj,up,np,nu, grad_P)
 
 
