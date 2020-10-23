@@ -39,7 +39,7 @@ gutsf.o:gutsf.f global.o boundary.o grid_interp.o  $(INCLUDE)
 gutsp_dd.o:gutsp_dd.f global.o misc.o boundary.o grid_interp.o $(INCLUDE)
 	$(FC) $(FFLAGS) -c gutsp_dd.f
 
-misc.o:misc.f random_utils.o global.o $(INCLUDE)
+misc.o:misc.f random_utils.o global.o boundary.o $(INCLUDE)
 	$(FC) $(FFLAGS) -c misc.f
 
 boundary.o:boundary.f global.o $(INCLUDE)
