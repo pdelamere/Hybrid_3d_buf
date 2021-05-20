@@ -6,11 +6,11 @@ c simulation domain dimensions
       integer num_buf_cells
 
       PARAMETER (nx = 60, ny = 60, nz = 6)
-      PARAMETER (num_cells = nx*ny*nz)
-      PARAMETER (num_buf_cells = ny*nz)
+      PARAMETER (num_cells = (nx-1)*(ny-2)*(nz-2))
+      PARAMETER (num_buf_cells = (ny-2)*(nz-2))
 c particle array dimensions
 
       integer Ni_max
-      PARAMETER (Ni_max = 20000000)
+      PARAMETER (Ni_max = 40000000)
 
       END MODULE DIMENSIONS
