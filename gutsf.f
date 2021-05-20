@@ -147,13 +147,13 @@ cc     call fix_normal_b(b1)
  20            continue
       call boundaries(curl_B, us)
 
-      if(any(ntot .le. nf_init/50.0)) then
+      if(any(ntot .le. nf_init/30.0)) then
           write(error_unit,*) "Density capped in curlB"
       endif
-      where(ntot .gt. nf_init/50.0)
+      where(ntot .gt. nf_init/30.0)
       aj = curl_B/(ntot*alpha)
       elsewhere
-      aj = curl_B/((nf_init/50.0)*alpha)
+      aj = curl_B/((nf_init/30.0)*alpha)
       endwhere
       
 
