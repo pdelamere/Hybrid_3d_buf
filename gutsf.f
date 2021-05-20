@@ -258,6 +258,7 @@ c----------------------------------------------------------------------
       real btc(nx,ny,nz,3)
       real aus(ny,nz,3)
       real bus(ny,nz,3)
+      integer i,j,k,m
 
 
 
@@ -274,7 +275,41 @@ c----------------------------------------------------------------------
       call edge_to_center(bt,btc, bus)
       call crossf2(a,btc,aus,bus,c)
 
-      E = c + spread(nu, 4, 3)*aj
+      !E = c + spread(nu, 4, 3)*aj
+      ! c, and aj both handle their own boundaries, but since nu gets
+      ! averaged we have to handle the high end boundaries separately.
+      ! Hence, the loops below
+      do 30 k=1,nz-1
+      do 30 j=1,ny-1
+      do 30 i=1,nx-1
+        E(i,j,k,1) = c(i,j,k,1)
+     x                + 0.5*(nu(i,j,k)+nu(i+1,j,k))*aj(i,j,k,1)
+        E(i,j,k,2) = c(i,j,k,2)
+     x                + 0.5*(nu(i,j,k)+nu(i,j+1,k))*aj(i,j,k,2)
+        E(i,j,k,3) = c(i,j,k,3)
+     x                + 0.5*(nu(i,j,k)+nu(i,j,k+1))*aj(i,j,k,3)
+ 30   continue
+
+      ! We need to handle the high end boundaries. We just take the
+      ! nearest nu value rather than trying to do some kind of
+      ! averaging. It should be good enough, probably.
+      do 31 k=1,nz
+      do 31 j=1,ny
+      do 31 m=1,3
+        E(nx,j,k,m) = c(nx,j,k,m) + nu(nx,j,k)*aj(nx,j,k,m)
+ 31   continue
+      do 32 k=1,nz
+      do 32 i=1,nx
+      do 32 m=1,3
+        E(i,ny,k,m) = c(i,ny,k,m) + nu(i,ny,k)*aj(i,ny,k,m)
+ 32   continue
+      do 33 j=1,ny
+      do 33 i=1,nx
+      do 33 m=1,3
+        E(i,j,nz,m) = c(i,j,nz,m) + nu(i,j,nz)*aj(i,j,nz,m)
+ 33   continue
+
+
 
       return
       end SUBROUTINE get_E
@@ -375,7 +410,7 @@ c----------------------------------------------------------------------
       real ntot(3)            !total density np + nf
       real fnp(3),fnf(3)      !fraction np and nf of n
       real npave(3)
-      integer i,j,k
+      integer i,j,k,m
 
       do 5 k=1,nz
          do 5 j=1,ny
@@ -403,8 +438,39 @@ c----------------------------------------------------------------------
 
       call crossf2(a,btc,aus,bus,c)
        
-      E = c + spread(nu,4,3)*aj
+      !E = c + spread(nu,4,3)*aj
+      ! c, and aj both handle their own boundaries, but since nu gets
+      ! averaged we have to handle the high end boundaries separately.
+      ! Hence, the loops below
+      do 40 k=1,nz-1
+      do 40 j=1,ny-1
+      do 40 i=1,nx-1
+        E(i,j,k,1) = c(i,j,k,1)
+     x                + 0.5*(nu(i,j,k)+nu(i+1,j,k))*aj(i,j,k,1)
+        E(i,j,k,2) = c(i,j,k,2)
+     x                + 0.5*(nu(i,j,k)+nu(i,j+1,k))*aj(i,j,k,2)
+        E(i,j,k,3) = c(i,j,k,3)
+     x                + 0.5*(nu(i,j,k)+nu(i,j,k+1))*aj(i,j,k,3)
+ 40   continue
 
+      ! We need to handle the high end boundaries. We just take the
+      ! nearest nu value rather than trying to do some kind of
+      ! averaging. It should be good enough, probably.
+      do 41 k=1,nz
+      do 41 j=1,ny
+      do 41 m=1,3
+        E(nx,j,k,m) = c(nx,j,k,m) + nu(nx,j,k)*aj(nx,j,k,m)
+ 41   continue
+      do 42 k=1,nz
+      do 42 i=1,nx
+      do 42 m=1,3
+        E(i,ny,k,m) = c(i,ny,k,m) + nu(i,ny,k)*aj(i,ny,k,m)
+ 42   continue
+      do 43 j=1,ny
+      do 43 i=1,nx
+      do 43 m=1,3
+        E(i,j,nz,m) = c(i,j,nz,m) + nu(i,j,nz)*aj(i,j,nz,m)
+ 43   continue
       return
       end SUBROUTINE get_Ep1
 c----------------------------------------------------------------------
