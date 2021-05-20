@@ -397,6 +397,10 @@ c----------------------------------------------------------------------
      x     'c.bt_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
+      open(134,file=trim(out_dir)//'grid/'//
+     x     'c.aj_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
 
       open(140,file=trim(out_dir)//'grid/'//
      x     'c.aj_'//filenum//'.dat',
@@ -713,6 +717,8 @@ c save 3d arrays------------------------
                write(132) b0
                write(133) m
                write(133) bt
+               write(134) m
+               write(134) aj
                write(150) m
                write(150) E
                write(181) m
