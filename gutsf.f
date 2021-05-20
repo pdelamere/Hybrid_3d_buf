@@ -536,6 +536,51 @@ c      call fix_normal_b(b1p2)
       end SUBROUTINE correct_B
 c----------------------------------------------------------------------
 
+      SUBROUTINE update_nu(nu, nu_background, aj, bt)
+      real nu(nx,ny,nz)
+      real nu_background(nx,ny,nz)
+      real aj(nx,ny,nz,3)
+      real bt(nx,ny,nz,3)
+      real btc(nx,ny,nz,3)
+      real ajc(nx,ny,nz,3)       !aj at cell center
+      real aj_par
+      real btc_mag
+      real nu_max
+      real us
+      ! temporarily commented until needed (may need further
+      ! development)
+!      call edge_to_center(bt,btc,b0_us)
+!      us = 0.0 ! only if upstream B is curl free
+!      call face_to_center(aj,ajc,us)
+!
+!      do 60 i=1,nx
+!        do 60 j=1,ny
+!          do 60 k=1,nz
+!          btc_mag = sqrt(  btc(i,j,k,1)**2
+!     x                   + btc(i,j,k,2)**2
+!     x                   + btc(i,j,k,3)**2
+!     x            )
+!          aj_par = (ajc(i,j,k,1)*btc(i,j,k,1) 
+!     x           + ajc(i,j,k,2)*btc(i,j,k,2) 
+!     x           + ajc(i,j,k,3)*btc(i,j,k,3))/btc_mag
+!          call get_nu_max(nu_max, aj_par)
+!          nu_bar = (nu(i,j,k) - nu_background(i,j,k))/nu_max
+!          nu_bar = nu_bar + dtsub*(r*nu_bar*(1-nu_bar))
+!          nu(i,j,k) = n_max*nu_bar + nu_background(i,j,k)
+! 60   continue
+!      us = nu_init
+!      call boundary_scalar(nu, us)
+      end SUBROUTINE update_nu
+      
+!      SUBROUTINE get_nu_max(nu_max, aj_mag)
+!          if aj_mag > 1 then
+!            nu_max = 10*nu_init
+!          else
+!            nu_max = nu_init
+!          endif
+!      end SUBROUTINE get_nu_max
+
+
 c----------------------------------------------------------------      
       SUBROUTINE check_time_step(b0,b1,bt,np,step,error_file)
 c----------------------------------------------------------------      
