@@ -5,15 +5,15 @@
 9.5e11               !sw thermal He density (km^-3)
 4.7e11               !sw shell H density (km^-3)
 4.7e10               !sw shell He density (km^-3)
-30                     !sw thermal H ppc
-30                     !sw thermal He ppc
-50                    !sw shell H ppc
-50                    !sw shell He ppc
+10                     !sw thermal H ppc
+10                     !sw thermal He ppc
+20                    !sw shell H ppc
+0                    !sw shell He ppc
 0.00016                  !particle time step (fraction of omega_i)
-240001                  !number of time steps
-9000                     !grid data output interval
-20000                    !particle data output interval
-180001                  !data output wait steps
+10000                  !number of time steps
+1000                     !grid data output interval
+5000                    !particle data output interval
+0                  !data output wait steps
 403                   !flow speed (km/s) 
 11.2                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
 0.08                   !Ni_tot initial (fraction of Ni_max)
@@ -21,7 +21,7 @@
 0.2 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './data/'             !output directory 
 5000                !mrestart
-61                  !pluto_offset
+10                  !pluto_offset
 0.0               !pluto surface field (Tesla)
 90                 !IMF theta
 90                  !IMF phi

@@ -79,6 +79,7 @@ c----------------------------------------------------------------------
      x     xp(Ni_max,3),      !coordinates of ion particles
      x     aj(nx,ny,nz,3),    !curlB/(alpha*n) 
      x     nu(nx,ny,nz),      !collision frequency
+     x     nu_background(nx,ny,nz),
      x     Ep(Ni_max,3),      !Ion particle electric field
      x     E(nx,ny,nz,3)     !electric field from electron mom eqn
 
@@ -221,7 +222,8 @@ c initialize seed for each processor
       input_bill = 0.0
 
       call grd_no_strech()
-      call get_nu(nu)
+      call get_nu(nu_background)
+      nu = nu_background
       call grd6_setup(b0,b1,b1p2,bt)
       call get_beta()
 
@@ -427,6 +429,10 @@ c----------------------------------------------------------------------
      x     form='unformatted')
       open(133,file=trim(out_dir)//'grid/'//
      x     'c.bt_3d_'//filenum//'.dat',
+     x     status=stat, access= acc,
+     x     form='unformatted')
+      open(134,file=trim(out_dir)//'grid/'//
+     x     'c.aj_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
 
@@ -692,6 +698,8 @@ c**********************************************************************
          !convert main cell covarient bt to main cell contravarient
          call curlB(b1,np,aj)
 
+         ! update nu here
+         !call update_nu(nu, nu_background, aj, bt)
 
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
          call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
@@ -775,6 +783,8 @@ c save 3d arrays------------------------
 
                write(133) m
                write(133) bt
+               write(134) m
+               write(134) aj
                write(150) m
                write(150) E
                write(300) m
