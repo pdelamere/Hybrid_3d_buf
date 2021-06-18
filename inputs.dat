@@ -5,14 +5,14 @@
 9.5e11               !sw thermal He density (km^-3)
 4.7e11               !sw shell H density (km^-3)
 4.7e10               !sw shell He density (km^-3)
-10                     !sw thermal H ppc
-10                     !sw thermal He ppc
-20                    !sw shell H ppc
+20                     !sw thermal H ppc
+20                     !sw thermal He ppc
+40                    !sw shell H ppc
 0                    !sw shell He ppc
-0.00016                  !particle time step (fraction of omega_i)
-10000                  !number of time steps
-1000                     !grid data output interval
-5000                    !particle data output interval
+0.00008                  !particle time step (fraction of omega_i)
+20000                  !number of time steps
+2000                     !grid data output interval
+100000                    !particle data output interval
 0                  !data output wait steps
 403                   !flow speed (km/s) 
 11.2                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
