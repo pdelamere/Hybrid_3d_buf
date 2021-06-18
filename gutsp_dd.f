@@ -98,7 +98,7 @@ c----------------------------------------------------------------------
       real delta_np
       real vol
 
-      minden = nf_init/30.0
+      minden = nf_init/50.0
       do i = 2,nx-1
          do j = 2,ny-1
             do k = 2,nz-1

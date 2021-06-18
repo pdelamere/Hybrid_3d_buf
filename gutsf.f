@@ -100,6 +100,8 @@ c     x     nf(nx,ny,nz),
       real curl_B(nx,ny,nz,3)      !dummy for holding curl vector
       real ntot(nx,ny,nz,3)        !total density, np + nf
       integer i,j,k
+      real minden
+      minden = nf_init/100.0
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
@@ -147,13 +149,13 @@ cc     call fix_normal_b(b1)
  20            continue
       call boundaries(curl_B, us)
 
-      if(any(ntot .le. nf_init/30.0)) then
+      if(any(ntot .le. minden)) then
           write(error_unit,*) "Density capped in curlB"
       endif
-      where(ntot .gt. nf_init/30.0)
+      where(ntot .gt. minden)
       aj = curl_B/(ntot*alpha)
       elsewhere
-      aj = curl_B/((nf_init/30.0)*alpha)
+      aj = curl_B/(minden*alpha)
       endwhere
       
 
