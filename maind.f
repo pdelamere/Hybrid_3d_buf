@@ -109,7 +109,7 @@ c----------------------------------------------------------------------
       real bill_rate
       real satnp
       real mindt
-      integer*4 t1,t2,cnt_rt
+      integer t1,t2,cnt_rt
       real time
       integer ierr
 
