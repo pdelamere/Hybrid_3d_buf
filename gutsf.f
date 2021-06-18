@@ -561,7 +561,7 @@ c----------------------------------------------------------------------
       ! Critical current where resistivity "turns on" i.e. becomes
       ! quadradic (should be 0 - 1400 for pluto?)
       ! resistivity is constant below ajc
-      real ajc    
+      real aj_crit
 
       ! nu(aj_high) == nu_high
       real aj_high
@@ -570,11 +570,11 @@ c----------------------------------------------------------------------
       ! kappa is a constant calculated to make all this work
       real kappa 
       
-      ajc = 500
+      aj_crit = 500
       aj_high = 1000
       nu_high = 0.4 ! lower hybrid frequency
 
-      kappa = (nu_high - nu_init)/(aj_high**2 - ajc**2)
+      kappa = (nu_high - nu_init)/(aj_high**2 - aj_crit**2)
 
       call edge_to_center(bt,btc,b0_us)
       us = 0.0 ! only if upstream B is curl free
@@ -590,9 +590,9 @@ c----------------------------------------------------------------------
           aj_par = (ajc(i,j,k,1)*btc(i,j,k,1) 
      x           + ajc(i,j,k,2)*btc(i,j,k,2) 
      x           + ajc(i,j,k,3)*btc(i,j,k,3))/btc_mag
-          if (aj_par .ge. ajc) then
+          if (aj_par .ge. aj_crit) then
               nu_target = nu_background(i,j,k)
-     x                    + kappa*(aj_par**2 - ajc**2)
+     x                    + kappa*(aj_par**2 - aj_crit**2)
           else
               nu_target = nu_background(i,j,k)
           endif
