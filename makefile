@@ -2,7 +2,7 @@
 FC=mpif90
 
 # Release
-FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source
+FFLAGS=-mcmodel=medium -O3 -implicitnone -warn truncated_source -warn errors
 
 # Maximum Debug
 #FFLAGS=-mcmodel=medium -O0 -implicitnone -init=snan,arrays -g -traceback -check all -warn all -warn errors -warn stderrors -std90
