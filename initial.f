@@ -259,12 +259,33 @@ c----------------------------------------------------------------------
 
       SUBROUTINE get_nu(nu)
       real nu(nx,ny,nz)
+      real x,y,z
+      real xx,yy,zz
+      real cx,cy,cz
+      real r
+      real g
       integer i,j,k
+
+      call Neut_Center(cx,cy,cz)
+      g = q*b0_init/mion
+
       do 60 i=1,nx
        do 60 j=1,ny
-          do 60 k=1,nz
-             nu(i,j,k) = (q*b0_init/mproton)*
-     x            exp(-(qx(nx)-qx(i))**2/(10.0*dx)**2) + nu_init
+        do 60 k=1,nz
+          x = qx(i)
+          y = qy(j)
+          z = qz(k)
+          xx = x - cx
+          yy = y - cy
+          ! zz is computed differently since we need to convert z (which
+          ! is local) to a global z.
+          zz = (z + (procnum-(cart_rank+1))*qz(nz-1)) - cz
+          r = sqrt(xx**2 + yy**2 + zz**2)
+          ! nu_init is the 'true' value, but we add more at the upstream
+          ! boundary and near pluto to smooth out undesirable ripples 
+          nu(i,j,k) = nu_init
+     x       + g*exp(-(qx(nx)-qx(i))**2/(5*Rpluto)**2)
+     x       + g*exp(-0.5 * (r/(2*Rpluto))**2)
  60   continue
       end SUBROUTINE
 
