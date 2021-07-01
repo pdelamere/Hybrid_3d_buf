@@ -265,6 +265,7 @@ c----------------------------------------------------------------------
       endif
       call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
+      ! Read restart files
       mstart = 0
       write(*,*) 'restart status....',restart
       if (restart) then 
@@ -278,8 +279,7 @@ c----------------------------------------------------------------------
          
           read(1000+my_rank) b1,b12,
      x         E,input_E,mstart,
-     x         Evp,EB1,EE,
-     x         beta_p
+     x         Evp,EB1,EE, Ni_tot, Ni_tot_0
 
           bt = b0 + b1
 
@@ -287,10 +287,9 @@ c----------------------------------------------------------------------
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x         status='unknown',form='unformatted')
           write(*,*) 'reading restart.part......',filenum
-          read(1000+my_rank) vp,vp1,
-     x         xp,Ni_tot,
-     x         Ni_tot_0,
-     x         mrat, tags
+          read(1000+my_rank) vp(:Ni_tot),vp1(:Ni_tot),
+     x         xp(:Ni_tot),
+     x         mrat(:Ni_tot), tags(:Ni_tot), beta_p(:Ni_tot)
 
           close(1000+my_rank)
 
@@ -845,16 +844,14 @@ c----------------------------------------------------------------------
          
           write(1000+my_rank)  b1,b12,
      x             E,input_E,m,
-     x             Evp,EB1,EE,
-     x             beta_p
+     x             Evp,EB1,EE, Ni_tot, Ni_tot_0
 
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x             status='unknown',form='unformatted')
-          write(1000+my_rank) vp,vp1,
-     x             xp,Ni_tot,
-     x             Ni_tot_0,
-     x             mrat, tags
+          write(1000+my_rank) vp(:Ni_tot),vp1(:Ni_tot),
+     x             xp(:Ni_tot),
+     x             mrat(:Ni_tot), tags(:Ni_tot), beta_p(:Ni_tot)
 
           close(1000+my_rank)
 
