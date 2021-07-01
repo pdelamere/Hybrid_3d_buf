@@ -287,8 +287,8 @@ c----------------------------------------------------------------------
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x         status='unknown',form='unformatted')
           write(*,*) 'reading restart.part......',filenum
-          read(1000+my_rank) vp(:Ni_tot),vp1(:Ni_tot),
-     x         xp(:Ni_tot),
+          read(1000+my_rank) vp(:Ni_tot,:),vp1(:Ni_tot,:),
+     x         xp(:Ni_tot,:),
      x         mrat(:Ni_tot), tags(:Ni_tot), beta_p(:Ni_tot)
 
           close(1000+my_rank)
@@ -851,8 +851,8 @@ c----------------------------------------------------------------------
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
      x             status='unknown',form='unformatted')
-          write(1000+my_rank) vp(:Ni_tot),vp1(:Ni_tot),
-     x             xp(:Ni_tot),
+          write(1000+my_rank) vp(:Ni_tot,:),vp1(:Ni_tot,:),
+     x             xp(:Ni_tot,:),
      x             mrat(:Ni_tot), tags(:Ni_tot), beta_p(:Ni_tot)
 
           close(1000+my_rank)
