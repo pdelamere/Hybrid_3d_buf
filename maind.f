@@ -678,6 +678,8 @@ c**********************************************************************
 c SUBCYCLING LOOP!
 c**********************************************************************
 
+         ! Set subcycle timestep and number of steps back to their
+         ! fixed initial values (dtsub_init and ntsub don't change)
          dtsub = dtsub_init
          ntf = ntsub
          

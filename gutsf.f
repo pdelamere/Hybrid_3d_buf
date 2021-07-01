@@ -149,9 +149,6 @@ cc     call fix_normal_b(b1)
  20            continue
       call boundaries(curl_B, us)
 
-      if(any(ntot .le. minden)) then
-          write(error_unit,*) "Density capped in curlB"
-      endif
       where(ntot .gt. minden)
       aj = curl_B/(ntot*alpha)
       elsewhere
@@ -644,7 +641,7 @@ c----------------------------------------------------------------
          enddo
       enddo
 
-      if (ntf .gt. 100) then 
+      if (ntf .gt. 161) then 
           write(error_unit,*) 'Aborting due to excesive subcycling'
           stop
       endif
