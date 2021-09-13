@@ -621,20 +621,20 @@ c----------------------------------------------------------------
                womega = 0.5*(a1 + sqrt(a1**2 + 4*a2))
                phi = womega/ak
                deltat = dx/phi
-               if(deltat .le. 2.0*dtsub) then 
+               if(deltat .lt. 2.0*dtsub) then 
                    ! rank plus 1 is proc number
-                  write(*,*) 'time stepping error...', my_rank+1
-                  write(error_file) step
-                  write(error_file) my_rank+1
-                  write(error_file) i,j,k
-                  write(error_file) qx(i),qy(j),qz(k),gz(k)
-                  write(error_file) np
-                  write(error_file) b0
-                  write(error_file) b1
-                  write(error_file) bt
+                  !write(*,*) 'time stepping error...', my_rank+1
+                  !write(error_file) step
+                  !write(error_file) my_rank+1
+                  !write(error_file) i,j,k
+                  !write(error_file) qx(i),qy(j),qz(k),gz(k)
+                  !write(error_file) np
+                  !write(error_file) b0
+                  !write(error_file) b1
+                  !write(error_file) bt
 
-                  dtsub = dtsub/2.0
-                  ntf = ntf*2.0
+                  ntf = 2*ceiling(dt/deltat)
+                  dtsub = dt/ntf
                endif
 
             enddo
