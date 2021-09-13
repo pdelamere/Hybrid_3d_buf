@@ -691,6 +691,7 @@ c**********************************************************************
      x        MPI_REAL,MPI_MAX,MPI_COMM_WORLD,ierr)
 
          ntf = recvbuf
+         dtsub = dt/ntf
 
          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
