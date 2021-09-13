@@ -285,7 +285,7 @@ c----------------------------------------------------------------------
           ! boundary and near pluto to smooth out undesirable ripples 
           nu(i,j,k) = nu_init
      x       + g*exp(-(qx(nx)-qx(i))**2/(5*Rpluto)**2)
-     x       + g*exp(-0.5 * (r/(2*Rpluto))**2)
+!     x       + g*exp(-0.5 * (r/(2*Rpluto))**2)
  60   continue
       end SUBROUTINE
 
