@@ -101,7 +101,7 @@ c     x     nf(nx,ny,nz),
       real ntot(nx,ny,nz,3)        !total density, np + nf
       integer i,j,k
       real minden
-      minden = nf_init/100.0
+      minden = nf_init/30.0
 
 c      call periodic_scalar(np)
 c      call periodic_scalar(nf)
@@ -567,8 +567,8 @@ c----------------------------------------------------------------------
       ! kappa is a constant calculated to make all this work
       real kappa 
       
-      aj_crit = 500
-      aj_high = 1000
+      aj_crit = 100
+      aj_high = 300
       nu_high = 0.4 ! lower hybrid frequency
 
       kappa = (nu_high - nu_init)/(aj_high**2 - aj_crit**2)
@@ -641,9 +641,14 @@ c----------------------------------------------------------------
          enddo
       enddo
 
-      if (ntf .gt. 161) then 
-          write(error_unit,*) 'Aborting due to excesive subcycling'
-          stop
+      if (ntf .gt. 50) then 
+          write(error_unit,*) 
+     x         'Excesive subcycling detected. ntf=', ntf
+      elseif (ntf .gt. 100) then
+          write(error_unit,*) 
+     x    'Excesive subcycling pinned at 100. desired ntf was ntf=', ntf
+          ntf = 100
+          dtsub = dt/ntf
       endif
       
       return
