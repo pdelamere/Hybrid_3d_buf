@@ -414,6 +414,10 @@ c----------------------------------------------------------------------
      x     'c.up_dummy_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
+      open(9122,file=trim(out_dir)//'grid/'//
+     x     'c.nu_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+
       open(130,file=trim(out_dir)//'grid/'//
      x     'c.b1_'//filenum//'.dat',
      x     status=stat, access= acc,
@@ -701,7 +705,7 @@ c**********************************************************************
          call curlB(b1,np,aj)
 
          ! update nu here
-         !call update_nu(nu, nu_background, aj, bt)
+         call update_nu(nu, nu_background, aj, bt)
 
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
          call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
@@ -782,6 +786,9 @@ c save 3d arrays------------------------
                write(9120) up_tot
                write(9121) m
                write(9121) up_dummy
+
+               write(9122) m
+               write(9122) nu
 
                write(133) m
                write(133) bt
