@@ -539,6 +539,8 @@ c======================================================================
          do i=1,procnum
          if (cursteps(i) .ne. m) then
              call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
+             call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+             stop
          endif
          enddo
          write(*,*) 'All the same steps'
