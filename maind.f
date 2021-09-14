@@ -538,6 +538,8 @@ c======================================================================
          if (my_rank .eq. 0) then
          do i=1,procnum
          if (cursteps(i) .ne. m) then
+             write(error_unit,*) 'cursteps(',i,') = ', cursteps(i),
+     x                           ' != m = ', m
              call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
              call MPI_BARRIER(MPI_COMM_WORLD,ierr)
              stop

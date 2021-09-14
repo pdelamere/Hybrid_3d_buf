@@ -130,6 +130,7 @@ c----------------------------------------------------------------------
       write(*,*) 'Normalized total energy......',NE_total
 
       if (isnan(NE_part) .or. isnan(NE_total)) then
+          write(error_unit,*) 'Energy is NaN'
           call MPI_ABORT(MPI_COMM_WORLD, 1, ierr)
           call MPI_BARRIER(MPI_COMM_WORLD, ierr)
           stop
