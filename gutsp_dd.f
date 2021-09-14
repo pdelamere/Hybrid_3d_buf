@@ -1798,8 +1798,10 @@ c----------------------------------------------------------------------
 
          if (i .lt. 1 .or. j .lt. 1 .or. k .lt. 1 .or.
      x       ip .gt. nx .or. jp .gt. ny .or. kp .gt. nz) then
-            call remove_ion(xp,vp,vp1,l)
-            cycle
+          write(error_unit,*) 'update_np found particle out of bounds'
+            call MPI_ABORT(MPI_COMM_WORLD, 1, ierr)
+            call MPI_BARRIER(MPI_COMM_WORLD, ierr)
+            stop
          endif
 
 
@@ -1868,9 +1870,10 @@ c----------------------------------------------------------------------
 
          if (i .lt. 1 .or. j .lt. 1 .or. k .lt. 1 .or.
      x       ip .gt. nx .or. jp .gt. ny .or. kp .gt. nz) then
-            !Remove ion with the separate flag
-            call remove_ion(xp,vp,vp1,l,1) 
-            cycle
+          write(error_unit,*) 'separate_np found particle out of bounds'
+            call MPI_ABORT(MPI_COMM_WORLD, 1, ierr)
+            call MPI_BARRIER(MPI_COMM_WORLD, ierr)
+            stop
          endif
             
             volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta*beta_p(l))
