@@ -16,7 +16,6 @@
 0                  !data output wait steps
 403                   !flow speed (km/s) 
 11.2                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
-0.08                   !Ni_tot initial (fraction of Ni_max)
 0.45                   !grid size as fraction of lambda_i
 0.0666 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './data/'             !output directory 

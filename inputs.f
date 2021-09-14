@@ -26,7 +26,6 @@
       integer output_wait
       real vsw
       real vth
-      real Ni_tot_frac
       real dx_frac
       real nu_init_frac
       real mion,q
@@ -202,10 +201,6 @@ c----------------------------------------------------------------
       write(*,*) 'vsw...............',vsw
       read(100,*) vth
       write(*,*) 'vth...............',vth
-c      read(100,*) Ni_max
-c      write(*,*) 'Ni_max....',Ni_max
-      read(100,*) Ni_tot_frac
-      write(*,*) 'Ni_tot_frac.......',Ni_tot_frac
       read(100,*) dx_frac
       write(*,*) 'dx_frac...........',dx_frac
       read(100,*) nu_init_frac

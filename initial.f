@@ -46,10 +46,6 @@ c----------------------------------------------------------------
       vsw_us(:,:,2) = 0
       vsw_us(:,:,3) = 0
 
-      Ni_tot_0 = Ni_max*Ni_tot_frac
-
-      write(*,*) 'Ni_tot_0...',Ni_tot_0, Ni_max,Ni_tot_frac
-
       mO = mion    !mass of H (kg)
 
       eoverm = q/mO
@@ -130,9 +126,7 @@ c----------------------------------------------------------------
       !dx_buf = vsw*dt 
       dx_buf = dx 
 
-      write(*,*) "init function: Ni_tot_0", Ni_tot_0
       write(*,*) "init function: dx_buf", dx_buf
-      write(*,*) "init f: formula", Ni_tot_0*dx_buf/(qx(nx-1)-qx(1))
       ! number of particles in the buffer is always the same
       Ni_max_buf = Ni_tot_buf
 

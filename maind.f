@@ -141,7 +141,7 @@ c      character filenum
 
       logical ex
       integer para_dat_version
-      para_dat_version = 4
+      para_dat_version = 5
 
 c----------------------------------------------------------------------
 
@@ -188,7 +188,7 @@ c create virtual topology (set dimensions in para.h)
       call get_command_argument(number=1,value=arg,status=ierr)
       restart = (trim(arg) == "restart")
 
-      print *,'Ni_tot_0, Ni_tot',Ni_tot_0,Ni_tot
+      print *,'Ni_tot',Ni_tot
       
       if (my_rank .eq. 0) then
          call check_inputs(my_rank)
@@ -279,7 +279,7 @@ c----------------------------------------------------------------------
          
           read(1000+my_rank) b1,b12,
      x         E,input_E,mstart,
-     x         Evp,EB1,EE, Ni_tot, Ni_tot_0
+     x         Evp,EB1,EE, Ni_tot
 
           bt = b0 + b1
 
@@ -327,7 +327,6 @@ c write para.h file
          write(109) dt_frac
          write(109) vsw
          write(109) vth
-         write(109) Ni_tot_frac
          write(109) dx_frac
          write(109) nu_init_frac
          write(109) mrestart
@@ -854,7 +853,7 @@ c----------------------------------------------------------------------
          
           write(1000+my_rank)  b1,b12,
      x             E,input_E,m,
-     x             Evp,EB1,EE, Ni_tot, Ni_tot_0
+     x             Evp,EB1,EE, Ni_tot
 
           close(1000+my_rank)
           open(1000+my_rank,file=trim(out_dir)//'restart.part'//filenum,
