@@ -8,54 +8,6 @@
 
       contains
 
-c----------------------------------------------------------------------
-      SUBROUTINE remove_ion(xp,vp,vp1,ion_l,separate)
-c Removes particles from simulation that have gone out of bounds
-c----------------------------------------------------------------------
-
-
-      real xp(Ni_max,3)
-      real vp(Ni_max,3)
-      real vp1(Ni_max,3)
-      integer ion_l
-      integer, optional :: separate
-      integer l,m
-
-      do 5 m=1,3   !remove ion energy from total input energy
-         input_E = input_E
-     x             -0.5*(mion/mrat(ion_l))*(vp(ion_l,m)*km_to_m)**2
-     x             / (beta*beta_p(ion_l))
- 5    continue
-
-      if(present(separate))then
-          write(*,*) 'Separate: removing ion...',ion_l
-      else
-          write(*,*) 'removing ion...',ion_l
-      endif
-
-      do 10 l=ion_l,Ni_tot-1
-c         m_arr(l) = m_arr(l+1)
-         mrat(l) = mrat(l+1)
-         tags(l) = tags(l+1)
-         beta_p(l) = beta_p(l+1)
-         do 7 m=1,8
-            wght(l,m) = wght(l+1,m)
- 7       continue
-         do 10 m=1,3 
-            xp(l,m) = xp(l+1,m)
-            vp(l,m) = vp(l+1,m)
-            vp1(l,m) = vp1(l+1,m)
-            ijkp(l,m) = ijkp(l+1,m)
-c            wquad(l,m) = wquad(l+1,m)
- 10      continue
-
-
-      Ni_tot = Ni_tot - 1
-
-      return
-      end SUBROUTINE remove_ion
-c----------------------------------------------------------------------
-
 
 c----------------------------------------------------------------------
       SUBROUTINE check_min_den(np,xp,vp,vp1,up,bt)
