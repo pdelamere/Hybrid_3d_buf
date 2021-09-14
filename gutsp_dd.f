@@ -1454,7 +1454,6 @@ c      endwhere
      x       (ijkp(l,2) .lt. 1) .or. (ijkp(l,3) .lt. 2)) then
             write(*,*) 'Out of bounds...',l,my_rank,
      x           ijkp(l,:),xp(l,:)
-c            call remove_ion(xp,vp,vp1,l)
             endif
    
 
