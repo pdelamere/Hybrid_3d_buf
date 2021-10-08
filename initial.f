@@ -278,8 +278,8 @@ c----------------------------------------------------------------------
           ! nu_init is the 'true' value, but we add more at the upstream
           ! boundary and near pluto to smooth out undesirable ripples 
           nu(i,j,k) = nu_init
-     x       + g*exp(-(qx(nx)-qx(i))**2/(5*Rpluto)**2)
-!     x       + g*exp(-0.5 * (r/(2*Rpluto))**2)
+     x       + g*exp(-(qx(nx)-qx(i))**2/(2*Rpluto)**2)
+     x       + g*exp(-0.5 * (r/(2*Rpluto))**2)
  60   continue
       end SUBROUTINE
 

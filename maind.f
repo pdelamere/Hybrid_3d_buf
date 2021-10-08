@@ -708,7 +708,7 @@ c**********************************************************************
          call curlB(b1,np,aj)
 
          ! update nu here
-         call update_nu(nu, nu_background, aj, bt)
+         !call update_nu(nu, nu_background, aj, bt)
 
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu) 
          call correct_B(b0,b1,b1p2,E,aj,up,np,nu)
