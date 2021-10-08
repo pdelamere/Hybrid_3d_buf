@@ -67,6 +67,11 @@ c----------------------------------------------------------------------
      x     vplus(Ni_max,3),   !v+ used in velocity update
      x     vminus(Ni_max,3),  !v- used in velocity update
      x     up(nx,ny,nz,3),    !particle flow at time level n, n+1/2
+     x     up_tot(nx,ny,nz,3),
+     x     up_H(nx,ny,nz,3),
+     x     up_CH4(nx,ny,nz,3),
+     x     up_dummy(nx,ny,nz,3),  
+
      x     xp(Ni_max,3),      !coordinates of ion particles
      x     aj(nx,ny,nz,3),    !curlB/(alpha*n) 
      x     nu(nx,ny,nz),      !collision frequency
@@ -379,6 +384,19 @@ c----------------------------------------------------------------------
      x     'c.np_dummy_3d_'//filenum//'.dat', access= acc,
      x     status=stat,form='unformatted')
 
+      open(9115,file=trim(out_dir)//'grid/'//
+     x     'c.up_H_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9119,file=trim(out_dir)//'grid/'//
+     x     'c.up_CH4_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9120,file=trim(out_dir)//'grid/'//
+     x     'c.up_tot_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+      open(9121,file=trim(out_dir)//'grid/'//
+     x     'c.up_dummy_3d_'//filenum//'.dat', access= acc,
+     x     status=stat,form='unformatted')
+
       open(130,file=trim(out_dir)//'grid/'//
      x     'c.b1_'//filenum//'.dat',
      x     status=stat, access= acc,
@@ -520,7 +538,7 @@ c======================================================================
          call get_interp_weights(xp)
          call update_np(xp, vp, vp1, np)             !np at n+1/2
          call update_np_boundary(np)
-         call update_up(vp,np,up)       !up at n+1/2
+         call update_up(vp,up)       !up at n+1/2
 
          call ionization(np,xp,vp,vp1)
 
@@ -541,7 +559,7 @@ c======================================================================
 
          call get_interp_weights(xp)
          call update_np(xp, vp, vp1, np)             !np at n+1/2
-         call update_up(vp,np,up)       !up at n+1/2
+         call update_up(vp,up)       !up at n+1/2
          call update_np_boundary(np)
          call get_grad_P(np, grad_P)
          ! These variables do not impact the simulation and only need
@@ -598,6 +616,16 @@ c======================================================================
      x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
      x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
                call separate_np(np_dummy,
+     x                   (tags(:Ni_tot)==dummy_particle_tag ))
+               call separate_up(vp,up_tot,
+     x                   (tags(:Ni_tot) .ne. dummy_particle_tag ))
+               call separate_up(vp,up_H,
+     x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
+               call separate_up(vp,up_CH4,
+     x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
+     x          .or. tags(:Ni_tot)==pluto_chex_CH4_tag))
+               call separate_up(vp,up_dummy,
      x                   (tags(:Ni_tot)==dummy_particle_tag ))
 
          endif
@@ -679,6 +707,15 @@ c save 3d arrays------------------------
                write(120) np_tot
                write(121) m
                write(121) np_dummy
+
+               write(9115) m
+               write(9115) up_H
+               write(9119) m
+               write(9119) up_CH4
+               write(9120) m
+               write(9120) up_tot
+               write(9121) m
+               write(9121) up_dummy
 
                write(131) m
                write(131) b1

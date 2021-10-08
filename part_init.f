@@ -338,7 +338,7 @@ c     x                  b_sw_shell_He, sw_shell_He_tag)
       write(*,*) 'update_np...'
       call update_np(xp, vp, vp1, np)
       write(*,*) 'update_up...'
-      call update_up(vp,np,up)
+      call update_up(vp,up)
       write(*,*) 'update_up complete...'
 
    
