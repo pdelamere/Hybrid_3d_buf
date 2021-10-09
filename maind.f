@@ -725,10 +725,6 @@ c save 3d arrays------------------------
                write(9121) m
                write(9121) up_dummy
 
-               write(131) m
-               write(131) b1
-               write(132) m
-               write(132) b0
                write(133) m
                write(133) bt
                write(134) m
