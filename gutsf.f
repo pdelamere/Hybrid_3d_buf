@@ -507,9 +507,9 @@ c----------------------------------------------------------------------
 
       kappa = (nu_high - nu_init)/(aj_high**2 - aj_crit**2)
 
-      call edge_to_center(bt,btc,b0_us)
+      call edge_to_center(bt,btc)
       us = 0.0 ! only if upstream B is curl free
-      call face_to_center(aj,ajc,us)
+      call face_to_center(aj,ajc)
 
       do 60 i=1,nx
         do 60 j=1,ny

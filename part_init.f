@@ -46,6 +46,9 @@ c----------------------------------------------------------------------
       real S_input_E
       real S_bndry_Eflux
 
+      real NE_part
+      real NE_total
+
       c = 1
       mO_q = mion/q
 
