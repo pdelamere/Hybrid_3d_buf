@@ -75,6 +75,7 @@ c----------------------------------------------------------------------
      x     xp(Ni_max,3),      !coordinates of ion particles
      x     aj(nx,ny,nz,3),    !curlB/(alpha*n) 
      x     nu(nx,ny,nz),      !collision frequency
+     x     nu_background(nx,ny,nz),
      x     Ep(Ni_max,3),      !Ion particle electric field
      x     E(nx,ny,nz,3),     !electric field from electron mom eqn
      x     grad_P(nx,ny,nz,3)  !electron pressure gradient
@@ -218,7 +219,8 @@ c initialize seed for each processor
       input_bill = 0.0
 
       call grd_no_strech()
-      call get_nu(nu)
+      call get_nu(nu_background)
+      nu = nu_background
       call grd6_setup(b0,b1,b1p2,bt)
       call get_beta()
 
@@ -653,6 +655,8 @@ c**********************************************************************
          !convert main cell covarient bt to main cell contravarient
          call curlB(b1,np,aj)
 
+         ! update nu here
+         !call update_nu(nu, nu_background, aj, bt)
 
          call predict_B(b0,b1,b12,b1p2,bt,E,aj,up,np,nu, grad_P)
          call correct_B(b0,b1,b1p2,E,aj,up,np,nu, grad_P)

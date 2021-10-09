@@ -235,6 +235,7 @@ c----------------------------------------------------------------------
       real btc(nx,ny,nz,3)
       real aus(ny,nz,3)
       real bus(ny,nz,3)
+      integer i,j,k,m
 
 
 
@@ -248,8 +249,44 @@ c----------------------------------------------------------------------
       call edge_to_center(bt,btc)
       call crossf2(a,btc,c)
 
-      E = c + spread(nu, 4, 3)*aj - grad_P
+      !E = c + spread(nu, 4, 3)*aj - grad_P
+      ! c, and aj both handle their own boundaries, but since nu gets
+      ! averaged we have to handle the high end boundaries separately.
+      ! Hence, the loops below
+      do 30 k=1,nz-1
+      do 30 j=1,ny-1
+      do 30 i=1,nx-1
+        E(i,j,k,1) = c(i,j,k,1)
+     x                + 0.5*(nu(i,j,k)+nu(i+1,j,k))*aj(i,j,k,1)
+        E(i,j,k,2) = c(i,j,k,2)
+     x                + 0.5*(nu(i,j,k)+nu(i,j+1,k))*aj(i,j,k,2)
+        E(i,j,k,3) = c(i,j,k,3)
+     x                + 0.5*(nu(i,j,k)+nu(i,j,k+1))*aj(i,j,k,3)
+ 30   continue
 
+      ! We need to handle the high end boundaries.
+      ! nearest nu value rather than trying to do some kind of
+      ! averaging. It should be good enough since we don't care
+      ! about what's right on the boundary and nu should be fairly
+      ! continuous
+      do 31 k=1,nz
+      do 31 j=1,ny
+      do 31 m=1,3
+        E(nx,j,k,m) = c(nx,j,k,m) + nu(nx,j,k)*aj(nx,j,k,m)
+ 31   continue
+      do 32 k=1,nz
+      do 32 i=1,nx
+      do 32 m=1,3
+        E(i,ny,k,m) = c(i,ny,k,m) + nu(i,ny,k)*aj(i,ny,k,m)
+ 32   continue
+      do 33 j=1,ny
+      do 33 i=1,nx
+      do 33 m=1,3
+        E(i,j,nz,m) = c(i,j,nz,m) + nu(i,j,nz)*aj(i,j,nz,m)
+ 33   continue
+
+
+      E = E - grad_P
       return
       end SUBROUTINE get_E
 c----------------------------------------------------------------------
@@ -328,7 +365,7 @@ c----------------------------------------------------------------------
       real ntot(3)            !total density np + nf
       real fnp(3),fnf(3)      !fraction np and nf of n
       real npave(3)
-      integer i,j,k
+      integer i,j,k,m
 
       do 5 k=1,nz
          do 5 j=1,ny
@@ -352,8 +389,41 @@ c----------------------------------------------------------------------
 
       call crossf2(a,btc,c)
        
-      E = c + spread(nu,4,3)*aj - grad_P
+      !E = c + spread(nu,4,3)*aj - grad_P
+      ! c, and aj both handle their own boundaries, but since nu gets
+      ! averaged we have to handle the high end boundaries separately.
+      ! Hence, the loops below
+      do 40 k=1,nz-1
+      do 40 j=1,ny-1
+      do 40 i=1,nx-1
+        E(i,j,k,1) = c(i,j,k,1)
+     x                + 0.5*(nu(i,j,k)+nu(i+1,j,k))*aj(i,j,k,1)
+        E(i,j,k,2) = c(i,j,k,2)
+     x                + 0.5*(nu(i,j,k)+nu(i,j+1,k))*aj(i,j,k,2)
+        E(i,j,k,3) = c(i,j,k,3)
+     x                + 0.5*(nu(i,j,k)+nu(i,j,k+1))*aj(i,j,k,3)
+ 40   continue
 
+      ! We need to handle the high end boundaries. We just take the
+      ! nearest nu value rather than trying to do some kind of
+      ! averaging. It should be good enough, probably.
+      do 41 k=1,nz
+      do 41 j=1,ny
+      do 41 m=1,3
+        E(nx,j,k,m) = c(nx,j,k,m) + nu(nx,j,k)*aj(nx,j,k,m)
+ 41   continue
+      do 42 k=1,nz
+      do 42 i=1,nx
+      do 42 m=1,3
+        E(i,ny,k,m) = c(i,ny,k,m) + nu(i,ny,k)*aj(i,ny,k,m)
+ 42   continue
+      do 43 j=1,ny
+      do 43 i=1,nx
+      do 43 m=1,3
+        E(i,j,nz,m) = c(i,j,nz,m) + nu(i,j,nz)*aj(i,j,nz,m)
+ 43   continue
+
+      E = E - grad_P
       return
       end SUBROUTINE get_Ep1
 c----------------------------------------------------------------------
@@ -396,6 +466,51 @@ c----------------------------------------------------------------------
       return
       end SUBROUTINE correct_B
 c----------------------------------------------------------------------
+
+      SUBROUTINE update_nu(nu, nu_background, aj, bt)
+      real nu(nx,ny,nz)
+      real nu_background(nx,ny,nz)
+      real aj(nx,ny,nz,3)
+      real bt(nx,ny,nz,3)
+      real btc(nx,ny,nz,3)
+      real ajc(nx,ny,nz,3)       !aj at cell center
+      real aj_par
+      real btc_mag
+      real nu_max
+      real us
+      ! temporarily commented until needed (may need further
+      ! development)
+!      call edge_to_center(bt,btc,b0_us)
+!      us = 0.0 ! only if upstream B is curl free
+!      call face_to_center(aj,ajc,us)
+!
+!      do 60 i=1,nx
+!        do 60 j=1,ny
+!          do 60 k=1,nz
+!          btc_mag = sqrt(  btc(i,j,k,1)**2
+!     x                   + btc(i,j,k,2)**2
+!     x                   + btc(i,j,k,3)**2
+!     x            )
+!          aj_par = (ajc(i,j,k,1)*btc(i,j,k,1) 
+!     x           + ajc(i,j,k,2)*btc(i,j,k,2) 
+!     x           + ajc(i,j,k,3)*btc(i,j,k,3))/btc_mag
+!          call get_nu_max(nu_max, aj_par)
+!          nu_bar = (nu(i,j,k) - nu_background(i,j,k))/nu_max
+!          nu_bar = nu_bar + dtsub*(r*nu_bar*(1-nu_bar))
+!          nu(i,j,k) = n_max*nu_bar + nu_background(i,j,k)
+! 60   continue
+!      us = nu_init
+!      call boundary_scalar(nu, us)
+      end SUBROUTINE update_nu
+      
+!      SUBROUTINE get_nu_max(nu_max, aj_mag)
+!          if aj_mag > 1 then
+!            nu_max = 10*nu_init
+!          else
+!            nu_max = nu_init
+!          endif
+!      end SUBROUTINE get_nu_max
+
 
 c----------------------------------------------------------------      
       SUBROUTINE check_time_step(b0,b1,bt,np,step,error_file)
