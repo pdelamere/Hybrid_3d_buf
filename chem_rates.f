@@ -238,17 +238,6 @@ c get source density
             enddo
          enddo
       enddo
-
-      
-
-      do 60 l = l1,Ni_tot
-         if ((ijkp(l,1) .gt. nx) .or. (ijkp(l,2) .gt. ny) .or. 
-     x        (ijkp(l,3) .gt. nz)) then
-            call remove_ion(xp,vp,vp1,l)
-            
-         endif
- 60   continue
-
       return
       end SUBROUTINE photoionization
 c----------------------------------------------------------------------

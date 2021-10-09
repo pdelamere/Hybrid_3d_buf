@@ -122,13 +122,22 @@ c----------------------------------------------------------------------
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       if (my_rank .eq. 0) then
 
+      NE_part = S_Evp/S_input_E
+      NE_total = actual_E/supposed_E
       write(*,*) 'Particle energy.........', S_Evp
       write(*,*) 'Input particle energy...', S_input_E
       write(*,*) 'Magnetic energy.........', S_EB1
       write(*,*) 'Electric energy.........', S_EE
       write(*,*) 'Total boundary E flux...', S_bndry_Eflux
-      write(*,*) 'Normalized particle energy...',S_Evp/S_input_E
-      write(*,*) 'Normalized total energy......',actual_E/supposed_E
+      write(*,*) 'Normalized particle energy...',NE_part
+      write(*,*) 'Normalized total energy......',NE_total
+
+      if (isnan(NE_part) .or. isnan(NE_total)) then
+          write(error_unit,*) 'Energy is NaN'
+          call MPI_ABORT(MPI_COMM_WORLD, 1, ierr)
+          call MPI_BARRIER(MPI_COMM_WORLD, ierr)
+          stop
+      endif
 
       endif
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)

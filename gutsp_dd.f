@@ -8,54 +8,6 @@
 
       contains
 
-c----------------------------------------------------------------------
-      SUBROUTINE remove_ion(xp,vp,vp1,ion_l,separate)
-c Removes particles from simulation that have gone out of bounds
-c----------------------------------------------------------------------
-
-
-      real xp(Ni_max,3)
-      real vp(Ni_max,3)
-      real vp1(Ni_max,3)
-      integer ion_l
-      integer, optional :: separate
-      integer l,m
-
-      do 5 m=1,3   !remove ion energy from total input energy
-         input_E = input_E
-     x             -0.5*(mion/mrat(ion_l))*(vp(ion_l,m)*km_to_m)**2
-     x             / (beta*beta_p(ion_l))
- 5    continue
-
-      if(present(separate))then
-          write(*,*) 'Separate: removing ion...',ion_l
-      else
-          write(*,*) 'removing ion...',ion_l
-      endif
-
-      do 10 l=ion_l,Ni_tot-1
-c         m_arr(l) = m_arr(l+1)
-         mrat(l) = mrat(l+1)
-         tags(l) = tags(l+1)
-         beta_p(l) = beta_p(l+1)
-         do 7 m=1,8
-            wght(l,m) = wght(l+1,m)
- 7       continue
-         do 10 m=1,3 
-            xp(l,m) = xp(l+1,m)
-            vp(l,m) = vp(l+1,m)
-            vp1(l,m) = vp1(l+1,m)
-            ijkp(l,m) = ijkp(l+1,m)
-c            wquad(l,m) = wquad(l+1,m)
- 10      continue
-
-
-      Ni_tot = Ni_tot - 1
-
-      return
-      end SUBROUTINE remove_ion
-c----------------------------------------------------------------------
-
 
 c----------------------------------------------------------------------
       SUBROUTINE check_min_den(np,xp,vp,vp1,up,bt)
@@ -1467,7 +1419,6 @@ c      endwhere
      x       (ijkp(l,2) .lt. 1) .or. (ijkp(l,3) .lt. 2)) then
             write(*,*) 'Out of bounds...',l,my_rank,
      x           ijkp(l,:),xp(l,:)
-c            call remove_ion(xp,vp,vp1,l)
             endif
    
 
@@ -1812,8 +1763,10 @@ c----------------------------------------------------------------------
 
          if (i .lt. 1 .or. j .lt. 1 .or. k .lt. 1 .or.
      x       ip .gt. nx .or. jp .gt. ny .or. kp .gt. nz) then
-            call remove_ion(xp,vp,vp1,l)
-            cycle
+          write(error_unit,*) 'update_np found particle out of bounds'
+            call MPI_ABORT(MPI_COMM_WORLD, 1, ierr)
+            call MPI_BARRIER(MPI_COMM_WORLD, ierr)
+            stop
          endif
 
 
@@ -1882,9 +1835,10 @@ c----------------------------------------------------------------------
 
          if (i .lt. 1 .or. j .lt. 1 .or. k .lt. 1 .or.
      x       ip .gt. nx .or. jp .gt. ny .or. kp .gt. nz) then
-            !Remove ion with the separate flag
-            call remove_ion(xp,vp,vp1,l,1) 
-            cycle
+          write(error_unit,*) 'separate_np found particle out of bounds'
+            call MPI_ABORT(MPI_COMM_WORLD, 1, ierr)
+            call MPI_BARRIER(MPI_COMM_WORLD, ierr)
+            stop
          endif
             
             volb = 1.0/(dx_grid(i)*dy_grid(j)*dz_grid(k)*beta*beta_p(l))
