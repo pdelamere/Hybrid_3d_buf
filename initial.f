@@ -46,10 +46,6 @@ c----------------------------------------------------------------
       vsw_us(:,:,2) = 0
       vsw_us(:,:,3) = 0
 
-      Ni_tot_0 = Ni_max*Ni_tot_frac
-
-      write(*,*) 'Ni_tot_0...',Ni_tot_0, Ni_max,Ni_tot_frac
-
       mO = mion    !mass of H (kg)
 
       eoverm = q/mO

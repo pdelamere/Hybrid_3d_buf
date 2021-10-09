@@ -18,7 +18,6 @@
 0.325                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
 0.08                   !Ni_tot initial (fraction of Ni_max)
 0.5                   !grid size as fraction of lambda_i
-0.0001 		      !nu_init_frac, fraction of gyrofrequency for nu_init
 './data/'             !output directory 
 5000                !mrestart
 0                  !pluto_offset
