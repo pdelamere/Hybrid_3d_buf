@@ -478,42 +478,59 @@ c----------------------------------------------------------------------
       real ajc(nx,ny,nz,3)       !aj at cell center
       real aj_par
       real btc_mag
-      real nu_max
-      real us
-      ! temporarily commented until needed (may need further
-      ! development)
-!      call edge_to_center(bt,btc,b0_us)
-!      us = 0.0 ! only if upstream B is curl free
-!      call face_to_center(aj,ajc,us)
-!
-!      do 60 i=1,nx
-!        do 60 j=1,ny
-!          do 60 k=1,nz
-!          btc_mag = sqrt(  btc(i,j,k,1)**2
-!     x                   + btc(i,j,k,2)**2
-!     x                   + btc(i,j,k,3)**2
-!     x            )
-!          aj_par = (ajc(i,j,k,1)*btc(i,j,k,1) 
-!     x           + ajc(i,j,k,2)*btc(i,j,k,2) 
-!     x           + ajc(i,j,k,3)*btc(i,j,k,3))/btc_mag
-!          call get_nu_max(nu_max, aj_par)
-!          nu_bar = (nu(i,j,k) - nu_background(i,j,k))/nu_max
-!          nu_bar = nu_bar + dtsub*(r*nu_bar*(1-nu_bar))
-!          nu(i,j,k) = n_max*nu_bar + nu_background(i,j,k)
-! 60   continue
-!      us = nu_init
-!      call boundary_scalar(nu, us)
-      end SUBROUTINE update_nu
+      real nu_target
+      real us(ny,nz,3)
+      integer i,j,k
+
+      ! nu(aj) = kappa*(aj^2 - ajc^2)*S(aj-ajc) + nu_init
+      ! i.e.
+      ! nu is constant below ajc
+      ! nu(aj <= ajc) == nu_init
+      ! and quadradic above it with
+      ! nu(aj_high) == nu_high
+
+      ! Critical current where resistivity "turns on" i.e. becomes
+      ! quadradic (should be 0 - 1400 for pluto?)
+      ! resistivity is constant below ajc
+      real aj_crit
+
+      ! nu(aj_high) == nu_high
+      real aj_high
+      real nu_high
+
+      ! kappa is a constant calculated to make all this work
+      real kappa 
       
-!      SUBROUTINE get_nu_max(nu_max, aj_mag)
-!          if aj_mag > 1 then
-!            nu_max = 10*nu_init
-!          else
-!            nu_max = nu_init
-!          endif
-!      end SUBROUTINE get_nu_max
+      aj_crit = 500
+      aj_high = 1000
+      nu_high = 0.4 ! lower hybrid frequency
 
+      kappa = (nu_high - nu_init)/(aj_high**2 - aj_crit**2)
 
+      call edge_to_center(bt,btc,b0_us)
+      us = 0.0 ! only if upstream B is curl free
+      call face_to_center(aj,ajc,us)
+
+      do 60 i=1,nx
+        do 60 j=1,ny
+          do 60 k=1,nz
+          btc_mag = sqrt(  btc(i,j,k,1)**2
+     x                   + btc(i,j,k,2)**2
+     x                   + btc(i,j,k,3)**2
+     x            )
+          aj_par = (ajc(i,j,k,1)*btc(i,j,k,1) 
+     x           + ajc(i,j,k,2)*btc(i,j,k,2) 
+     x           + ajc(i,j,k,3)*btc(i,j,k,3))/btc_mag
+          if (aj_par .ge. aj_crit) then
+              nu_target = nu_background(i,j,k)
+     x                    + kappa*(aj_par**2 - aj_crit**2)
+          else
+              nu_target = nu_background(i,j,k)
+          endif
+          nu(i,j,k) = nu(i,j,k) + (nu_target - nu(i,j,k))/10
+ 60   continue
+      end SUBROUTINE update_nu
+     
 c----------------------------------------------------------------      
       SUBROUTINE check_time_step(b0,b1,bt,np,step,error_file)
 c----------------------------------------------------------------      
