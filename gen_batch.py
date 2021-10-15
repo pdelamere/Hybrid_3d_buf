@@ -6,10 +6,6 @@ batch_commands = """
 #SBATCH --job-name={jobname}
 #SBATCH --partition={partition}
 #SBATCH --ntasks={ntasks}
-#SBATCH --mail-user=npbarnes@alaska.edu
-#SBATCH --mail-type=BEGIN
-#SBATCH --mail-type=END
-#SBATCH --mail-type=FAIL
 """
 
 script = """
