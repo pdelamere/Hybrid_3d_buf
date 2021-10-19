@@ -586,17 +586,6 @@ c======================================================================
                ! Thermal H
                call separate_temperature(xp,vp,np,temp_H,
      x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
-               ! He
-               call separate_temperature(xp,vp,np,temp_He,
-     x                   (tags(:Ni_tot)==sw_thermal_He_tag ))
-               ! Shell H
-               call separate_temperature(xp,vp,np,temp_shell,
-     x                   (tags(:Ni_tot)==sw_shell_H_tag ))
-               ! Solar wind
-               call separate_temperature(xp,vp,np,temp_sw,
-     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
-     x               .or. tags(:Ni_tot)==sw_thermal_He_tag
-     x               .or. tags(:Ni_tot)==sw_shell_H_tag))
                ! CH4
                call separate_temperature(xp,vp,np,temp_CH4,
      x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
@@ -608,17 +597,6 @@ c======================================================================
      x                   (tags(:Ni_tot) .ne. dummy_particle_tag ))
                call separate_np(np_H,
      x                   (tags(:Ni_tot)==sw_thermal_H_tag ))
-               call separate_np(np_He,
-     x                   (tags(:Ni_tot)==sw_thermal_He_tag))
-               call separate_np(np_H_shell,
-     x                   (tags(:Ni_tot)==sw_shell_H_tag))
-               call separate_np(np_He_shell,
-     x                   (tags(:Ni_tot)==sw_shell_He_tag))
-               call separate_np(np_sw,
-     x                   (tags(:Ni_tot)==sw_thermal_H_tag 
-     x               .or. tags(:Ni_tot)==sw_thermal_He_tag
-     x               .or. tags(:Ni_tot)==sw_shell_H_tag
-     x               .or. tags(:Ni_tot)==sw_shell_He_tag))
                call separate_np(np_CH4,
      x                   (tags(:Ni_tot)==pluto_photoionize_CH4_tag
      x          .or. tags(:Ni_tot)==pluto_stagnant_photoionize_CH4_tag
@@ -703,14 +681,6 @@ c save 3d arrays------------------------
 
                write(115) m
                write(115) np_H
-               write(116) m
-               write(116) np_He
-               write(117) m
-               write(117) np_H_shell
-               write(1175) m
-               write(1175) np_He_shell
-               write(118) m
-               write(118) np_sw
                write(119) m
                write(119) np_CH4
                write(120) m
@@ -741,12 +711,6 @@ c save 3d arrays------------------------
                write(301) temp_tot/1.6e-19
                write(302) m
                write(302) temp_h/1.6e-19
-               write(303) m
-               write(303) temp_he/1.6e-19
-               write(304) m
-               write(304) temp_shell/1.6e-19
-               write(305) m
-               write(305) temp_sw/1.6e-19
                write(306) m
                write(306) temp_ch4/1.6e-19
 
