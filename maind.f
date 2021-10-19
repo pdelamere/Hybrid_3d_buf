@@ -752,7 +752,8 @@ c----------------------------------------------------------------------
      x                    nu,up,np)
 
          !if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
-         if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
+         if (m .ge. output_wait) then
+           if ( (ndiag .ge. nout) .or. (m .eq. nt-1) ) then
 
 c save 3d arrays------------------------
                ! Output grid data for the whole domain
@@ -818,7 +819,7 @@ c save 3d arrays------------------------
 
          endif
                ! Only output particle data only near pluto
-         if ( m .eq. nt-1 ) then
+         if ( (ndiag_part .ge. part_nout) .or. (m .eq. nt-1) ) then
                if ( my_rank .gt. procnum/2 - 30 .and.
      x              my_rank .lt. procnum/2 + 30) then
                    write(307) m
@@ -831,9 +832,10 @@ c save 3d arrays------------------------
                    write(315) beta_p(:Ni_tot)
                    write(320) m
                    write(320) mrat(:Ni_tot)
-                   ndiag_part = 0
                endif
-               endif
+               ndiag_part = 0
+           endif
+         endif
 
 c----------------------------------------------------------------------
 
