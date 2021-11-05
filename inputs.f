@@ -87,13 +87,14 @@ c density scaling parameter, alpha, and ion particle array dims
 
       integer ri0 ! Number of cells pluto is offset from the center.
 
-      real Qo, vrad, N_o, RIo, Rpluto, tau_photo, k_rec
+      real Qo, vrad, N_o, RIo, Rpluto, tau_photo, tau_burn, k_rec
       PARAMETER (Qo = 3e27)       !neutral source rate
       PARAMETER (vrad = 0.05)     !escape velocity
       PARAMETER (N_o = 1e33)   !Steady state neutral particle constant
       PARAMETER (RIo = 1200.0)    !Io radius
       PARAMETER (Rpluto = 1184.0) !Pluto radius
       PARAMETER (tau_photo = 28)
+      PARAMETER (tau_burn = 1)
       PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
 
 c domain decompostion parameters

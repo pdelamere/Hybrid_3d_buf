@@ -12,18 +12,25 @@ c----------------------------------------------------------------------
       real function atmosphere(r)
           real, intent(in) :: r
           !! gaussian barium release
-          real N0, N
+          real N0, N1, N
           real vth_n
           real A
           real t
-          real tstart
-          tstart = 0.2
+          ! N0 is the total number of neutrals
           N0 = 2.631e24
           vth_n = 0.5
-          t = simulated_time + tstart
-          N = N0*exp(-t/tau_photo)
-          A = N/((sqrt(pi)*vth_n*t)**3)
+          t = simulated_time
 
+          ! N is the number of neutrals available to be ionized
+          ! i.e. We assume some neutrals are in dropplets of burining
+          ! thermite and others have been atomized. Only the atomized
+          ! neutrals are subject to photoionization.
+          A = N0/(1 - tau_burn/tau_photo)
+          N = A*(exp(-t/tau_photo) - exp(-t/tau_burn))
+
+          ! We assume that all the atomized neutrals are distributed as
+          ! a gaussian.
+          A = N/((sqrt(pi)*vth_n*t)**3)
           atmosphere = A*exp(-r**2/((vth_n*t)**2))
       end function atmosphere
 
