@@ -26,7 +26,12 @@ c----------------------------------------------------------------------
           ! thermite and others have been atomized. Only the atomized
           ! neutrals are subject to photoionization.
           A = N0/(1 - tau_burn/tau_photo)
-          N = A*(exp(-t/tau_photo) - exp(-t/tau_burn))
+          if(tau_burn .eq. 0.0) then
+              N = A*exp(-t/tau_photo)
+          else
+              N = A*(exp(-t/tau_photo) - exp(-t/tau_burn))
+          endif
+
 
           ! We assume that all the atomized neutrals are distributed as
           ! a gaussian.
