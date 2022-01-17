@@ -56,7 +56,7 @@ echo "Setting up modules"
 . /etc/profile.d/modules.sh
 module purge
 module load slurm
-module load toolchain/pic-intel/2016b
+module load toolchain/pic-intel/2019b
 module load lang/Anaconda3/2.5.0
 
 echo "Generate machinefile"
