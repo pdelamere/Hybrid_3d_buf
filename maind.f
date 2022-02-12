@@ -673,6 +673,8 @@ c----------------------------------------------------------------------
      x                    nu,up,np)
 
          if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
+               if ( my_rank .gt. procnum/2 - 12 .and.
+     x              my_rank .lt. procnum/2 + 12) then
 
 c save 3d arrays------------------------
                ! Output grid data for the whole domain
@@ -688,14 +690,14 @@ c save 3d arrays------------------------
                write(121) m
                write(121) np_dummy
 
-               write(9115) m
-               write(9115) up_H
-               write(9119) m
-               write(9119) up_CH4
+               !write(9115) m
+               !write(9115) up_H
+               !write(9119) m
+               !write(9119) up_CH4
                write(9120) m
                write(9120) up_tot
-               write(9121) m
-               write(9121) up_dummy
+               !write(9121) m
+               !write(9121) up_dummy
 
                write(133) m
                write(133) bt
@@ -703,8 +705,8 @@ c save 3d arrays------------------------
                write(134) aj
                write(150) m
                write(150) E
-               write(181) m
-               write(181) up
+               !write(181) m
+               !write(181) up
                write(300) m
                write(300) temp_p/1.6e-19
                write(301) m
@@ -713,11 +715,12 @@ c save 3d arrays------------------------
                write(302) temp_h/1.6e-19
                write(306) m
                write(306) temp_ch4/1.6e-19
+           endif
 
                ! Only output particle data only near pluto
                if ( ndiag_part .ge. part_nout ) then
-               if ( my_rank .gt. procnum/2 - 15 .and.
-     x              my_rank .lt. procnum/2 + 15) then
+               if ( my_rank .gt. procnum/2 - 10 .and.
+     x              my_rank .lt. procnum/2 + 10) then
                    write(307) m
                    write(307) ((xp(i,j), i=1,Ni_tot),j=1,3)
                    write(310) m

@@ -18,7 +18,8 @@ c----------------------------------------------------------------------
           real t
           ! N0 is the total number of neutrals
           N0 = 2.631e24
-          vth_n = 0.5
+          !N0 =  1.3155e24
+          vth_n = 1.8
           t = simulated_time
 
           ! N is the number of neutrals available to be ionized
@@ -31,7 +32,6 @@ c----------------------------------------------------------------------
           else
               N = A*(exp(-t/tau_photo) - exp(-t/tau_burn))
           endif
-
 
           ! We assume that all the atomized neutrals are distributed as
           ! a gaussian.

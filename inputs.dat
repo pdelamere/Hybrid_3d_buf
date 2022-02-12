@@ -1,18 +1,18 @@
-1.0e-5               !magnetic field (Tesla)
+5.0e-5               !magnetic field (Tesla)
 16                    !atomic mass for reference species
 137                    !mass of pickup ion species
-1e21               !sw thermal H density (km^-3)
+2.28e20               !sw thermal H density (km^-3)
 9.5e1               !sw thermal He density (km^-3)
 4.7e1               !sw shell H density (km^-3)
 4.7e1               !sw shell He density (km^-3)
-10                     !sw thermal H ppc
+20                     !sw thermal H ppc
 0                     !sw thermal He ppc
 0                    !sw shell H ppc
 0                    !sw shell He ppc
 0.05                  !particle time step (fraction of omega_i)
-50000                  !number of time steps
-250                     !grid data output interval
-1000000                    !particle data output interval
+50001                  !number of time steps
+2500                     !grid data output interval
+500000                    !particle data output interval
 0                  !data output wait steps
 2.5                   !flow speed (km/s)
 0.325                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
