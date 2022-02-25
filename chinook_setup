@@ -9,15 +9,15 @@ import argparse
 from gen_batch import gen_batch
 from subprocess import call
 
-def make_next_directory(path):
+def make_next_directory(job, path):
     max_num = 0
     for name in os.listdir(path):
-        match = re.match('pluto-(\d+)', name)
+        match = re.match(f'{job}-(\d+)', name)
         if match:
             if int(match.group(1)) > max_num:
                 max_num = int(match.group(1))
 
-    ret = os.path.join(path,'pluto-{}'.format(max_num+1))
+    ret = os.path.join(path,'{}-{}'.format(job, max_num+1))
     os.mkdir(ret)
     return ret
 
@@ -73,7 +73,7 @@ if not os.path.exists(os.path.join(args.scratch, date_today)):
     os.mkdir(os.path.join(args.scratch, date_today))
 
 # Now make a new subfolder to put this run into.
-data_folder = make_next_directory(os.path.join(args.scratch, date_today))
+data_folder = make_next_directory(args.jobname, os.path.join(args.scratch, date_today))
 
 
 # Copy the needed hybrid code files over
@@ -94,9 +94,9 @@ with open(os.path.join(data_folder, 'commit'), mode='w') as f:
     call('git show --quiet --pretty=fuller HEAD', shell=True, stdout=f)
 
 # Generate the SLURM batch script that will be used to submit the job
-gen_batch( os.path.join(data_folder,'pluto.slurm'), args.jobname, args.partition, args.ntasks,
+gen_batch( os.path.join(data_folder,f'{args.jobname}.slurm'), args.jobname, args.partition, args.ntasks,
            args.tasks_per_node, args.time, args.test, args.cont )
 
 if args.submit:
     os.chdir(data_folder)
-    call('sbatch pluto.slurm', shell=True)
+    call(f'sbatch {args.jobname}.slurm', shell=True)

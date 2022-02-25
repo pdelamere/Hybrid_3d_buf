@@ -43,7 +43,7 @@ else
 fi
     
 echo "Submit restart job"
-sbatch -d afternotok:$SLURM_JOBID pluto.slurm $SLURM_JOBID &> restart_job_submission
+sbatch -d afternotok:$SLURM_JOBID $0 $SLURM_JOBID &> restart_job_submission
 sleep 1
 NEXT_JOBID=$(cat restart_job_submission |cut -f 4 -d " ")
 
