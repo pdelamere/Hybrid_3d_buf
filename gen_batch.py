@@ -97,6 +97,3 @@ def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=No
                 + extra_batch_commands
                 + script)
 
-if __name__ == '__main__':
-    gen_batch('test.slurm', 'pluto', 'debug', 115, restart_filename='restart.slurm')
-
