@@ -577,6 +577,8 @@ c----------------------------------------------------------------
 
       if (ntf .gt. 100) then 
           write(error_unit,*) 'Aborting due to excesive subcycling'
+          call MPI_ABORT(MPI_COMM_WORLD,ierr,ierr)
+          call MPI_BARRIER(MPI_COMM_WORLD,ierr)
           stop
       endif
       
