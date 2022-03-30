@@ -444,7 +444,7 @@ c----------------------------------------------------------------------
      x     form='unformatted')
 
       open(150,file=trim(out_dir)//'grid/'//
-     x     'c.E_'//filenum//'.dat',
+     x     'c.E_3d_'//filenum//'.dat',
      x     status=stat, access= acc,
      x     form='unformatted')
 
