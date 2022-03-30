@@ -20,9 +20,12 @@ c----------------------------------------------------------------------
       real function atmosphere(r)
           real, intent(in) :: r
           real rr
+          real N_c, lambda_c, k
+          N_c = 3.0e21 ! km^-3
+          lambda_c = 8.85
+          k = 25658 ! km
           rr = max(r, 1.5*Rpluto)
-          atmosphere = 1e15*(Rpluto/rr)**25.0 + 5e9*(Rpluto/rr)**8.0
-          atmosphere = atmosphere*1e15
+          atmosphere = N_c * exp(lambda_c - k/rr)
       end function atmosphere
 
 c---------------------------------------------------------------------
