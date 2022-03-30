@@ -6,10 +6,6 @@ batch_commands = """
 #SBATCH --job-name={jobname}
 #SBATCH --partition={partition}
 #SBATCH --ntasks={ntasks}
-#SBATCH --mail-user=npbarnes@alaska.edu
-#SBATCH --mail-type=BEGIN
-#SBATCH --mail-type=END
-#SBATCH --mail-type=FAIL
 """
 
 script = """
@@ -47,7 +43,7 @@ else
 fi
     
 echo "Submit restart job"
-sbatch -d afternotok:$SLURM_JOBID pluto.slurm $SLURM_JOBID &> restart_job_submission
+sbatch -d afternotok:$SLURM_JOBID $0 $SLURM_JOBID &> restart_job_submission
 sleep 1
 NEXT_JOBID=$(cat restart_job_submission |cut -f 4 -d " ")
 
@@ -60,7 +56,7 @@ echo "Setting up modules"
 . /etc/profile.d/modules.sh
 module purge
 module load slurm
-module load toolchain/pic-intel/2016b
+module load toolchain/pic-intel/2019b
 module load lang/Anaconda3/2.5.0
 
 echo "Generate machinefile"
@@ -100,7 +96,4 @@ def gen_batch(filename, jobname, partition, ntasks, tasks_per_node=None, time=No
                 + batch_commands.format(jobname=jobname, partition=partition, ntasks=ntasks)
                 + extra_batch_commands
                 + script)
-
-if __name__ == '__main__':
-    gen_batch('test.slurm', 'pluto', 'debug', 115, restart_filename='restart.slurm')
 
