@@ -673,8 +673,14 @@ c----------------------------------------------------------------------
      x                    nu,up,np)
 
          if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
-               if ( my_rank .gt. procnum/2 - 12 .and.
-     x              my_rank .lt. procnum/2 + 12) then
+               if ( my_rank .lt. 5 ) then
+                   ! need to see if the alfven wave hits the end
+               write(133) m
+               write(133) bt
+               endif
+
+               if ( my_rank .gt. procnum/2 - 10 .and.
+     x              my_rank .lt. procnum/2 + 10) then
 
 c save 3d arrays------------------------
                ! Output grid data for the whole domain
@@ -692,8 +698,8 @@ c save 3d arrays------------------------
 
                !write(9115) m
                !write(9115) up_H
-               !write(9119) m
-               !write(9119) up_CH4
+               write(9119) m
+               write(9119) up_CH4
                write(9120) m
                write(9120) up_tot
                !write(9121) m
@@ -717,7 +723,6 @@ c save 3d arrays------------------------
                write(306) temp_ch4/1.6e-19
            endif
 
-               ! Only output particle data only near pluto
                if ( ndiag_part .ge. part_nout ) then
                if ( my_rank .gt. procnum/2 - 10 .and.
      x              my_rank .lt. procnum/2 + 10) then
