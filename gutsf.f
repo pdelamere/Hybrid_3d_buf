@@ -633,8 +633,8 @@ c----------------------------------------------------------------
                   !write(error_file) b1
                   !write(error_file) bt
 
-                  ntf = 2*ceiling(dt/deltat)
-                  dtsub = dt/ntf
+                  dtsub = dtsub/2.0
+                  ntf = 2*ntf
                endif
 
             enddo
