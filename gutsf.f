@@ -543,6 +543,7 @@ c----------------------------------------------------------------
       integer error_file
       integer step
       integer i,j,k
+      integer ierr
 
       do i = 1,nx
          do j = 1,ny
