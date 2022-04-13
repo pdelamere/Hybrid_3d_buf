@@ -72,10 +72,55 @@ c----------------------------------------------------------------------
           real xp(Ni_max,3)
           real vp(Ni_max,3)
           real vp1(Ni_max,3)
-          !call charge_exchange_ionization(xp,vp,vp1)
-          call photoionization(np,xp,vp,vp1)
+          !call photoionization(np,xp,vp,vp1)
+          call fake_charge_exchange(xp, vp, vp1)
       end SUBROUTINE ionization
 
+      SUBROUTINE fake_charge_exchange(xp, vp, vp1)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
+      real xp(Ni_max,3)
+      integer l, m
+      real mr, b, t !mrat, beta, and tag
+      real drift, vthrm
+      integer ierr
+      real cx,cy,cz
+      real xx,yy,zz
+      real r
+
+      if( simulated_time .le. 0.5 ) then
+      call Neut_Center(cx,cy,cz)
+      do l=1,Ni_tot
+         if( tags(l) .ne. sw_thermal_H_tag ) then
+             cycle
+         endif
+         xx = xp(l,1) - cx
+         yy = xp(l,2) - cy
+         ! zz is computed differently since we need to convert z
+         ! (which is local) to a global z.
+         zz = (xp(l,3) + (procnum-(cart_rank+1))*qz(nz-1)) - cz
+         r = sqrt(xx**2 + yy**2 + zz**2)
+
+         if( pad_ranf() .le. 0.1*exp(-(r/0.5)/2) ) then
+             ! The particle is being removed and replaced with a
+             ! stationary Ba. So, remove the original input_E. The new
+             ! value for the input_E of this particle is zero
+             vp(l,1) = 0
+             vp(l,2) = 0
+             vp(l,3) = 0
+             mrat(l) = ion_amu/m_pu
+             tags(l) = pluto_photoionize_CH4_tag
+             do m=1,3
+                vp1(l,m) = vp(l,m)
+                input_E = input_E - 
+     x               0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x               (beta*beta_p(l))
+             enddo
+         endif
+
+      enddo
+      endif
+      end SUBROUTINE fake_charge_exchange
 c----------------------------------------------------------------------
       SUBROUTINE photoionization(np,xp,vp,vp1)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle

@@ -369,7 +369,7 @@ c      include 'incurv.h'
 c Initialize Thermal H+
       call insert_maxwl(1, Ni_thermal_H, -vsw, vth, vp, vp1,
      x        xp, 1.0, b_sw_thermal_H, sw_thermal_H_tag)
-      call initial_barium(1, Ni_thermal_H, vp, vp1, xp)
+      !call initial_barium(1, Ni_thermal_H, vp, vp1, xp)
 
 cc initialize Thermal He++
 c      call insert_maxwl(Ni_thermal_H+1, Ni_thermal_H+Ni_thermal_He,
