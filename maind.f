@@ -673,8 +673,8 @@ c----------------------------------------------------------------------
      x                    nu,up,np)
 
          if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
-               if ( (my_rank .gt. procnum/2 - 30 .and.
-     x              my_rank .lt. procnum/2 + 10) 
+               if ( (my_rank .gt. procnum/2 - 10 .and.
+     x              my_rank .lt. procnum/2 + 3) 
      x          .or.
      x              (my_rank .lt. procnum/2 .and.
      x              mod(my_rank,5) .eq. 0) 
