@@ -38,7 +38,7 @@ c grid parameters
 
 c time stepping parameters
       integer ntsub
-      PARAMETER (ntsub = 10)        !number of subcycle time steps
+      PARAMETER (ntsub = 1000)        !number of subcycle time steps
 
 c output directory
       character(50) out_dir

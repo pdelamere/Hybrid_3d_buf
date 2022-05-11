@@ -9,11 +9,11 @@
 20                     !sw thermal He ppc
 30                    !sw shell H ppc
 30                    !sw shell He ppc
-0.000076                  !particle time step (fraction of omega_i)
-400001                  !number of time steps
-10000                     !grid data output interval
-200000                    !particle data output interval
-200000                  !data output wait steps
+0.0076                  !particle time step (fraction of omega_i)
+4001                  !number of time steps
+100                     !grid data output interval
+4000                    !particle data output interval
+0                  !data output wait steps
 403                   !flow speed (km/s) 
 11.2                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
 0.45                   !grid size as fraction of lambda_i

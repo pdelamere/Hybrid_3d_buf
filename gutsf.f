@@ -641,14 +641,9 @@ c----------------------------------------------------------------
          enddo
       enddo
 
-      if (ntf .gt. 50) then 
+      if (ntf .gt. 10000) then 
           write(error_unit,*) 
      x         'Excesive subcycling detected. ntf=', ntf
-      elseif (ntf .gt. 100) then
-          write(error_unit,*) 
-     x    'Excesive subcycling pinned at 100. desired ntf was ntf=', ntf
-          ntf = 100
-          dtsub = dt/ntf
       endif
       
       return
