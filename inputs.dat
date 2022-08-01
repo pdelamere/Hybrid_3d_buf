@@ -10,7 +10,7 @@
 0                    !sw shell H ppc
 0                    !sw shell He ppc
 0.0125                  !particle time step (fraction of omega_i)
-12501                  !number of time steps
+25001                  !number of time steps
 500                     !grid data output interval
 500                    !particle data output interval
 0                  !data output wait steps
