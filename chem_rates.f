@@ -88,7 +88,14 @@ c----------------------------------------------------------------------
       real xx,yy,zz
       real r
 
-      if( simulated_time .le. 0.5 ) then
+      real duration
+      real s
+      real f
+      duration = 0.18
+      s = 5.0
+      f = 0.00103
+
+      if( simulated_time .le. duration ) then
       call Neut_Center(cx,cy,cz)
       do l=1,Ni_tot
          if( tags(l) .ne. sw_thermal_H_tag ) then
@@ -101,7 +108,7 @@ c----------------------------------------------------------------------
          zz = (xp(l,3) + (procnum-(cart_rank+1))*qz(nz-1)) - cz
          r = sqrt(xx**2 + yy**2 + zz**2)
 
-         if( pad_ranf() .le. 0.1*exp(-(r/0.5)/2) ) then
+         if(pad_ranf() .le. f/(s*sqrt(2*PI))*exp(-((r/s)**2)/2)) then
              ! The particle is being removed and replaced with a
              ! stationary Ba. So, remove the original input_E. The new
              ! value for the input_E of this particle is zero
