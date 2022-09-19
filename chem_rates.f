@@ -171,8 +171,6 @@ c----------------------------------------------------------------------
       integer i,j,k,l,m
       integer ii,jj,kk,ll
 
-
-
       call Neut_Center(cx,cy,cz)
 
 c get source density
