@@ -4,6 +4,60 @@
         parameter( pi = 3.14159 )
         
         contains
+
+        function circle_sample() result(r)
+            real, dimension(3) :: r
+            do
+                r(1) = 2*ranf() - 1
+                r(2) = 2*ranf() - 1
+                r(3) = r(1)**2 + r(2)**2
+                if((r(3) .lt. 1) .and. (r(3) .ne. 0)) exit
+            end do
+        end function circle_sample
+
+        function mpm_factor(s)
+            real :: mpm_factor
+            real, intent(in) :: s
+            mpm_factor = sqrt(-2*log(s)/s)
+        end function mpm_factor
+
+        subroutine randn_one(n)
+            real, intent(out) :: n
+            real :: x,y,s,f
+            real, dimension(3) :: c
+            c = circle_sample()
+            x = c(1)
+            y = c(2)
+            s = c(3)
+            f = mpm_factor(s)
+            n = x*f
+        end subroutine randn_one
+
+        subroutine randn_pair(n1,n2)
+            real, intent(out) :: n1, n2
+            real :: x,y,s,f
+            real, dimension(3) :: c
+            c = circle_sample()
+            x = c(1)
+            y = c(2)
+            s = c(3)
+            f = mpm_factor(s)
+            n1 = x*f
+            n2 = y*f
+        end subroutine randn_pair
+
+        function randn(n) result(r)
+            real, dimension(n) :: r
+            integer, intent(in) :: n
+            integer :: i
+            do i=1, n-1, 2
+                call randn_pair(r(i), r(i+1))
+            enddo
+            if(mod(n,2) .eq. 1) then
+                call randn_one(r(n))
+            endif
+        end function randn
+
         real function ranf()
         ! function version of random_number. Samples a random number
         ! from the range 0 <= x < 1
