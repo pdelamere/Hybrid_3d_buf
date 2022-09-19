@@ -246,9 +246,9 @@ c get source density
                if (Ni_tot+1 .le. Ni_max) then
                    if (new_macro .gt. pad_ranf()) then
                       l = Ni_tot + 1
-                      vp(l,1) = 0.0
-                      vp(l,2) = 0.0
-                      vp(l,3) = 0.0                        
+                      vp(l,1) = x/simulated_time
+                      vp(l,2) = y/simulated_time
+                      vp(l,3) = z/simulated_time
                       
                       xp(l,1) = qx(i) + (pad_ranf()-0.5)*dx_grid(i)
                       xp(l,2) = qy(j) + (pad_ranf()-0.5)*dy_grid(j)
