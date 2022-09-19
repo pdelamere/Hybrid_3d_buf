@@ -74,8 +74,8 @@ c----------------------------------------------------------------------
           real xp(Ni_max,3)
           real vp(Ni_max,3)
           real vp1(Ni_max,3)
-          !call photoionization(np,xp,vp,vp1)
-          call fake_charge_exchange(xp, vp, vp1)
+          call photoionization(np,xp,vp,vp1)
+          !call fake_charge_exchange(xp, vp, vp1)
       end SUBROUTINE ionization
 
       SUBROUTINE fake_charge_exchange(xp, vp, vp1)
