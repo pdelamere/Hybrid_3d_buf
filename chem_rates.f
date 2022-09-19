@@ -17,8 +17,10 @@ c----------------------------------------------------------------------
           real A
           real t
           ! N0 is the total number of neutrals
-          N0 = 2.631e24
-          !N0 =  1.3155e24
+          N0 = 9e24
+          !N0 = 2.631e24 ! Matt's number
+          !N0 = 2.6e24 ! CRRES number
+          !N0 = 9.0e24 ! CRRES G9 single canister number
           vth_n = 1.8
           t = simulated_time
 
