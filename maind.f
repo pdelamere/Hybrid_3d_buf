@@ -673,10 +673,10 @@ c----------------------------------------------------------------------
      x                    nu,up,np)
 
          if ((ndiag .ge. nout) .and. (m .ge. output_wait)) then
-               if ( (my_rank .ge. procnum/2 - 3 .and.
-     x              my_rank .lt. procnum/2 + 3) 
+               if ( (my_rank .ge. (procnum/2)-1) .and.
+     x              (my_rank .le. (procnum/2)) 
      x          .or.
-     x              (my_rank .le. 5) 
+     x              (my_rank .eq. 0) 
      x          ) then
 
 c save 3d arrays------------------------
@@ -721,8 +721,8 @@ c save 3d arrays------------------------
            endif
 
                if ( ndiag_part .ge. part_nout ) then
-               if ( my_rank .gt. procnum/2 - 10 .and.
-     x              my_rank .lt. procnum/2 + 10) then
+               if ( my_rank .ge. procnum/2 - 1 .and.
+     x              my_rank .le. procnum/2) then
                    write(307) m
                    write(307) ((xp(i,j), i=1,Ni_tot),j=1,3)
                    write(310) m

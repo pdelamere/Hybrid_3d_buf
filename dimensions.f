@@ -5,7 +5,7 @@ c simulation domain dimensions
       integer num_cells
       integer num_buf_cells
 
-      PARAMETER (nx = 130, ny = 90, nz = 8)
+      PARAMETER (nx = 65, ny = 45, nz = 51)
       PARAMETER (num_cells = (nx-2)*(ny-2)*(nz-2))
 c particle array dimensions
 
