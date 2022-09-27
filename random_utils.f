@@ -15,6 +15,8 @@
             end do
         end function circle_sample
 
+        ! Calculate a multiplicitive factor for the Marsaglia polar
+        ! method
         function mpm_factor(s)
             real :: mpm_factor
             real, intent(in) :: s
@@ -57,6 +59,68 @@
                 call randn_one(r(n))
             endif
         end function randn
+
+        subroutine randn_fill(arr, mu, sigma)
+            real, intent(out), dimension(:) :: arr
+            real, optional :: mu, sigma
+            integer :: n
+            integer :: i 
+            n = size(arr)
+
+            if(.not. present(mu)) mu = 0
+            if(.not. present(sigma)) sigma = 1
+
+            do i=1, n-1, 2
+                call randn_pair(arr(i), arr(i+1))
+                arr(i) = sigma*arr(i) + mu
+                arr(i+1) = sigma*arr(i+1) + mu
+            enddo
+            if(mod(n,2) .eq. 1) then
+                call randn_one(arr(n))
+                arr(n) = sigma*arr(n) + mu
+            endif
+        end
+        subroutine randn_fill2(arr, mu, sigma)
+            real, intent(out), dimension(:,:) :: arr
+            real, optional :: mu
+            real, optional :: sigma
+            real :: m,s
+            integer :: idx, next_idx
+            integer :: row, col
+            integer :: nextrow, nextcol
+            integer :: Nrows, Ncols, N
+            N = size(arr)
+            Nrows = size(arr,1)
+            Ncols = size(arr,2)
+
+            if(present(mu)) then
+                m = mu
+            else
+                m = 0
+            endif
+            if(present(sigma)) then
+                s = sigma
+            else
+                s = 1
+            endif
+
+            do idx=1, n-1, 2
+                row = mod(idx-1,Nrows)+1
+                col = (idx-1)/Nrows + 1
+
+                next_idx = idx+1
+                nextrow = mod(next_idx-1,Nrows)+1
+                nextcol = (next_idx-1)/Nrows + 1
+
+                call randn_pair(arr(row,col), arr(nextrow,nextcol))
+                arr(row,col) = s*arr(row, col) + m
+                arr(nextrow,nextcol) = s*arr(nextrow,nextcol) + m
+            enddo
+            if(mod(n,2) .eq. 1) then
+                call randn_one(arr(Nrows, Ncols))
+                arr(Nrows, Ncols) = s*arr(Nrows,Ncols) + m
+            endif
+        end
 
         real function ranf()
         ! function version of random_number. Samples a random number
