@@ -74,9 +74,16 @@ c----------------------------------------------------------------------
           real xp(Ni_max,3)
           real vp(Ni_max,3)
           real vp1(Ni_max,3)
-          call photoionization(np,xp,vp,vp1)
+          !call photoionization(np,xp,vp,vp1)
+          call photoionization_switching(np,xp,vp,vp1)
           !call fake_charge_exchange(xp, vp, vp1)
       end SUBROUTINE ionization
+      real function ionization_rate(t)
+          real :: t
+          real :: N0
+          N0 = 2.631e24 ! Matt's number
+          ionization_rate = N0/tau_photo * exp(-t/tau_photo)
+      end function ionization_rate
 
       SUBROUTINE fake_charge_exchange(xp, vp, vp1)
       real vp(Ni_max,3)
@@ -130,6 +137,104 @@ c----------------------------------------------------------------------
       enddo
       endif
       end SUBROUTINE fake_charge_exchange
+
+      subroutine photoionization_switching(np,xp,vp,vp1)
+      real np(nx,ny,nz)
+      real xp(Ni_max,3)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
+      real sigma
+      real dsigma
+      dsigma = 1.27 ! km/s Don's expansion rate
+      sigma = simulated_time*dsigma
+
+      if((mod(procnum, 2) .eq. 0) .or. (3*sigma .gt. qz(nz)/2)) then
+          call photoionization(np,xp,vp,vp1)
+      else
+          if(my_rank .eq. procnum/2) then
+              call photoionization2(np,xp,vp,vp1)
+          endif
+      endif
+
+
+      end subroutine
+      subroutine photoionization2(np,xp,vp,vp1)
+      real np(nx,ny,nz)
+      real xp(Ni_max,3)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
+
+      real t
+      real sigma
+      real dsigma
+      real new_micro   
+      integer new_macro   
+      real pu_beta_p
+      integer ierr
+      integer l,m
+
+      real cx,cy,cz         !x,y,z coord of neutral cloud center
+      call Neut_Center(cx,cy,cz)
+
+      dsigma = 1.27 ! km/s Don's expansion rate
+      t = simulated_time
+      sigma = t*dsigma
+
+      pu_beta_p = 50*b_sw_thermal_H 
+      new_micro = ionization_rate(t)*dt
+      new_macro = nint(new_micro*beta*pu_beta_p)
+
+      if((Ni_tot + new_macro) .gt. Ni_max) then
+          call MPI_ABORT(MPI_COMM_WORLD, ierr, ierr)
+          stop
+      endif
+
+      call randn_fill2(xp(Ni_tot+1:Ni_tot+new_macro,:), 0.0, sigma)
+      vp(Ni_tot+1:Ni_tot+new_macro,:)=xp(Ni_tot+1:Ni_tot+new_macro,:)/t
+      vp1(Ni_tot+1:Ni_tot+new_macro,:)=vp(Ni_tot+1:Ni_tot+new_macro,:)
+
+      do l=Ni_tot+1, Ni_tot+new_macro
+        ijkp(l,1) = search(xp(l,1), qx)
+        ijkp(l,2) = search(xp(l,2), qy)
+        ijkp(l,3) = searchk(xp(l,3), qz)
+        mrat(l) = ion_amu/m_pu
+        beta_p(l) = pu_beta_p
+        tags(l) = pluto_photoionize_CH4_tag
+        do m=1,3
+           ! Add the kinetic energy of the particle
+           input_E = input_E + 
+     x               0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x                     (beta*beta_p(l))
+        enddo                     
+      enddo
+
+
+
+      Ni_tot = Ni_tot + new_macro
+      end subroutine photoionization2
+
+      real function search(x, q) result(r)
+          real, intent(in) :: x
+          real, intent(in), dimension(:) :: q
+          integer ii
+          ii=0
+          do
+              ii = ii + 1
+              if (x .le. q(ii)) exit
+          enddo
+          r = ii-1
+      end function
+      real function searchk(z,q) result(r)
+          real, intent(in) :: z
+          real, intent(in), dimension(:) :: q
+          integer kk
+          kk = 2
+          do
+              kk = kk+1
+              if (z .le. qz(kk)) exit
+          enddo
+          r = kk-1
+      end function
 c----------------------------------------------------------------------
       SUBROUTINE photoionization(np,xp,vp,vp1)
 c Ionizes the neutral cloud with a 28 s time constant and fill particle
