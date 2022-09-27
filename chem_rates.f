@@ -41,6 +41,7 @@ c----------------------------------------------------------------------
           atmosphere = A*exp(-r**2/((vth_n*t)**2))
       end function atmosphere
 
+
 c---------------------------------------------------------------------
       real FUNCTION neutral_density(i,j,k)
       integer i,j,k
@@ -259,7 +260,6 @@ c----------------------------------------------------------------------
       real nnofr       !neutral density vs. r
       real new_macro   !fractional part indicates probabalisitc particle
       real new_micro
-      real cur_micro
       
       real Np_total         !total number of ions /s
       real vol         !volume of shell vs. r
@@ -295,7 +295,6 @@ c get source density
                pu_beta_p = 50*b_sw_thermal_H 
                pu_tag = pluto_photoionize_CH4_tag
 
-               cur_micro = np(i,j,k)*vol
                new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
                new_macro = new_micro*beta*pu_beta_p
 
