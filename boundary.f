@@ -116,18 +116,9 @@ c---------------------------------------------------------------------
 c----------------------------------------------------------------------
       SUBROUTINE Neut_Center(cx,cy,cz)
 c Locates the cartisian coords of the center of the neutral cloud
-c at a given time t.
 c----------------------------------------------------------------------
-CVD$F NOVECTOR
-c      include 'incurv.h'
       real cx, cy, cz
       real x0, y0, z0
-
-c      t = m*dt + tstart          !0.2 reflects canister evacuation time
-c      cx = qx(ri) + vsat*(t-0.2) !release point + cloud expansion
-c      cx = qx(ri) + vsat*t       !release point 
-c      cy = qy(rj) + dy/1e10      !second term to avoid division
-c      cz = qz(rk)                !by zero.  That is to avoid
 
       x0 = dx_grid(nx/2+ri0)/2
       y0 = dy_grid(ny/2)/2
@@ -135,15 +126,7 @@ c      cz = qz(rk)                !by zero.  That is to avoid
       
       cx = qx(int(nx/2+ri0)) + x0
       cy = qy(ny/2) + y0
-c      cz = qz(rk/2) + io_proc*qz(nz) + z0 !defines second proc from bottom
       cz = procnum*qz(nz-1)/2 + z0
-c      cz = qz(1) + io_proc*qz(nz-1) + z0 !defines second proc from bottom
-                                    !in global coordinates
-
-
-                                 !centering the sat track on 
-                                 !whole grid points, otherwise
-                                 !danger of r = 0.
       return
       end SUBROUTINE Neut_Center
 c----------------------------------------------------------------------
