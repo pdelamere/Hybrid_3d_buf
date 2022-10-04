@@ -130,4 +130,23 @@ c----------------------------------------------------------------------
       return
       end SUBROUTINE Neut_Center
 c----------------------------------------------------------------------
+      SUBROUTINE Neut_Center2(cx,cy,cz)
+      ! Assuming the neutral cloud is in the currect proc, find it's
+      ! coordinates in the proc-local coordinate system. 
+      ! This implementation assumes procnum is odd.
+
+      ! x, and y are the same as the normal neut_center because there's
+      ! no domain decomp in x or y.
+      real cx, cy, cz
+      real x0, y0, z0
+      x0 = dx_grid(nx/2+ri0)/2
+      y0 = dy_grid(ny/2)/2
+      z0 = dz_grid(nz/2)/2
+      
+      cx = qx(int(nx/2+ri0)) + x0
+      cy = qy(ny/2) + y0
+
+      ! Assume the cloud is in the center of this proc (with z0 offset).
+      cz = qz(nz/2) + z0
+      end SUBROUTINE Neut_Center2
       end MODULE boundary

@@ -159,7 +159,12 @@ c----------------------------------------------------------------------
 
 
       end subroutine
+
       subroutine photoionization2(np,xp,vp,vp1)
+      ! Photoionization2 does exact normal distribution sampling. It
+      ! should only be called by the one proc that contains the center
+      ! of the neutral cloud and only before the edge of the cloud
+      ! reaches the boundary.
       real np(nx,ny,nz)
       real xp(Ni_max,3)
       real vp(Ni_max,3)
@@ -173,9 +178,10 @@ c----------------------------------------------------------------------
       real pu_beta_p
       integer ierr
       integer l,m
+      real r
 
       real cx,cy,cz         !x,y,z coord of neutral cloud center
-      call Neut_Center(cx,cy,cz)
+      call Neut_Center2(cx,cy,cz) ! cz is in local coordinates
 
       dsigma = 1.27 ! km/s Don's expansion rate
       t = simulated_time
@@ -190,14 +196,38 @@ c----------------------------------------------------------------------
           stop
       endif
 
+      ! This part is a little weird,
+      ! randn_fill2 just fills xp with normally distributed random
+      ! numbers with mu=0 and sigma=sigma. That's the coorect thing to
+      ! do if xp's coordinates were centered on the cloud, but they
+      ! aren't. We shift a little later (in the loop). First, vp and vp1
+      ! are set. vp has a simple form when the position is in
+      ! coordinates centered on the cloud (that's why we didn't shift it
+      ! yet). vp1 = vp since the assumption is that the particle was
+      ! always moving with this velocity.
       call randn_fill2(xp(Ni_tot+1:Ni_tot+new_macro,:), 0.0, sigma)
       vp(Ni_tot+1:Ni_tot+new_macro,:)=xp(Ni_tot+1:Ni_tot+new_macro,:)/t
       vp1(Ni_tot+1:Ni_tot+new_macro,:)=vp(Ni_tot+1:Ni_tot+new_macro,:)
 
       do l=Ni_tot+1, Ni_tot+new_macro
+        do
+            if(abs(xp(l,3)) .lt. qz(nz)/2) then
+                exit
+            else
+                call randn_one(xp(l,3))
+                vp(l,:) = xp(l,:)/t
+                vp1(l,:) = vp(l,:)
+            endif
+        enddo
+        xp(l,1) = xp(l,1) + cx
+        xp(l,2) = xp(l,2) + cy
+        xp(l,3) = xp(l,3) + cz
+
+
         ijkp(l,1) = search(xp(l,1), qx)
         ijkp(l,2) = search(xp(l,2), qy)
         ijkp(l,3) = searchk(xp(l,3), qz)
+
         mrat(l) = ion_amu/m_pu
         beta_p(l) = pu_beta_p
         tags(l) = pluto_photoionize_CH4_tag
