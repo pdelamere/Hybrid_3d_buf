@@ -9,14 +9,14 @@
 0                     !sw thermal He ppc
 0                    !sw shell H ppc
 0                    !sw shell He ppc
-0.005                  !particle time step (fraction of omega_i)
-30000                  !number of time steps
-1000                     !grid data output interval
-1000                    !particle data output interval
+0.02                  !particle time step (fraction of omega_i)
+60001                  !number of time steps
+2000                     !grid data output interval
+2000                    !particle data output interval
 0                  !data output wait steps
 2.5                   !flow speed (km/s)
 2.5                  !thermal speed for Maxwellian (km/s) (Most probable speed vth = sqrt(2kT/m))
-0.1                   !grid size as fraction of lambda_i
+0.5                   !grid size as fraction of lambda_i
 0.0001                !nu_init_frac, fraction of gyrofrequency for nu_init
 './data/'             !output directory 
 5000                !mrestart
