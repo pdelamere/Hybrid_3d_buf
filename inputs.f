@@ -153,6 +153,16 @@ c solar wind composition
       PARAMETER (pluto_chex_CH4_tag = 7)
 
       real e_temperature
+
+
+      ! Reaction cross sections
+      real sigma_Ba_res_chex ! Ba + Ba^+ -> Ba^+ + Ba
+      real sigma_Ba_chex ! Ba + O^+ -> Ba^+ + O
+      !real sigma_O_chex  ! O + Ba^+ -> O^+ + Ba
+      !real sigma_Ba_recomb ! Ba^+ + e^- -> Ba
+      PARAMETER (sigma_Ba_res_chex = 1e-24)
+      PARAMETER (sigma_Ba_chex = 1e-28)
+
       CONTAINS
 
 c----------------------------------------------------------------

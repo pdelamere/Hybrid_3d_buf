@@ -53,15 +53,9 @@ c---------------------------------------------------------------------
       real FUNCTION neutral_density_continuous(x,y,z)
       real x,y,z
       real xx,yy,zz
-      real cx,cy,cz
       real r
 
-      call Neut_Center(cx,cy,cz)
-      xx = x - cx
-      yy = y - cy
-      ! zz is computed differently since we need to convert z (which is
-      ! local) to a global z.
-      zz = (z + (procnum-(cart_rank+1))*qz(nz-1)) - cz
+      call NC_coords(xx,yy,zz, x,y,z)
 
       r = sqrt(xx**2 + yy**2 + zz**2)
       neutral_density_continuous = atmosphere(r)
@@ -78,6 +72,7 @@ c----------------------------------------------------------------------
           !call photoionization(np,xp,vp,vp1)
           call photoionization_switching(np,xp,vp,vp1)
           !call fake_charge_exchange(xp, vp, vp1)
+          call charge_exchange_ionization(xp,vp,vp1)
       end SUBROUTINE ionization
       real function ionization_rate(t)
           real :: t
@@ -85,6 +80,92 @@ c----------------------------------------------------------------------
           N0 = 2.631e24 ! Matt's number
           ionization_rate = N0/tau_photo * exp(-t/tau_photo)
       end function ionization_rate
+
+      SUBROUTINE Ba_chex(l, xp,vp,vp1)
+         ! Handles both Ba + Ba^+ -> Ba^+ + Ba
+         ! and Ba + O^+ -> Ba^+ + O
+         ! I.e. these are charge exchange reactions that consume neutral
+         ! barium and produce ionized barium. The only difference
+         ! between the two reactions is the cross section and the
+         ! identity of the ion being converted.
+         integer l
+         real xp(Ni_max,3)
+         real vp(Ni_max,3)
+         real vp1(Ni_max,3)
+
+         real vrel
+         real nn
+         real x,y,z
+         real nvx,nvy,nvz
+         real rvx,rvy,rvz 
+         real sigma
+         real chex_inv_tau
+         real chex_prob
+
+         integer m
+         nn = neutral_density_continuous(xp(l,1), xp(l,2), xp(l,3))
+
+         call NC_coords(x,y,z, xp(l,1), xp(l,2), xp(l,3))
+         nvx = x/simulated_time
+         nvy = y/simulated_time
+         nvz = z/simulated_time
+
+         rvx = vp(l,1) - nvx
+         rvy = vp(l,2) - nvy
+         rvz = vp(l,3) - nvz
+
+         vrel = sqrt(rvx**2 + rvy**2 + rvz**2)
+
+         if((tags(l) .eq. pluto_photoionize_CH4_tag) .or.
+     x      (tags(l) .eq.  pluto_chex_CH4_tag)) then
+            sigma = sigma_Ba_res_chex
+         elseif(tags(l) .eq. sw_thermal_H_tag) then
+            sigma = sigma_Ba_chex
+         endif
+         chex_inv_tau = nn*sigma*vrel
+         chex_prob = dt*chex_inv_tau
+
+         if (pad_ranf() .lt. chex_prob) then
+             ! Remove kinetic energy of the old particle
+             do m=1,3
+                input_E = input_E - 
+     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x              beta*beta_p(l) 
+             enddo
+             vp(l,1) = nvx
+             vp(l,2) = nvy
+             vp(l,3) = nvz
+             vp1(l,:) = vp(l,:)
+             mrat(l) = ion_amu/m_pu
+             tags(l) = pluto_chex_CH4_tag
+             ! Add kinetic energy of the new particle
+             do m=1,3
+                input_E = input_E + 
+     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x              beta*beta_p(l) 
+             enddo
+         endif
+
+      end SUBROUTINE Ba_chex 
+
+      SUBROUTINE charge_exchange_ionization(xp,vp,vp1)
+          real xp(Ni_max,3)
+          real vp(Ni_max,3)
+          real vp1(Ni_max,3)
+
+
+          integer l
+
+          do l = 1, Ni_tot
+          if((tags(l) .eq. pluto_photoionize_CH4_tag) .or.
+     x       (tags(l) .eq. pluto_chex_CH4_tag) .or.
+     x       (tags(l) .eq. sw_thermal_H_tag)) then
+             call Ba_chex(l, xp, vp, vp1)
+          endif
+
+          enddo
+
+      end SUBROUTINE charge_exchange_ionization
 
       SUBROUTINE fake_charge_exchange(xp, vp, vp1)
       real vp(Ni_max,3)

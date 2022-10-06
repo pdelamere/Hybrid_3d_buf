@@ -261,4 +261,19 @@ cc----------------------------------------------------------------------
 
       end SUBROUTINE get_grad_P
 
+      SUBROUTINE NC_coords(x, y, z, ix, iy, iz)
+      ! Convert internal coordinates (i.e. whats in xp array) to
+      ! coordinates centered on the neutral cloud
+          real, intent(out) :: x, y, z
+          ! Internal local coordinates. i.e. what's found in xp array
+          real, intent(in) :: ix, iy, iz 
+          real :: cx, cy, cz
+          call Neut_center(cx,cy,cz)
+
+          x = ix - cx
+          y = iy - cy
+          ! z is computed differently since we need to convert iz (which
+          ! is local) to a global z accounting for domain decomposition.
+          z = (iz + (procnum-(cart_rank+1))*qz(nz-1)) - cz
+      end SUBROUTINE NC_coords
       end MODULE misc
