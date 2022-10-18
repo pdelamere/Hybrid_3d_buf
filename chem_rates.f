@@ -9,38 +9,80 @@
       contains
 
 c----------------------------------------------------------------------
-      real function atmosphere(r)
+      function equilibrium_density(t, r) result(nn)
+          ! gaussian barium release with equilibrium model of
+          ! photoionization
+          real, intent(in) :: t
           real, intent(in) :: r
-          !! gaussian barium release
-          real N0, N1, N
-          real vth_n
+          real :: nn
+          real N
           real A
-          real t
-          ! N0 is the total number of neutrals
-          N0 = 9e24
-          !N0 = 2.631e24 ! Matt's number
-          !N0 = 2.6e24 ! CRRES number
-          !N0 = 9.0e24 ! CRRES G9 single canister number
-          vth_n = 1.8
-          t = simulated_time
 
           ! N is the number of neutrals available to be ionized
-          ! i.e. We assume some neutrals are in dropplets of burining
-          ! thermite and others have been atomized. Only the atomized
-          ! neutrals are subject to photoionization.
-          A = N0/(1 - tau_burn/tau_photo)
-          if(tau_burn .eq. 0.0) then
-              N = A*exp(-t/tau_photo)
-          else
-              N = A*(exp(-t/tau_photo) - exp(-t/tau_burn))
-          endif
+          N = N0*exp(-t/tau_photo)
 
-          ! We assume that all the atomized neutrals are distributed as
+          ! We assume that the neutrals are distributed as
           ! a gaussian.
           A = N/((sqrt(pi)*vth_n*t)**3)
-          atmosphere = A*exp(-r**2/((vth_n*t)**2))
-      end function atmosphere
+          nn = A*exp(-r**2/((vth_n*t)**2))
+      end function equilibrium_density
 
+      function excitation_density(t, r) result(nn)
+          ! gaussian barium release with excitation model of
+          ! photoionization
+          real, intent(in) :: t
+          real, intent(in) :: r
+          real :: nn
+          real N
+          real A
+          integer i
+
+          ! This loop computes the number of ions at time t in the
+          ! excitation model
+          N = 0
+          do i=1,4
+            N = N + N0*vc(i)*exp(lambda(i)*t)
+          enddo
+          ! The number of neutrals is N0 - Ni
+          N = N0 - N
+
+          ! We assume that the neutrals are distributed as
+          ! a gaussian.
+          A = N/((sqrt(pi)*vth_n*t)**3)
+          nn = A*exp(-r**2/((vth_n*t)**2))
+      end function excitation_density
+
+      function equilibrium_ionization_rate(t, N) result(r)
+          real :: r
+          real :: t
+          real, optional :: N
+          real :: NN
+          if(present(N)) then
+              NN = N
+          else 
+              NN = N0
+          endif
+
+          r = NN/tau_photo * exp(-t/tau_photo)
+      end function equilibrium_ionization_rate
+
+      function excitation_ionization_rate(t, N) result(r)
+          real :: r
+          real :: t
+          integer :: i
+          real, optional :: N
+          real :: NN
+          if(present(N)) then
+              NN = N
+          else 
+              NN = N0
+          endif
+
+          r = 0
+          do i=1, 4
+            r = r + N0*vc(i)*lambda(i)*exp(lambda(i)*t)
+          enddo
+      end function excitation_ionization_rate
 
 c---------------------------------------------------------------------
       real FUNCTION neutral_density(i,j,k)
@@ -58,7 +100,7 @@ c---------------------------------------------------------------------
       call NC_coords(xx,yy,zz, x,y,z)
 
       r = sqrt(xx**2 + yy**2 + zz**2)
-      neutral_density_continuous = atmosphere(r)
+      neutral_density_continuous = excitation_density(simulated_time, r)
 
       return
       end FUNCTION neutral_density_continuous
@@ -74,151 +116,6 @@ c----------------------------------------------------------------------
           !call fake_charge_exchange(xp, vp, vp1)
           call charge_exchange_ionization(xp,vp,vp1)
       end SUBROUTINE ionization
-      real function ionization_rate(t)
-          real :: t
-          real :: N0
-          N0 = 2.631e24 ! Matt's number
-          ionization_rate = N0/tau_photo * exp(-t/tau_photo)
-      end function ionization_rate
-
-      SUBROUTINE Ba_chex(l, xp,vp,vp1)
-         ! Handles both Ba + Ba^+ -> Ba^+ + Ba
-         ! and Ba + O^+ -> Ba^+ + O
-         ! I.e. these are charge exchange reactions that consume neutral
-         ! barium and produce ionized barium. The only difference
-         ! between the two reactions is the cross section and the
-         ! identity of the ion being converted.
-         integer l
-         real xp(Ni_max,3)
-         real vp(Ni_max,3)
-         real vp1(Ni_max,3)
-
-         real vrel
-         real nn
-         real x,y,z
-         real nvx,nvy,nvz
-         real rvx,rvy,rvz 
-         real sigma
-         real chex_inv_tau
-         real chex_prob
-
-         integer m
-         nn = neutral_density_continuous(xp(l,1), xp(l,2), xp(l,3))
-
-         call NC_coords(x,y,z, xp(l,1), xp(l,2), xp(l,3))
-         nvx = x/simulated_time
-         nvy = y/simulated_time
-         nvz = z/simulated_time
-
-         rvx = vp(l,1) - nvx
-         rvy = vp(l,2) - nvy
-         rvz = vp(l,3) - nvz
-
-         vrel = sqrt(rvx**2 + rvy**2 + rvz**2)
-
-         if((tags(l) .eq. pluto_photoionize_CH4_tag) .or.
-     x      (tags(l) .eq.  pluto_chex_CH4_tag)) then
-            sigma = sigma_Ba_res_chex
-         elseif(tags(l) .eq. sw_thermal_H_tag) then
-            sigma = sigma_Ba_chex
-         endif
-         chex_inv_tau = nn*sigma*vrel
-         chex_prob = dt*chex_inv_tau
-
-         if (pad_ranf() .lt. chex_prob) then
-             ! Remove kinetic energy of the old particle
-             do m=1,3
-                input_E = input_E - 
-     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x              beta*beta_p(l) 
-             enddo
-             vp(l,1) = nvx
-             vp(l,2) = nvy
-             vp(l,3) = nvz
-             vp1(l,:) = vp(l,:)
-             mrat(l) = ion_amu/m_pu
-             tags(l) = pluto_chex_CH4_tag
-             ! Add kinetic energy of the new particle
-             do m=1,3
-                input_E = input_E + 
-     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x              beta*beta_p(l) 
-             enddo
-         endif
-
-      end SUBROUTINE Ba_chex 
-
-      SUBROUTINE charge_exchange_ionization(xp,vp,vp1)
-          real xp(Ni_max,3)
-          real vp(Ni_max,3)
-          real vp1(Ni_max,3)
-
-
-          integer l
-
-          do l = 1, Ni_tot
-          if((tags(l) .eq. pluto_photoionize_CH4_tag) .or.
-     x       (tags(l) .eq. pluto_chex_CH4_tag) .or.
-     x       (tags(l) .eq. sw_thermal_H_tag)) then
-             call Ba_chex(l, xp, vp, vp1)
-          endif
-
-          enddo
-
-      end SUBROUTINE charge_exchange_ionization
-
-      SUBROUTINE fake_charge_exchange(xp, vp, vp1)
-      real vp(Ni_max,3)
-      real vp1(Ni_max,3)
-      real xp(Ni_max,3)
-      integer l, m
-      real mr, b, t !mrat, beta, and tag
-      real drift, vthrm
-      integer ierr
-      real cx,cy,cz
-      real xx,yy,zz
-      real r
-
-      real duration
-      real s
-      real f
-      duration = 0.18
-      s = 5.0
-      f = 0.00103
-
-      if( simulated_time .le. duration ) then
-      call Neut_Center(cx,cy,cz)
-      do l=1,Ni_tot
-         if( tags(l) .ne. sw_thermal_H_tag ) then
-             cycle
-         endif
-         xx = xp(l,1) - cx
-         yy = xp(l,2) - cy
-         ! zz is computed differently since we need to convert z
-         ! (which is local) to a global z.
-         zz = (xp(l,3) + (procnum-(cart_rank+1))*qz(nz-1)) - cz
-         r = sqrt(xx**2 + yy**2 + zz**2)
-
-         if(pad_ranf() .le. f/(s*sqrt(2*PI))*exp(-((r/s)**2)/2)) then
-             ! The particle is being removed and replaced with a
-             ! stationary Ba. So, remove the original input_E. The new
-             ! value for the input_E of this particle is zero
-             vp(l,1) = 0
-             vp(l,2) = 0
-             vp(l,3) = 0
-             mrat(l) = ion_amu/m_pu
-             tags(l) = pluto_photoionize_CH4_tag
-             do m=1,3
-                vp1(l,m) = vp(l,m)
-                input_E = input_E - 
-     x               0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x               (beta*beta_p(l))
-             enddo
-         endif
-
-      enddo
-      endif
-      end SUBROUTINE fake_charge_exchange
 
       subroutine photoionization_switching(np,xp,vp,vp1)
       real np(nx,ny,nz)
@@ -237,119 +134,10 @@ c----------------------------------------------------------------------
               call photoionization2(np,xp,vp,vp1)
           endif
       endif
-
-
       end subroutine
-
-      subroutine photoionization2(np,xp,vp,vp1)
-      ! Photoionization2 does exact normal distribution sampling. It
-      ! should only be called by the one proc that contains the center
-      ! of the neutral cloud and only before the edge of the cloud
-      ! reaches the boundary.
-      real np(nx,ny,nz)
-      real xp(Ni_max,3)
-      real vp(Ni_max,3)
-      real vp1(Ni_max,3)
-
-      real t
-      real sigma
-      real dsigma
-      real new_micro   
-      integer new_macro   
-      real pu_beta_p
-      integer ierr
-      integer l,m
-      real r
-
-      real cx,cy,cz         !x,y,z coord of neutral cloud center
-      call Neut_Center2(cx,cy,cz) ! cz is in local coordinates
-
-      dsigma = 1.27 ! km/s Don's expansion rate
-      t = simulated_time
-      sigma = t*dsigma
-
-      pu_beta_p = 50*b_sw_thermal_H 
-      new_micro = ionization_rate(t)*dt
-      new_macro = nint(new_micro*beta*pu_beta_p)
-
-      if((Ni_tot + new_macro) .gt. Ni_max) then
-          call MPI_ABORT(MPI_COMM_WORLD, ierr, ierr)
-          stop
-      endif
-
-      ! This part is a little weird,
-      ! randn_fill2 just fills xp with normally distributed random
-      ! numbers with mu=0 and sigma=sigma. That's the coorect thing to
-      ! do if xp's coordinates were centered on the cloud, but they
-      ! aren't. We shift a little later (in the loop). First, vp and vp1
-      ! are set. vp has a simple form when the position is in
-      ! coordinates centered on the cloud (that's why we didn't shift it
-      ! yet). vp1 = vp since the assumption is that the particle was
-      ! always moving with this velocity.
-      call randn_fill2(xp(Ni_tot+1:Ni_tot+new_macro,:), 0.0, sigma)
-      vp(Ni_tot+1:Ni_tot+new_macro,:)=xp(Ni_tot+1:Ni_tot+new_macro,:)/t
-      vp1(Ni_tot+1:Ni_tot+new_macro,:)=vp(Ni_tot+1:Ni_tot+new_macro,:)
-
-      do l=Ni_tot+1, Ni_tot+new_macro
-        do
-            if(abs(xp(l,3)) .lt. qz(nz)/2) then
-                exit
-            else
-                call randn_one(xp(l,3))
-                vp(l,:) = xp(l,:)/t
-                vp1(l,:) = vp(l,:)
-            endif
-        enddo
-        xp(l,1) = xp(l,1) + cx
-        xp(l,2) = xp(l,2) + cy
-        xp(l,3) = xp(l,3) + cz
-
-
-        ijkp(l,1) = search(xp(l,1), qx)
-        ijkp(l,2) = search(xp(l,2), qy)
-        ijkp(l,3) = searchk(xp(l,3), qz)
-
-        mrat(l) = ion_amu/m_pu
-        beta_p(l) = pu_beta_p
-        tags(l) = pluto_photoionize_CH4_tag
-        do m=1,3
-           ! Add the kinetic energy of the particle
-           input_E = input_E + 
-     x               0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
-     x                     (beta*beta_p(l))
-        enddo                     
-      enddo
-
-
-
-      Ni_tot = Ni_tot + new_macro
-      end subroutine photoionization2
-
-      real function search(x, q) result(r)
-          real, intent(in) :: x
-          real, intent(in), dimension(:) :: q
-          integer ii
-          ii=0
-          do
-              ii = ii + 1
-              if (x .le. q(ii)) exit
-          enddo
-          r = ii-1
-      end function
-      real function searchk(z,q) result(r)
-          real, intent(in) :: z
-          real, intent(in), dimension(:) :: q
-          integer kk
-          kk = 2
-          do
-              kk = kk+1
-              if (z .le. qz(kk)) exit
-          enddo
-          r = kk-1
-      end function
 c----------------------------------------------------------------------
       SUBROUTINE photoionization(np,xp,vp,vp1)
-c Ionizes the neutral cloud with a 28 s time constant and fill particle
+c Ionizes the neutral cloud and fills particle
 c arrays, np, vp, up (ion particle density, velocity, 
 c and bulk velocity).   
 c----------------------------------------------------------------------
@@ -386,8 +174,10 @@ c----------------------------------------------------------------------
       real pu_tag
       integer i,j,k,l,m
       integer ii,jj,kk,ll
+      real N
 
       call Neut_Center(cx,cy,cz)
+      t = simulated_time
 
 c get source density
 
@@ -406,7 +196,8 @@ c get source density
                pu_beta_p = 50*b_sw_thermal_H 
                pu_tag = pluto_photoionize_CH4_tag
 
-               new_micro = vol*neutral_density(i,j,k)*dt/tau_photo
+               N = vol*neutral_density(i,j,k)
+               new_micro = excitation_ionization_rate(t, N)*dt
                new_macro = new_micro*beta*pu_beta_p
 
                do ll = 1,min(nint(new_macro), Ni_max - Ni_tot)
@@ -507,18 +298,180 @@ c get source density
      x                          0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2/
      x                          (beta*beta_p(l))
                       enddo                     
-                        
-                        
                    endif
-                     
                endif
-
-                  
             enddo
          enddo
       enddo
       return
       end SUBROUTINE photoionization
 c----------------------------------------------------------------------
+
+      subroutine photoionization2(np,xp,vp,vp1)
+      ! Photoionization2 does exact normal distribution sampling. It
+      ! should only be called by the one proc that contains the center
+      ! of the neutral cloud and only before the edge of the cloud
+      ! reaches the boundary.
+      real np(nx,ny,nz)
+      real xp(Ni_max,3)
+      real vp(Ni_max,3)
+      real vp1(Ni_max,3)
+
+      real t
+      real sigma
+      real dsigma
+      real new_micro   
+      integer new_macro   
+      real pu_beta_p
+      integer ierr
+      integer l,m
+      real r
+
+      real cx,cy,cz         !x,y,z coord of neutral cloud center
+      call Neut_Center2(cx,cy,cz) ! cz is in local coordinates
+
+      dsigma = 1.27 ! km/s Don's expansion rate
+      t = simulated_time
+      sigma = t*dsigma
+
+      pu_beta_p = 50*b_sw_thermal_H 
+      new_micro = excitation_ionization_rate(t)*dt
+      new_macro = nint(new_micro*beta*pu_beta_p)
+
+      if((Ni_tot + new_macro) .gt. Ni_max) then
+          call MPI_ABORT(MPI_COMM_WORLD, ierr, ierr)
+          stop
+      endif
+
+      ! This part is a little weird,
+      ! randn_fill2 just fills xp with normally distributed random
+      ! numbers with mu=0 and sigma=sigma. That's the coorect thing to
+      ! do if xp's coordinates were centered on the cloud, but they
+      ! aren't. We shift a little later (in the loop). First, vp and vp1
+      ! are set. vp has a simple form when the position is in
+      ! coordinates centered on the cloud (that's why we didn't shift it
+      ! yet). vp1 = vp since the assumption is that the particle was
+      ! always moving with this velocity.
+      call randn_fill2(xp(Ni_tot+1:Ni_tot+new_macro,:), 0.0, sigma)
+      vp(Ni_tot+1:Ni_tot+new_macro,:)=xp(Ni_tot+1:Ni_tot+new_macro,:)/t
+      vp1(Ni_tot+1:Ni_tot+new_macro,:)=vp(Ni_tot+1:Ni_tot+new_macro,:)
+
+      do l=Ni_tot+1, Ni_tot+new_macro
+        do 
+          ! test if the particle is in the domain (assume x and y are in
+          ! the domain)
+            if(abs(xp(l,3)) .lt. qz(nz)/2) then
+                exit
+            else
+                call randn_one(xp(l,3))
+                vp(l,3) = xp(l,3)/t
+                vp1(l,3) = vp(l,3)
+            endif
+        enddo
+        xp(l,1) = xp(l,1) + cx
+        xp(l,2) = xp(l,2) + cy
+        xp(l,3) = xp(l,3) + cz
+
+        ijkp(l,1) = search(xp(l,1), qx)
+        ijkp(l,2) = search(xp(l,2), qy)
+        ijkp(l,3) = searchk(xp(l,3), qz)
+
+        mrat(l) = ion_amu/m_pu
+        beta_p(l) = pu_beta_p
+        tags(l) = pluto_photoionize_CH4_tag
+        do m=1,3
+           ! Add the kinetic energy of the particle
+           input_E = input_E + 
+     x               0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x                     (beta*beta_p(l))
+        enddo                     
+      enddo
+
+      Ni_tot = Ni_tot + new_macro
+      end subroutine photoionization2
+
+
+      SUBROUTINE charge_exchange_ionization(xp,vp,vp1)
+          real xp(Ni_max,3)
+          real vp(Ni_max,3)
+          real vp1(Ni_max,3)
+          integer l
+
+          do l = 1, Ni_tot
+          if((tags(l) .eq. pluto_photoionize_CH4_tag) .or.
+     x       (tags(l) .eq. pluto_chex_CH4_tag) .or.
+     x       (tags(l) .eq. sw_thermal_H_tag)) then
+             call Ba_chex(l, xp, vp, vp1)
+          endif
+
+          enddo
+
+      end SUBROUTINE charge_exchange_ionization
+
+      SUBROUTINE Ba_chex(l, xp,vp,vp1)
+         ! Handles both Ba + Ba^+ -> Ba^+ + Ba
+         ! and Ba + O^+ -> Ba^+ + O
+         ! I.e. these are charge exchange reactions that consume neutral
+         ! barium and produce ionized barium. The only difference
+         ! between the two reactions is the cross section and the
+         ! identity of the ion being converted.
+         integer l
+         real xp(Ni_max,3)
+         real vp(Ni_max,3)
+         real vp1(Ni_max,3)
+
+         real vrel
+         real nn
+         real x,y,z
+         real nvx,nvy,nvz
+         real rvx,rvy,rvz 
+         real sigma
+         real chex_inv_tau
+         real chex_prob
+
+         integer m
+         nn = neutral_density_continuous(xp(l,1), xp(l,2), xp(l,3))
+
+         call NC_coords(x,y,z, xp(l,1), xp(l,2), xp(l,3))
+         nvx = x/simulated_time
+         nvy = y/simulated_time
+         nvz = z/simulated_time
+
+         rvx = vp(l,1) - nvx
+         rvy = vp(l,2) - nvy
+         rvz = vp(l,3) - nvz
+
+         vrel = sqrt(rvx**2 + rvy**2 + rvz**2)
+
+         if((tags(l) .eq. pluto_photoionize_CH4_tag) .or.
+     x      (tags(l) .eq.  pluto_chex_CH4_tag)) then
+            sigma = sigma_Ba_res_chex
+         elseif(tags(l) .eq. sw_thermal_H_tag) then
+            sigma = sigma_Ba_chex
+         endif
+         chex_inv_tau = nn*sigma*vrel
+         chex_prob = dt*chex_inv_tau
+
+         if (pad_ranf() .lt. chex_prob) then
+             ! Remove kinetic energy of the old particle
+             do m=1,3
+                input_E = input_E - 
+     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x              beta*beta_p(l) 
+             enddo
+             vp(l,1) = nvx
+             vp(l,2) = nvy
+             vp(l,3) = nvz
+             vp1(l,:) = vp(l,:)
+             mrat(l) = ion_amu/m_pu
+             tags(l) = pluto_chex_CH4_tag
+             ! Add kinetic energy of the new particle
+             do m=1,3
+                input_E = input_E + 
+     x              0.5*(mion/mrat(l))*(vp(l,m)*km_to_m)**2 /
+     x              beta*beta_p(l) 
+             enddo
+         endif
+      end SUBROUTINE Ba_chex 
 
       end MODULE chem_rates

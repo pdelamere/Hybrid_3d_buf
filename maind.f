@@ -314,7 +314,7 @@ c write para.h file
          write(109) b0_top,b0_bottom
          write(109) vth_top,vth_bottom
          write(109) alpha,beta
-         write(109) RIo
+         write(109) RPluto
 
          write(109) b0_init
          write(109) ion_amu

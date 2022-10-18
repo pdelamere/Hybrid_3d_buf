@@ -13,7 +13,6 @@ c raw grid coordinate data
       real gz(nz)
       real qx(nx), qy(ny), qz(nz)
                             !cartisian coordinates of grid points
-      real lambda(nz)       !latitude of given grid point
       integer ri, rj, rk    !release coordinates
       real dz_grid(nz)      !dz for grid, variable in z direction
       real dz_cell(nz)      !dz for cell, variable in z direction 

@@ -87,16 +87,30 @@ c density scaling parameter, alpha, and ion particle array dims
 
       integer ri0 ! Number of cells pluto is offset from the center.
 
-      real Qo, vrad, N_o, RIo, Rpluto, tau_photo, tau_burn, k_rec
-      PARAMETER (Qo = 3e27)       !neutral source rate
-      PARAMETER (vrad = 0.05)     !escape velocity
-      PARAMETER (N_o = 1e33)   !Steady state neutral particle constant
-      PARAMETER (RIo = 1200.0)    !Io radius
-      PARAMETER (Rpluto = 1184.0) !Pluto radius
-      PARAMETER (tau_photo = 28)
-      PARAMETER (tau_burn = 0.0)
-      PARAMETER (k_rec = 1e-5/1e15) !km^3 s^-1
+      real Rpluto, tau_photo
+      PARAMETER (Rpluto = 1184.0) ! Pluto radius
+      PARAMETER (tau_photo = 28) ! Equilibrium photoionization rate
 
+      real N0, vth_n
+      PARAMETER (N0 = 2.631e24) ! Matt's number
+      !PARAMETER (N0 = 2.6e24) ! CRRES number
+      !PARAMETER (N0 = 9.0e24) ! CRRES G9 single canister
+      PARAMETER (vth_n = 1.8) ! Neutral thermal (most probable) speed
+
+      ! "Magic" numbers for computing ion and neutral numbers and
+      ! ionization rates. Lambda
+      ! is the vector of eigenvalues of the state transition matrix (not
+      ! present in this source code). To explain vc I will use some
+      ! intermediate variables. First, let V be the matrix of
+      ! eigenvectors cooresponding to lambda, then let c be the vector
+      ! that solves the linear equation Vc = [0,1,0,0]. The array vc
+      ! below is the elementwise product of the first row of V with c.
+      ! The number of ions and ionization rates can be computed using
+      ! these two arrays. See chem_rates.f.
+      real, parameter, dimension(4) :: vc =
+     x       (/ -3.1622e-5, 0.017523, -1.017492, 1.0 /)
+      real, parameter, dimension(4) :: lambda =
+     x       (/ -18.344, -1.9769, -0.034852, 0.0 /)
 c domain decompostion parameters
 
       integer n_up, n_down, cart_dims

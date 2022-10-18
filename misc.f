@@ -276,4 +276,27 @@ cc----------------------------------------------------------------------
           ! is local) to a global z accounting for domain decomposition.
           z = (iz + (procnum-(cart_rank+1))*qz(nz-1)) - cz
       end SUBROUTINE NC_coords
+
+      real function search(x, q) result(r)
+          real, intent(in) :: x
+          real, intent(in), dimension(:) :: q
+          integer ii
+          ii=0
+          do
+              ii = ii + 1
+              if (x .le. q(ii)) exit
+          enddo
+          r = ii-1
+      end function
+      real function searchk(z,q) result(r)
+          real, intent(in) :: z
+          real, intent(in), dimension(:) :: q
+          integer kk
+          kk = 2
+          do
+              kk = kk+1
+              if (z .le. qz(kk)) exit
+          enddo
+          r = kk-1
+      end function
       end MODULE misc
