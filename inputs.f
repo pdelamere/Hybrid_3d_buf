@@ -91,11 +91,12 @@ c density scaling parameter, alpha, and ion particle array dims
       PARAMETER (Rpluto = 1184.0) ! Pluto radius
       PARAMETER (tau_photo = 28) ! Equilibrium photoionization rate
 
-      real N0, vth_n
+      real N0, vth_n, dsigma
       PARAMETER (N0 = 2.631e24) ! Matt's number
       !PARAMETER (N0 = 2.6e24) ! CRRES number
       !PARAMETER (N0 = 9.0e24) ! CRRES G9 single canister
       PARAMETER (vth_n = 1.8) ! Neutral thermal (most probable) speed
+      PARAMETER (dsigma = vth_n/sqrt(2.0))
 
       ! "Magic" numbers for computing ion and neutral numbers and
       ! ionization rates. Lambda
