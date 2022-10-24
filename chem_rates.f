@@ -81,6 +81,15 @@ c----------------------------------------------------------------------
           real N
           N = equilibrium_N(t)
       end function
+      SUBROUTINE ionization(np,xp,vp,vp1)
+          real np(nx,ny,nz)
+          real xp(Ni_max,3)
+          real vp(Ni_max,3)
+          real vp1(Ni_max,3)
+          !call photoionization(np,xp,vp,vp1)
+          call photoionization_switching(np,xp,vp,vp1)
+          call charge_exchange_ionization(xp,vp,vp1)
+      end SUBROUTINE ionization
 
 c---------------------------------------------------------------------
       real FUNCTION neutral_density(i,j,k)
@@ -106,15 +115,6 @@ c---------------------------------------------------------------------
       end FUNCTION neutral_density_continuous
 c----------------------------------------------------------------------
 
-      SUBROUTINE ionization(np,xp,vp,vp1)
-          real np(nx,ny,nz)
-          real xp(Ni_max,3)
-          real vp(Ni_max,3)
-          real vp1(Ni_max,3)
-          call photoionization(np,xp,vp,vp1)
-          !call photoionization_switching(np,xp,vp,vp1)
-          !call charge_exchange_ionization(xp,vp,vp1)
-      end SUBROUTINE ionization
 
       subroutine photoionization_switching(np,xp,vp,vp1)
       real np(nx,ny,nz)
