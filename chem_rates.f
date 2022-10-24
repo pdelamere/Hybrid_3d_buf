@@ -74,12 +74,12 @@ c----------------------------------------------------------------------
       function ionization_rate(t) result(r)
           real t
           real r
-          r = equilibrium_ionization_rate(t)
+          r = excitation_ionization_rate(t)
       end function
       function neutral_N(t) result(N)
           real t
           real N
-          N = equilibrium_N(t)
+          N = excitation_N(t)
       end function
       SUBROUTINE ionization(np,xp,vp,vp1)
           real np(nx,ny,nz)
