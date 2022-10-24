@@ -155,6 +155,7 @@ c----------------------------------------------------------------------
       real n_source,vol_source
       real nnofr       !neutral density vs. r
       real new_micro
+      real r_new_macro
       integer new_macro 
       
       real Np_total         !total number of ions /s
@@ -186,8 +187,13 @@ c----------------------------------------------------------------------
                pu_tag = pluto_photoionize_CH4_tag
 
                N = vol*neutral_density(i,j,k)
+
                new_micro = N * ionization_rate(t) * dt
-               new_macro = nint(new_micro*pu_beta_p)
+               r_new_macro = new_micro*pu_beta_p
+               new_macro = int(r_new_macro)
+               if((r_new_macro - new_macro) .gt. pad_ranf()) then
+                   new_macro = new_macro + 1
+               endif
 
                if(Ni_tot + new_macro .gt. Ni_max) then
                    call MPI_ABORT(MPI_COMM_WORLD, ierr, ierr)
@@ -243,6 +249,7 @@ c----------------------------------------------------------------------
       real t
       real sigma
       real new_micro   
+      real r_new_macro
       integer new_macro   
       real pu_beta_p
       integer ierr
@@ -259,8 +266,13 @@ c----------------------------------------------------------------------
       pu_beta_p = 5*b_sw_thermal_H 
 
       N = neutral_N(t)
-      new_micro = N * ionization_rate(t)*dt
-      new_macro = nint(new_micro*pu_beta_p)
+
+      new_micro = N * ionization_rate(t) * dt
+      r_new_macro = new_micro*pu_beta_p
+      new_macro = int(r_new_macro)
+      if((r_new_macro - new_macro) .gt. pad_ranf()) then
+          new_macro = new_macro + 1
+      endif
 
       if((Ni_tot + new_macro) .gt. Ni_max) then
           call MPI_ABORT(MPI_COMM_WORLD, ierr, ierr)
