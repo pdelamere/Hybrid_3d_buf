@@ -8,52 +8,6 @@
       contains
 
 
-c----------------------------------------------------------------------
-      SUBROUTINE part_setup_buf(xp_buf,vp_buf)
-c----------------------------------------------------------------------
-
-      real vp_buf(Ni_max_buf,3)
-      real xp_buf(Ni_max_buf,3)
-      real rnd,f,v
-      real vx,vy,vz
-      real tmp
-      real phi
-
-      integer flg
-      integer Ni_tot_buf_1
-      integer l
-
-      Ni_tot_buf = Ni_tot_buf_0
-      Ni_thermal_H_buf  = Ni_thermal_H_buf_0
-      Ni_thermal_He_buf = Ni_thermal_He_buf_0
-      Ni_shell_H_buf    = Ni_shell_H_buf_0
-      Ni_shell_He_buf   = Ni_shell_He_buf_0
-
-c Initialize Thermal H+
-      call insert_maxwl_buf(1, Ni_thermal_H_buf, -vsw, vth, vp_buf,
-     x        xp_buf, 1.0, b_sw_thermal_H, sw_thermal_H_tag)
-
-c initialize Thermal He++
-      call insert_maxwl_buf(Ni_thermal_H_buf+1,
-     x  Ni_thermal_H_buf+Ni_thermal_He_buf,
-     x  -vsw, vth, vp_buf, xp_buf, 0.5, b_sw_thermal_He, 
-     x  sw_thermal_He_tag)
-
-c initialize Shell H+
-      call insert_shell_buf(Ni_thermal_H_buf+Ni_thermal_He_buf+1,
-     x         Ni_thermal_H_buf+Ni_thermal_He_buf+Ni_shell_H_buf,
-     x                  -vsw, vsw, vp_buf, xp_buf,1.0, 
-     x                  b_sw_shell_H, sw_shell_H_tag)
-
-c initialize Shell He+
-      call insert_shell_buf(Ni_thermal_H_buf
-     x                  +Ni_thermal_He_buf+Ni_shell_H_buf+1,
-     x                  Ni_Max_buf,
-     x                  -vsw, vsw, vp_buf,xp_buf, 0.25, 
-     x                  b_sw_shell_He, sw_shell_He_tag)
-      return
-      end SUBROUTINE part_setup_buf
-c----------------------------------------------------------------------
 
 c----------------------------------------------------------------------
       SUBROUTINE get_Ep_buf(Ep_buf,b0,xp_buf,up)

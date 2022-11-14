@@ -24,7 +24,9 @@
       integer nout
       integer part_nout
       integer output_wait
-      real vsw
+      real vsw_x
+      real vsw_y
+      real vsw_z
       real vth
       real dx_frac
       real nu_init_frac
@@ -222,8 +224,12 @@ c----------------------------------------------------------------
       write(*,*) 'part_nout..............',part_nout
       read(100,*) output_wait
       write(*,*) 'output_wait..............',output_wait
-      read(100,*) vsw
-      write(*,*) 'vsw...............',vsw
+      read(100,*) vsw_x
+      write(*,*) 'vsw x...............',vsw_x
+      read(100,*) vsw_y
+      write(*,*) 'vsw y...............',vsw_y
+      read(100,*) vsw_z
+      write(*,*) 'vsw z...............',vsw_z
       read(100,*) vth
       write(*,*) 'vth...............',vth
       read(100,*) dx_frac

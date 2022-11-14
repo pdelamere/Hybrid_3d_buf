@@ -217,7 +217,8 @@ c----------------------------------------------------------------------
       enddo
       end SUBROUTINE insert_maxwl_buf
 
-      SUBROUTINE insert_maxwl(start_N, stop_N, drift, vthrm, vp, vp1,
+      SUBROUTINE insert_maxwl(start_N, stop_N, driftx, drifty, driftz,
+     x        vthrm, vp, vp1,
      x        xp, mr, b, t)
       integer start_N, stop_N
       real vp(Ni_max,3)
@@ -225,7 +226,8 @@ c----------------------------------------------------------------------
       real xp(Ni_max,3)
       integer l, m
       real mr, b, t !mrat, beta, and tag
-      real drift, vthrm
+      real driftx, drifty, driftz
+      real vthrm
       integer ierr
 
 
@@ -234,7 +236,9 @@ c----------------------------------------------------------------------
          xp(l,2) = qy(1)+(1.0-pad_ranf())*(qy(ny-1)-qy(1))
          xp(l,3) = qz(2)+(1.0-pad_ranf())*(qz(nz)-qz(2))
          call maxwl_init(vthrm,vp(l,1),vp(l,2),vp(l,3))
-         vp(l,1) = vp(l,1) + drift
+         vp(l,1) = vp(l,1) + driftx
+         vp(l,2) = vp(l,2) + drifty
+         vp(l,3) = vp(l,3) + driftz
 
          call locate_new(l, xp(l,1), xp(l,2), xp(l,3))
 
@@ -367,7 +371,8 @@ c      include 'incurv.h'
       vth = vth_top
 
 c Initialize Thermal H+
-      call insert_maxwl(1, Ni_thermal_H, -vsw, vth, vp, vp1,
+      call insert_maxwl(1, Ni_thermal_H, vsw_x, vsw_y, vsw_z,
+     x        vth, vp, vp1,
      x        xp, 1.0, b_sw_thermal_H, sw_thermal_H_tag)
       !call initial_barium(1, Ni_thermal_H, vp, vp1, xp)
 

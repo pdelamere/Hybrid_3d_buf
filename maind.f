@@ -321,7 +321,7 @@ c write para.h file
          write(109) m_pu
          write(109) nf_init
          write(109) dt_frac
-         write(109) vsw
+         write(109) 0.0
          write(109) vth
          write(109) dx_frac
          write(109) nu_init_frac

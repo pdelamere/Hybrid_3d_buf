@@ -38,11 +38,11 @@ c----------------------------------------------------------------
 
       print*, 'dt...',dt,dtsub_init
 
-      vtop = vsw
-      vbottom = -vsw
+      vtop = 0
+      vbottom = 0
 
       ! Initialize upstream solar wind velocities
-      vsw_us(:,:,1) = -vsw
+      vsw_us(:,:,1) = 0
       vsw_us(:,:,2) = 0
       vsw_us(:,:,3) = 0
 
